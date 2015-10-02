@@ -1,3 +1,4 @@
+package src;
 public class CommandParser {
 	
 	private static String[] ACTION_KEYWORD = {"add", "update", "delete", "redo", "at", "by", "from", "to"};

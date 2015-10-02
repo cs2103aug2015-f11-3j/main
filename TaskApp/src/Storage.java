@@ -1,3 +1,4 @@
+package src;
 /**
  * The Storage saves all the data of the user,
  * and will be updated according to commands, i.e. add/delete/update.

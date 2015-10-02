@@ -1,3 +1,4 @@
+package src;
 import java.io.IOException;
 
 import javafx.scene.control.Label;
