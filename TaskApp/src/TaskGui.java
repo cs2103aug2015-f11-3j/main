@@ -12,8 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
-//import main.java.backend.Logic;
-
 public class TaskGui extends Application {
 	 
 	private Stage primaryStage;
@@ -29,7 +27,10 @@ public class TaskGui extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		lb = new Label("Welcome to task manager");
+		
+		logic = new TaskLogic();
+		
+		lb = new Label(logic.executeCommand(""));
 		textField = new TextField ();
 		
 		VBox root = new VBox();
