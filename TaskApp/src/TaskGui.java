@@ -1,4 +1,5 @@
 package src;
+
 import java.io.IOException;
 
 import javafx.scene.control.Label;
@@ -20,25 +21,22 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import src.TaskLogic;
-//import main.java.gui.CommandBarController;
 
 
 public class TaskGui extends Application {
 	
 	TextField textfield;
 	BorderPane rootlayout;
-	TaskLogic tasklogic;
 	Text actiontarget;
+	
 	ListView<String> console;
 	
-	
+	TaskLogic tasklogic;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-//		String str = tasklogic.executeCommand("send");
-//		System.out.println(str);
-		
+	
 		primaryStage.setTitle("TaskManager");
 		
 		Text scenetitle = new Text("Welcome");
@@ -62,30 +60,27 @@ public class TaskGui extends Application {
         textfield.setPromptText("Write you commands here.");
         textfield.setStyle("-fx-font-size: 25;");
         
+        tasklogic = new TaskLogic();
+        
         //add a key listeners
         textfield.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
             	if(ke.getCode() == KeyCode.ENTER){
-            		//String str = tasklogic.executeCommand("send");
-            		//System.out.println(str);
+            		
             		handleEnterPress();
-	                //console.getItems().add("Key Pressed: " + textfield.getText());
-	                //actiontarget.setFill(Color.FIREBRICK);
-	                //actiontarget.setText("thanks for type in command.");
+            		textfield.setText("");
             	}
             }
 
 			private void handleEnterPress() {
-				// TODO Auto-generated method stub
-				console.getItems().add("Key Pressed: " + textfield.getText());
-				//console.getItems().add("Key Pressed: " + tasklogic.executeCommand("test"));
+				console.getItems().add("Key Pressed: " + tasklogic.executeCommand(textfield.getText()));
 				actiontarget.setFill(Color.FIREBRICK);
                 actiontarget.setText("thanks for type in command."+ textfield.getText());
 			}
         });
 		
 		rootlayout = new BorderPane();
-		rootlayout.setRight(actiontarget);
+		//rootlayout.setRight(actiontarget);
 		rootlayout.setBottom(textfield);
 		rootlayout.setTop(scenetitle);
 		rootlayout.setCenter(console);
