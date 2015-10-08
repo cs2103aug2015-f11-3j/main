@@ -1,5 +1,6 @@
 package src;
 
+
 public class TaskLogic {
 	
 	CommandParser parser;
@@ -19,6 +20,8 @@ public class TaskLogic {
 		com = parser.parse(userCommand);
 		
 		//case(com.getKeyword())
+		
+		//System.out.println(userCommand);
 		
 		return "Welcome!";
 	}
