@@ -1,4 +1,11 @@
 package src;
+import src.Command;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Calendar;
+import java.lang.Integer;
+
 public class CommandParser {
 	
 //	private static String[] KEYWORD = {"ADD", "UPDATE", "DELETE", "REDO"};
@@ -40,6 +47,7 @@ public class CommandParser {
 		}
 		return sb.toString().trim();
 	}
+	
 	private String getRemainingString (String str) {
 		String remainStr = str.replaceFirst(initKeyword(str), "").trim();
 //	System.out.println(remainStr+" +" + "getRemain");
@@ -48,10 +56,23 @@ public class CommandParser {
 		return remainStr;
 	}
 	
+	// support only dd/mm format
 	private String initTimeConstraint(String str) {
 		String remainStr = getRemainingString(str);
-		return remainStr;
-	
+//		System.out.println(remainStr.length());
+		
+		Calendar cal = Calendar.getInstance();
+		 
+		if(remainStr.length()==0) {
+			Date date = new Date();
+			cal.setTime(date);
+			return new SimpleDateFormat("EEE, d MMM").format(cal.getTime());
+		}else {
+			String[] strArray = remainStr.split(" ");
+	//		System.out.println(convertNumericMonth(strArray[2]));
+			Date date = new GregorianCalendar(2015, convertNumericMonth(strArray[2]), Integer.valueOf(strArray[1])).getTime();
+			return new SimpleDateFormat("EEE, d MMM").format(date);
+		}
 	}
 	
 	private boolean isTimeFormat(String str) { 
@@ -103,5 +124,38 @@ public class CommandParser {
 		}
 		return false;
 	}
-}
+	
+	private int convertNumericMonth(String str) {
+		int month;
+		switch (str) {
+        	case "Jan":  month = 0;
+                 break;
+        	case "Feb":  month = 1;
+                 break;
+        	case "Mar":  month = 2;
+                 break;
+        	case "Apr":  month = 3;
+                 break;
+        	case "May":  month = 4;
+                 break;
+        	case "Jun":  month = 5;
+                 break;
+        	case "Jul":  month = 6;
+                 break;
+        	case "Aug":  month = 7;
+                 break;
+        	case "Sep":  month = 8;
+                 break;
+        	case "Oct": month = 9;
+                 break;
+        	case "Nov": month = 10;
+                 break;
+        	case "Dec": month = 11;
+                 break;
+        	default: month = -1;
+                 break;
+        }
+		return month;
+	}
 
+}
