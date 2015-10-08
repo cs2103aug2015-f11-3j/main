@@ -4,6 +4,8 @@ import java.io.IOException;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.application.Application;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -33,6 +35,18 @@ public class TaskGui extends Application {
 		
 		lb = new Label(logic.executeCommand(""));
 		textField = new TextField ();
+		
+//		textField.setOnAction(new EventHandler<KeyEvent>()
+//	    {
+//	        @Override
+//	        public void handle(KeyEvent ke)
+//	        {
+//	            if (ke.getCode().equals(KeyCode.ENTER))
+//	            {
+//	                doSomething();
+//	            }
+//	        }
+//	    });
 		
 		VBox root = new VBox();
 		root.getChildren().add(lb);

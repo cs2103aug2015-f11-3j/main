@@ -2,16 +2,23 @@ package src;
 
 public class TaskLogic {
 	
-	CommandParser parse;
+	CommandParser parser;
+	Command com;
 	Storage store;
 	
 	public TaskLogic(){
-		parse = new CommandParser();
+		parser = new CommandParser();
 		store = new Storage();
 	}
 	
 	public String executeCommand(String userCommand){
+		
+		com = new Command();
+		
 		//send command to parser
+		com = parser.parse(userCommand);
+		
+		//case(com.getKeyword())
 		
 		return "Welcome!";
 	}
