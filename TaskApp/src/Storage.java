@@ -1,4 +1,4 @@
-package src;
+
 /**
  * The Storage saves all the data of the user,
  * and will be updated according to commands, i.e. add/delete/update.
@@ -7,6 +7,7 @@ package src;
 import java.io.*;
 
 public class Storage {
+	
 	public Storage(){
 		
 	}
@@ -33,5 +34,19 @@ public class Storage {
 				e.printStackTrace();
 				}
 		}
+	
+	static String getContent (File file){
+		StringBuilder result = new StringBuilder();
+		InputStream inputStream = null;
+		int length = 0;
+		try {
+			inputStream = new FileInputStream(file);
+			length = inputStream.available();
+			while (!(length == -1)) {
+			    result.append(inputStream.read());
+		}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-
+}
