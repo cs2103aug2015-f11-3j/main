@@ -28,6 +28,7 @@ public class CommandParser {
 	}
 	
 	public Command parse(String input) {
+		assert input.length()>0;
 		Command cmd = new Command();
 		cmd.setKeyword(initKeyword(input));
 		cmd.setEvent(initEvent(input));
@@ -119,6 +120,7 @@ public class CommandParser {
 	}
 	
 	private boolean isAppendable(String[] arr, int i) {
+		assert i<arr.length;
 		if(isPrepositionKeyword(arr[i])==false && isTimeFormat(arr[i])==false) {
 			return true;
 		}
