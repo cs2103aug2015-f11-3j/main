@@ -33,10 +33,4 @@ public class FileHunter {
 		return result.toString();
 	}
 
-
-//	public static String searchInFile(File file, String keyword) {
-		// TODO Auto-generated method stub
-	//	return 
-//	}
-
 }

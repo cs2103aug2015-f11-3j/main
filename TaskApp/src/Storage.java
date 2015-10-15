@@ -32,10 +32,5 @@ public class Storage {
 	static String displayAll (File file) {
 		return FileHunter.getContent(file);
 	}
-
-	//static String search (File file, String keyword) {
-		//return FileHunter.searchInFile(file, keyword);
-	//}
-	
 	
 }
