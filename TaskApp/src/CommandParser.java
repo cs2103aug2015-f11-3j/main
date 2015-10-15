@@ -8,13 +8,23 @@ import java.lang.Integer;
 
 public class CommandParser {
 	
-//	private static String[] KEYWORD = {"ADD", "UPDATE", "DELETE", "REDO"};
+	private static String[] KEYWORD = {"ADD", "UPDATE", "DELETE", "REDO", "READ","SEARCH"};
 	private static String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON"};
 	private static String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 	private static String[] DAY_OF_THE_WEEK = {"MON", "TUE","WED","THU","FRI","SAT","SUN",
 												"MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY","SUNDAY"};
 	
 	public CommandParser() {
+	}
+	
+	public boolean isValidCommand(String input) {
+		String commandType = input.split(" ")[0];
+		for(int n=0; n<KEYWORD.length; n++) {
+			if(commandType.equalsIgnoreCase(KEYWORD[n])) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public Command parse(String input) {
@@ -113,13 +123,19 @@ public class CommandParser {
 			return true;
 		}
 		if(isPrepositionKeyword(arr[i])==true) {
-			if((i+1)<arr.length) {
-				if(isTimeFormat(arr[i+1])==false) {
-					return true;
-				}
+			if(i==arr.length-1) {
+				return true;
 			}
+				
 			else {
-				return false;
+				if(i<arr.length-1) {
+					if(isTimeFormat(arr[i+1])==false) {
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
 			}
 		}
 		return false;
