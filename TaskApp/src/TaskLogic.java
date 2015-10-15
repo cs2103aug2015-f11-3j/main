@@ -49,7 +49,7 @@ public class TaskLogic {
 
 	//Updates a task that contains a similar task event with the commands event and date
 	private String updateTask(Command command) {
-		
+	
 		int i = searchFor(command.getEvent());
 		
 		if (i != taskList.size()) {
@@ -85,6 +85,7 @@ public class TaskLogic {
 	//Search in each task for a substring
 	private int searchFor(String string) {
 		int i = 0;
+
 		
 		for (String curTask : taskList){
 			

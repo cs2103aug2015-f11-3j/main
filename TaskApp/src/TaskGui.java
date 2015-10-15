@@ -1,5 +1,6 @@
 package src;
 
+//test
 import java.io.IOException;
 
 import javafx.scene.control.Label;
@@ -36,10 +37,12 @@ public class TaskGui extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-	
+
+		tasklogic = new TaskLogic();
+		
 		primaryStage.setTitle("TaskManager");
 		
-		Text scenetitle = new Text("Welcome");
+		Text scenetitle = new Text("Welcome to TaskManager!");
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 		//---------test-------
 		final ListView<String> console = new ListView<String>(FXCollections.<String>observableArrayList());
@@ -66,16 +69,20 @@ public class TaskGui extends Application {
         textfield.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
             	if(ke.getCode() == KeyCode.ENTER){
-            		
+
             		handleEnterPress();
-            		textfield.setText("");
+            		textfield.clear();
+
             	}
             }
 
 			private void handleEnterPress() {
+
+				// TODO Auto-generated method stub
+
 				console.getItems().add("Key Pressed: " + tasklogic.executeCommand(textfield.getText()));
 				actiontarget.setFill(Color.FIREBRICK);
-                actiontarget.setText("thanks for type in command."+ textfield.getText());
+                actiontarget.setText("thanks for type in command.\n"+textfield.getText());
 			}
         });
 		
@@ -86,7 +93,7 @@ public class TaskGui extends Application {
 		rootlayout.setCenter(console);
 		
 
-		Scene scene = new Scene(rootlayout, 500, 450);
+		Scene scene = new Scene(rootlayout, 700, 450);
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
