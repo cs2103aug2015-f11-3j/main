@@ -2,6 +2,8 @@ package src;
 
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TaskLogic {
 	
@@ -13,6 +15,7 @@ public class TaskLogic {
 	
 	private String ERROR_KEYWORD = "Keyword not recognized!";
 	private String ERROR_UNDO = "You have no cammand to undo!";
+	private final static Logger log = Logger.getLogger(TaskLogic.class.getName());
 	
 	public TaskLogic(){
 		
@@ -27,6 +30,8 @@ public class TaskLogic {
 	
 	//According to the keyword, execute the appropiate command
 	public String executeCommand(String userCommand){
+		
+		log.entering(getClass().getName(), "executeCommand with"+userCommand);
 		
 		Command command = new Command();
 		
@@ -56,12 +61,13 @@ public class TaskLogic {
 		}
 			
 		default:
+			log.log(Level.INFO, "Entered command: "+command.getEvent());
 			return ERROR_KEYWORD;
 		}
 	}
 
 	private String undoTask(Command pop) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
