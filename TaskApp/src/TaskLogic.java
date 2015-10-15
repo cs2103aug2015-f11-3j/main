@@ -1,15 +1,18 @@
 package src;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class TaskLogic {
 	
-	private CommandParser parser;
-	private Storage store;
+	private static CommandParser parser;
+	private static Storage store;
 	private ArrayList<String> taskList;
 	private Command LastCommand;
+	private Stack<Command> commandStack;
 	
 	private String ERROR_KEYWORD = "Keyword not recognized!";
+	private String ERROR_UNDO = "You have no cammand to undo!";
 	
 	public TaskLogic(){
 		
@@ -17,7 +20,9 @@ public class TaskLogic {
 		store = new Storage();
 		
 		taskList = new ArrayList<>();
-		LastCommand = new Command();
+		//taskList = store.start(filename);
+		
+		commandStack = new Stack<>();
 	}
 	
 	//According to the keyword, execute the appropiate command
@@ -27,7 +32,8 @@ public class TaskLogic {
 		
 		//send command to parser
 		command = parser.parse(userCommand);
-		
+		commandStack.push(command);
+
 		
 		switch (command.getKeyword()) {
 		case "add":
@@ -39,12 +45,24 @@ public class TaskLogic {
 		case "update":
 			return updateTask(command);
 
-//		case "undo":
-//			return undoTask()
+		case "undo":{
+			if(commandStack.size()==1){
+				commandStack.pop();
+				return ERROR_UNDO;
+			}else{
+				commandStack.pop();
+				return undoTask(commandStack.pop());
+			}
+		}
 			
 		default:
 			return ERROR_KEYWORD;
 		}
+	}
+
+	private String undoTask(Command pop) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	//Updates a task that contains a similar task event with the commands event and date
