@@ -6,31 +6,37 @@ package src;
  * @@author Fang Juping A0126415M
  */
 import java.io.*;
+import java.util.ArrayList;
 
 public class Storage {
 	
-	public Storage(){
-		
+	public Storage () {
+		//default
 	}
-	//constant
-	static final Boolean OVERWRITE_TO_FILE = false;
-	static final Boolean ADD_TO_FILE = true;
 	
-	static void saveToFile (File file, String text, Boolean isAppend) {
+	public static ArrayList<String> accessToFile (File file) {
+		ArrayList<String> fileContent = new ArrayList<String>();
 		if (!file.exists()) {
 			try {
 				file.createNewFile();
+				fileContent = null;
 			} catch (IOException e) {
 				e.printStackTrace();
+			}} else {
+				fileContent = FileManager.getContent(file);
 			}
-		} else {
-			FileModifier.writeTextToFile(file, text, isAppend);
-		}
-		
+		return fileContent;
 	}
 	
-	static String displayAll (File file) {
-		return FileHunter.getContent(file);
+	public static void addToFile(String task) {
+		FileManager.addTaskToFile(task);
 	}
 	
+	public static void deleteFromFile (int index) {
+		FileManager.deleteTaskFromFile(index);
+	}
+	
+	public static void updateTask (int index, String newTask) {
+		FileManager.updateTaskInFile(index,newTask);
+	}
 }
