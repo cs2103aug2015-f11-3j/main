@@ -1,8 +1,9 @@
+package src;
 
 /**
  * The Storage saves all the data of the user,
  * and will be updated according to commands, i.e. add/delete/update.
- * @author fang
+ * @@author Fang Juping A0126415M
  */
 import java.io.*;
 
@@ -11,42 +12,25 @@ public class Storage {
 	public Storage(){
 		
 	}
-	
+	//constant
 	static final Boolean OVERWRITE_TO_FILE = false;
+	static final Boolean ADD_TO_FILE = true;
 	
-	static void createSaveFile (String fileName) {
-		File file = new File(fileName);
+	static void saveToFile (File file, String text, Boolean isAppend) {
 		if (!file.exists()) {
-		   writeTextToFile(file, "", Storage.OVERWRITE_TO_FILE );
-		}
-		//Write to existing file.
-	}
-	
-	static void writeTextToFile (File file, String task, Boolean isAppend) {
-		OutputStream output = null;
-		try {
-			output = new FileOutputStream(file, isAppend);
-			output.write(task.getBytes());
-			if (isAppend == true) {
-			    output.write('\n');
-			    }
+			try {
+				file.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
-				}
+			}
+		} else {
+			FileModifier.writeTextToFile(file, text, isAppend);
 		}
-	
-	static String getContent (File file){
-		StringBuilder result = new StringBuilder();
-		InputStream inputStream = null;
-		int length = 0;
-		try {
-			inputStream = new FileInputStream(file);
-			length = inputStream.available();
-			while (!(length == -1)) {
-			    result.append(inputStream.read());
-		}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
+	
+	static String displayAll (File file) {
+		return FileHunter.getContent(file);
+	}
+	
 }
