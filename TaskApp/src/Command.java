@@ -1,39 +1,49 @@
 package src;
-import java.lang.String;
+import java.util.Date;
+import java.util.ArrayList;
+
+//package src;
+//import java.lang.String;
 
 public class Command {
 	
-	private String commandKeyword;
-	private String event;
-	private String timeConstraint;
+	public enum TYPE {
+		ADD, DELETE, READ, UNDO, UPDATE, EXIT, INVALID, SEARCH
+	};
+	private TYPE commandType;
+	private String task;
+	private ArrayList<Date> dates;
 	
-	public Command() {
-		commandKeyword = new String();
-		event = new String();
-		timeConstraint = new String();
+	public Command(TYPE commandType) {
+		this.commandType = commandType;
+		task = new String();
+		dates = new ArrayList<Date>();
 	}
 	
-	public void setKeyword (String str) {
-		commandKeyword = str;
+	public void setCommandType(TYPE type) {
+		this.commandType = type;
 	}
 	
-	public void setEvent (String str) {
-		event = str;
+	public TYPE getCommandType() {
+		return commandType;
 	}
 	
-	public void setTimeConstraint (String time) {
-		timeConstraint = time;
+	// add/delete/update methods
+	public String getTask() {
+		return task;
 	}
 	
-	public String getKeyword () {
-		return commandKeyword;
+	public void setTask(String task) {
+		this.task = task;
 	}
 	
-	public String getEvent() {
-		return event;
+	public ArrayList<Date> getDates() {
+		return dates;
 	}
-	
-	public String getTimeConstraint() {
-		return timeConstraint;
+
+	public void setDates(ArrayList<Date> datesArr) {
+		// TODO Auto-generated method stub
+		dates = datesArr;
 	}
+
 }
