@@ -26,6 +26,7 @@ public class TaskLogic {
 		//taskList = store.start(filename);
 		
 		commandStack = new Stack<>();
+		
 	}
 	
 	//According to the keyword, execute the appropiate command
@@ -33,24 +34,23 @@ public class TaskLogic {
 		
 		log.entering(getClass().getName(), "executeCommand with"+userCommand);
 		
-		Command command = new Command();
+		Command command;
 		
 		//send command to parser
 		command = parser.parse(userCommand);
 		commandStack.push(command);
-
 		
-		switch (command.getKeyword()) {
-		case "add":
+		switch (command.getCommandType()) {
+		case ADD:
 			return addTask(command);
 
-		case "delete":
-			return deleteTask(command.getEvent());
+		case DELETE:
+			return deleteTask(command.getTask());
 			
-		case "update":
+		case UPDATE:
 			return updateTask(command);
 
-		case "undo":{
+		case UNDO:{
 			if(commandStack.size()==1){
 				commandStack.pop();
 				return ERROR_UNDO;
@@ -61,7 +61,7 @@ public class TaskLogic {
 		}
 			
 		default:
-			log.log(Level.INFO, "Entered command: "+command.getEvent());
+			log.log(Level.INFO, "Entered command: "+command.getTask());
 			return ERROR_KEYWORD;
 		}
 	}
@@ -74,21 +74,22 @@ public class TaskLogic {
 	//Updates a task that contains a similar task event with the commands event and date
 	private String updateTask(Command command) {
 	
-		int i = searchFor(command.getEvent());
+		int i = searchFor(command.getTask());
 		
 		if (i != taskList.size()) {
-			taskList.set(i, command.getEvent()+" "+command.getTimeConstraint());
-			return "Task "+command.getEvent()+" has been modified!";
+			taskList.set(i, command.getTask()+" "+command.getDates());
+			return "Task "+command.getTask()+" has been modified!";
 		}else{
-			return "Task "+command.getEvent()+" hasn't been found in your Task List!";
+			return "Task "+command.getTask()+" hasn't been found in your Task List!";
 		}
 	}
 
 	//Adds a task in the task list
 	private String addTask(Command command) {
-		taskList.add(command.getEvent()+" "+command.getTimeConstraint());
+		taskList.add(command.getTask()+" "+command.getDates());
+		System.out.println(command.getDates());
 		
-		return "Added task "+command.getEvent()+" for "+command.getTimeConstraint();
+		return "Added task "+command.getTask()+" for "+command.getDates().toString();
 	}
 
 	//Deletes the first task that contains a specific string
