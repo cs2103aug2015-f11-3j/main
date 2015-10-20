@@ -28,15 +28,15 @@ public class Storage {
 		return fileContent;
 	}
 	
-	public static void addToFile(String task) {
+	public void addToFile(String task) {
 		FileManager.addTaskToFile(task);
 	}
 	
-	public static void deleteFromFile (int index) {
+	public void deleteFromFile (int index) {
 		FileManager.deleteTaskFromFile(index);
 	}
 	
-	public static void updateTask (int index, String newTask) {
+	public void updateTask (int index, String newTask) {
 		FileManager.updateTaskInFile(index,newTask);
 	}
 }
