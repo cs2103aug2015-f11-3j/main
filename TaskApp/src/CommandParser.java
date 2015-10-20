@@ -91,7 +91,6 @@ public class CommandParser {
 		cmd.setDates(dates);
 	}
 	
-	// support only dd/mm format
 	private void createTimeConstraint(Command cmd, String str, ArrayList<Date> dates) {
 		str = str.replaceAll("\\b(from|to|at|on|by)\\b",  "-");
 		ArrayList<String> tokens = new ArrayList<String>(Arrays.asList(str.split("-")));
@@ -99,11 +98,16 @@ public class CommandParser {
 		convertToDate(cmd ,tokens, dates);
 	}
 	
+	//supporting format example:
+	//1800 oct 3 2015
+	//3 10 2015
+	//oct 3 2015
+	//3 oct 2015
 	private void convertToDate(Command cmd, ArrayList<String> tokens, ArrayList<Date> dateList) {
 		ArrayList<SimpleDateFormat> knownPatterns = new ArrayList<SimpleDateFormat>();
-		knownPatterns.add(new SimpleDateFormat("MMM, d HHmm yyyy"));
+		knownPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
 		knownPatterns.add(new SimpleDateFormat("d MM yyyy"));
-		knownPatterns.add(new SimpleDateFormat("MMM, d yyyy"));
+		knownPatterns.add(new SimpleDateFormat("MMM d yyyy"));
 		knownPatterns.add(new SimpleDateFormat("d MMM yyyy"));
 //		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
 		for(int i=0; i<tokens.size(); i++) {
