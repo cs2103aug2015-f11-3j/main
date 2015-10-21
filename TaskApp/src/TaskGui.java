@@ -36,7 +36,6 @@ public class TaskGui extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stub
 
 		tasklogic = new TaskLogic();
 		
@@ -77,8 +76,6 @@ public class TaskGui extends Application {
             }
 
 			private void handleEnterPress() {
-
-				// TODO Auto-generated method stub
 
 				console.getItems().add("Key Pressed: " + tasklogic.executeCommand(textfield.getText()));
 				actiontarget.setFill(Color.FIREBRICK);

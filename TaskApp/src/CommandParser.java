@@ -1,44 +1,165 @@
 package src;
-import src.Command;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
-import java.lang.Integer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class CommandParser {
 	
-//	private static String[] KEYWORD = {"ADD", "UPDATE", "DELETE", "REDO"};
-	private static String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON"};
-	private static String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-	private static String[] DAY_OF_THE_WEEK = {"MON", "TUE","WED","THU","FRI","SAT","SUN",
+	private static final String USER_COMMAND_ADD = "add";
+    private static final String USER_COMMAND_DELETE = "delete";
+    private static final String USER_COMMAND_READ = "read";
+    private static final String USER_COMMAND_UPDATE = "update";
+    private static final String USER_COMMAND_SEARCH = "search";
+    private static final String USER_COMMAND_UNDO = "undo";
+    private static final String USER_COMMAND_EXIT = "exit";
+	
+	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON"};
+	private static final String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+	private static final String[] DAY_OF_THE_WEEK = {"MON", "TUE","WED","THU","FRI","SAT","SUN",
 												"MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY","SUNDAY"};
 	
 	public CommandParser() {
 	}
 	
 	public Command parse(String input) {
-		Command cmd = new Command();
-		cmd.setKeyword(initKeyword(input));
-		cmd.setEvent(initEvent(input));
-		cmd.setTimeConstraint(initTimeConstraint(input));
-		return cmd;
+		Command command;
+		String commandTypeString = getFirstWord(input);
+		String remainStr = removeString(input, commandTypeString);
+		
+		switch (commandTypeString.toLowerCase()) {
+        	case USER_COMMAND_ADD :
+        		command = initAddCommand(remainStr);
+        		break;
+
+        	case USER_COMMAND_DELETE :
+        		command = initDeleteComamnd(remainStr);
+        		break;
+
+        	case USER_COMMAND_UPDATE :
+        		command = initUpdateCommand(remainStr);
+        		break;
+               
+        	case USER_COMMAND_READ :
+        		command = initReadCommand();
+        		break;
+        
+        	case USER_COMMAND_SEARCH :
+        		command = initSearchCommand(remainStr);
+        		break;
+        
+        	case USER_COMMAND_EXIT :
+        		command = initExitCommand();
+        		break;
+        
+        	case USER_COMMAND_UNDO :
+        		command = initUndoCommand();
+        		break;
+        
+        	default :
+        		command = initInvalidCommand();
+		}				
+		return command;
 	}
 	
-	private String initKeyword(String str) {
-		String commandTypeString = str.trim().split(" ")[0];
-		return commandTypeString;
+	private Command initUpdateCommand(String remainStr) {
+		Command cmd = new Command(Command.TYPE.UPDATE);
+		createTask(remainStr, cmd);
+		return cmd;
+	}
+
+	private Command initDeleteComamnd(String remainStr) {
+		Command cmd = new Command(Command.TYPE.DELETE);
+		cmd.setTask(initEvent(remainStr));
+		return cmd;
+	}
+
+	private Command initAddCommand(String remainStr) {
+		Command cmd = new Command(Command.TYPE.ADD);
+		createTask(remainStr, cmd);
+		return cmd;
+	}
+
+	public void createTask(String remainStr, Command cmd) {
+		ArrayList<Date> dates = new ArrayList<Date>();
+		String event = initEvent(remainStr);
+		cmd.setTask(event);
+		String timeStr = removeString(remainStr, event);
+		createTimeConstraint(cmd, timeStr, dates);
+		cmd.setDates(dates);
+	}
+	
+	private void createTimeConstraint(Command cmd, String str, ArrayList<Date> dates) {
+		str = str.replaceAll("\\b(from|to|at|on|by)\\b",  "-");
+		ArrayList<String> tokens = new ArrayList<String>(Arrays.asList(str.split("-")));
+		tokens.removeAll(Collections.singleton(""));
+		convertToDate(cmd ,tokens, dates);
+	}
+	
+	//supporting format example:
+	//1800 oct 3 2015
+	//3 10 2015
+	//oct 3 2015
+	//3 oct 2015
+	private void convertToDate(Command cmd, ArrayList<String> tokens, ArrayList<Date> dateList) {
+		ArrayList<SimpleDateFormat> knownPatterns = new ArrayList<SimpleDateFormat>();
+		knownPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
+		knownPatterns.add(new SimpleDateFormat("d MM yyyy"));
+		knownPatterns.add(new SimpleDateFormat("MMM d yyyy"));
+		knownPatterns.add(new SimpleDateFormat("d MMM yyyy"));
+//		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
+		for(int i=0; i<tokens.size(); i++) {
+			for (SimpleDateFormat pattern : knownPatterns) {
+				try {
+		        Date date = pattern.parse(tokens.get(i).trim());
+		        dateList.add(date);
+		        break;
+				} catch (ParseException pe) {
+				}
+			}
+		}
+		if(dateList.size()!=tokens.size()) {
+			cmd.setCommandType(Command.TYPE.INVALID);
+		}
+	}
+
+	private Command initExitCommand() {
+        return new Command(Command.TYPE.EXIT);
+    }
+
+	private Command initInvalidCommand() {
+        return new Command(Command.TYPE.INVALID);
+    }
+	
+	private Command initUndoCommand() {
+        return new Command(Command.TYPE.UNDO);
+    }
+	
+	private Command initReadCommand() {
+        return new Command(Command.TYPE.READ);
+    }
+	
+	private Command initSearchCommand(String remainStr) {
+        Command cmd = new Command(Command.TYPE.SEARCH);
+        cmd.setTask(remainStr);
+        return cmd;
+    }
+	
+	private String getFirstWord(String str) {
+		return str.trim().split(" ")[0];
+	}
+	
+	private String removeString(String str, String strToRemove) {
+		return str.replaceFirst(strToRemove, "").trim();
 	}
 	
 	private String initEvent(String str) {
 		StringBuilder sb = new StringBuilder();
-		String remainStr = str.replaceFirst(initKeyword(str), "").trim();
-		String[] pieces = remainStr.split(" ");
-//		System.out.println(remainStr);
-		
+		String[] pieces = str.split(" ");
 		for (int i = 0; i < pieces.length; i++) {
-			if(isAppendable(pieces, i)) {
-	//			System.out.println(isAppendable(pieces,i)+" +" + i);
+			if(toAppend(pieces, i)) {
 				sb.append(" ");
 				sb.append(pieces[i]);
 			}
@@ -47,33 +168,8 @@ public class CommandParser {
 		}
 		return sb.toString().trim();
 	}
+
 	
-	private String getRemainingString (String str) {
-		String remainStr = str.replaceFirst(initKeyword(str), "").trim();
-//	System.out.println(remainStr+" +" + "getRemain");
-		remainStr = remainStr.replaceFirst(initEvent(str), "").trim();
-//	System.out.println(remainStr+" +" + "getRemain");
-		return remainStr;
-	}
-	
-	// support only dd/mm format
-	private String initTimeConstraint(String str) {
-		String remainStr = getRemainingString(str);
-//		System.out.println(remainStr.length());
-		
-		Calendar cal = Calendar.getInstance();
-		 
-		if(remainStr.length()==0) {
-			Date date = new Date();
-			cal.setTime(date);
-			return new SimpleDateFormat("EEE, d MMM").format(cal.getTime());
-		}else {
-			String[] strArray = remainStr.split(" ");
-	//		System.out.println(convertNumericMonth(strArray[2]));
-			Date date = new GregorianCalendar(2015, convertNumericMonth(strArray[2]), Integer.valueOf(strArray[1])).getTime();
-			return new SimpleDateFormat("EEE, d MMM").format(date);
-		}
-	}
 	
 	private boolean isTimeFormat(String str) { 
 		if (str.contains("/") || str.contains(":")||str.matches(".*\\d+.*")||isDay(str)||isMonth(str)) { 
@@ -108,54 +204,15 @@ public class CommandParser {
 		return false;
 	}
 	
-	private boolean isAppendable(String[] arr, int i) {
+	private boolean toAppend(String[] arr, int i) {
+//		assert i<arr.length;
 		if(isPrepositionKeyword(arr[i])==false && isTimeFormat(arr[i])==false) {
 			return true;
 		}
-		if(isPrepositionKeyword(arr[i])==true) {
-			if((i+1)<arr.length) {
-				if(isTimeFormat(arr[i+1])==false) {
-					return true;
-				}
-			}
-			else {
-				return false;
-			}
+		if(isPrepositionKeyword(arr[i])==true && i <arr.length-1 && !isTimeFormat(arr[i+1])) {
+			return true;
 		}
 		return false;
 	}
-	
-	private int convertNumericMonth(String str) {
-		int month;
-		switch (str) {
-        	case "Jan":  month = 0;
-                 break;
-        	case "Feb":  month = 1;
-                 break;
-        	case "Mar":  month = 2;
-                 break;
-        	case "Apr":  month = 3;
-                 break;
-        	case "May":  month = 4;
-                 break;
-        	case "Jun":  month = 5;
-                 break;
-        	case "Jul":  month = 6;
-                 break;
-        	case "Aug":  month = 7;
-                 break;
-        	case "Sep":  month = 8;
-                 break;
-        	case "Oct": month = 9;
-                 break;
-        	case "Nov": month = 10;
-                 break;
-        	case "Dec": month = 11;
-                 break;
-        	default: month = -1;
-                 break;
-        }
-		return month;
-	}
-
 }
+	

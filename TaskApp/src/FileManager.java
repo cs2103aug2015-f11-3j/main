@@ -12,7 +12,7 @@ public class FileManager {
 		//default
 	}
 	
-	static ArrayList<String> fileContent = new ArrayList<String>();
+	static ArrayList<String> fileContent = Storage.fileContent;
 	
 	static ArrayList<String> getContent(File file) {	
 		try {
