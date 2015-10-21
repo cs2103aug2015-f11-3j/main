@@ -7,9 +7,11 @@ import java.util.ArrayList;
  * @@author Fang Juping A0126415M
  */
 public class FileManager {
+	
 	public FileManager () {
 		//default
 	}
+	
 	static ArrayList<String> fileContent = new ArrayList<String>();
 	
 	static ArrayList<String> getContent(File file) {	
@@ -28,20 +30,35 @@ public class FileManager {
 		return fileContent;
 }
 
-	static void addTaskToFile(String task) {
+	static void addTaskToFile(File file, String task) {
 		fileContent.add(task);
+		updateFileContent(file, fileContent);
 	}
 
-	static void deleteTaskFromFile(int index) {
+	static void deleteTaskFromFile(File file, int index) {
 		fileContent.remove(index);
+		updateFileContent(file, fileContent);
 	}
 
-	static void updateTaskInFile(int index, String newTask) {
+
+	static void updateTaskInFile(File file, int index, String newTask) {
 		fileContent.set(index,newTask);
-		
+		updateFileContent(file, fileContent);		
 	}
 	
 	
-
-	
+	private static void updateFileContent(File file, ArrayList<String> fileContent) {
+		try {
+			FileWriter fw = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+			for (int i = 0; i < fileContent.size(); i++) {
+				bw.write(fileContent.get(i));
+				bw.newLine();
+				}
+			bw.close();
+			fw.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+				}
+		}
 }

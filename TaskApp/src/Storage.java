@@ -14,6 +14,10 @@ public class Storage {
 		//default
 	}
 	
+	public static final String ERROR_MESSAGE = "Failed to create new file!";
+	
+	static File file;
+	
 	public static ArrayList<String> accessToFile (File file) {
 		ArrayList<String> fileContent = new ArrayList<String>();
 		if (!file.exists()) {
@@ -22,6 +26,7 @@ public class Storage {
 				fileContent = null;
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.err.println("ERROR_MESSAGE");
 			}} else {
 				fileContent = FileManager.getContent(file);
 			}
@@ -29,14 +34,14 @@ public class Storage {
 	}
 	
 	public static void addToFile(String task) {
-		FileManager.addTaskToFile(task);
+		FileManager.addTaskToFile(file, task);
 	}
 	
 	public static void deleteFromFile (int index) {
-		FileManager.deleteTaskFromFile(index);
+		FileManager.deleteTaskFromFile(file, index);
 	}
 	
 	public static void updateTask (int index, String newTask) {
-		FileManager.updateTaskInFile(index,newTask);
+		FileManager.updateTaskInFile(file, index,newTask);
 	}
 }
