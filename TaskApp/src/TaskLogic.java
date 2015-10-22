@@ -33,11 +33,11 @@ public class TaskLogic {
 		taskList = store.accessToFile(file);
 		
 		commandStack = new Stack<>();	
+		deletedStack = new Stack<>();
 	}
 	
-	//According to the keyword, execute the appropiate command
-	public String executeCommand(String userCommand){
-		
+	
+	public String executeCommand(String userCommand){		
 		log.entering(getClass().getName(), "executeCommand with"+userCommand);
 		
 		Command command;
@@ -47,40 +47,82 @@ public class TaskLogic {
 		command = parser.parse(userCommand);
 		commandStack.push(command);
 		
-		switch (command.getCommandType()) {
-		case ADD:
-			return addTask(command);
-
-		case DELETE:
-			return deleteTask(command.getTask());
+		switch(command.getCommandType()){
+			case ADD:{
+				returnList.add(addTask(command.getTask()+" "+command.getDates()));
+				break;
+			}
 			
-		case UPDATE:
-			return updateTask(command);
-		
-		case SEARCH:
-			return searchForTask(command);
+			case DELETE:{
+				returnList.add(deleteTask(command.getTask()));
+				break;
+			}
+			
+			case UPDATE:{
+				returnList.add(updateTask(command));
+				break;
+			}
+			
+			case SEARCH:{
+				returnList = new ArrayList<>(searchForTask(command));
+				
+				if (returnList.size()>0){
+					returnList.set(0, "There are "+returnList.size()+" options found!");
+				}else {
+					returnList.add("There are no options found!");
+				}
+				break;
+			}
+			
+			case UNDO:{
+				if(commandStack.size()==1){
+					commandStack.pop();
+					returnList.add(ERROR_UNDO);
+					break;
+				}else{
+					commandStack.pop();
+					returnList.add(undoTask(commandStack.pop()));
+					break;
 
-		case UNDO:{
-			if(commandStack.size()==1){
+				}
+			}
+			
+			case EXIT:{
+				returnList.add("Still not implemented");
+				break;
+			}
+			
+			default:{
+				log.log(Level.INFO, "Entered command: "+command.getTask());
 				commandStack.pop();
-				return ERROR_UNDO;
-			}else{
-				commandStack.pop();
-				return undoTask(commandStack.pop());
+				returnList.add(ERROR_KEYWORD);
+			}
+		}
+		
+		store.updateToFile(file, taskList);
+		
+		return returnList.get(0);
+	}
+	
+
+
+	private ArrayList<String> searchForTask(Command command) {
+		
+		ArrayList<String> pass = new ArrayList<>();
+		
+		
+		for (String curTask : taskList){
+			
+			if (curTask.contains(command.getTask())){
+				pass.add(curTask);
 			}
 		}
 			
-		default:
-			log.log(Level.INFO, "Entered command: "+command.getTask());
-			return ERROR_KEYWORD;
-		}
+		return pass;
 	}
 
-	private String searchForTask(Command command) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
+	
 	private String undoTask(Command pop) {
 		
 		String returnText;
@@ -90,16 +132,29 @@ public class TaskLogic {
 		case ADD:{
 			returnText = "Undo ADD command";
 			deleteTask(pop.getTask());
+			break;
 		}
 		
 		case DELETE:{
 			returnText = "Undo DELETE command";
-			
+			addTask(deleteTask(deletedStack.pop()));
+			break;
 		}
-			
+		
+		case UPDATE:{
+			returnText = "Undo UPDATE command";
+			updateTask(pop);
+			deletedStack.pop();
+			break;
 		}
-
-		return null;
+		default:{
+			returnText = "Cannot undo this command";
+			break;
+		}
+		
+		}
+		
+		return returnText;
 	}
 	
 
@@ -109,8 +164,9 @@ public class TaskLogic {
 		int i = searchFor(command.getTask());
 		
 		if (i != taskList.size()) {
+			deletedStack.push(taskList.get(i));
 			taskList.set(i, command.getTask()+" "+command.getDates());
-			store.updateTask(i, taskList.get(i));
+			
 			return "Task "+command.getTask()+" has been modified!";
 		}else{
 			return "Task "+command.getTask()+" hasn't been found in your Task List!";
@@ -118,12 +174,11 @@ public class TaskLogic {
 	}
 
 	//Adds a task in the task list
-	private String addTask(Command command) {
-		taskList.add(command.getTask()+" "+command.getDates());
-		store.addToFile(taskList.get(taskList.size()-1));
-		System.out.println(command.getDates());
+	private String addTask(String command) {
+		taskList.add(command);
+		System.out.println(command);
 		
-		return "Added task "+command.getTask()+" for "+command.getDates().toString();
+		return "Added task "+command;
 	}
 
 	//Deletes the first task that contains a specific string
@@ -133,7 +188,8 @@ public class TaskLogic {
 		
 		if(i != taskList.size()){
 			String removed = taskList.get(i);
-			store.deleteFromFile(i);
+			deletedStack.push(removed);
+			
 			taskList.remove(i);
 			return "Task *"+removed+"* has been deleted from your task list";
 		}else{
