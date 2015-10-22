@@ -3,7 +3,7 @@ package src;
 import java.io.*;
 import java.util.ArrayList;
 /**
- * In this class, it will do the file manage, i.e, add to file, delete from file, update the file and get content of the file.
+ * In this class, it will do the file content updating and allows to be accessed to get the content of the file.
  * @@author Fang Juping A0126415M
  */
 public class FileManager {
@@ -12,42 +12,35 @@ public class FileManager {
 		//default
 	}
 	
-	static ArrayList<String> fileContent = Storage.fileContent;
-	
+    
+	/**
+	 * This method will access to file content
+	 * @param file
+	 * @return content
+	 */
 	static ArrayList<String> getContent(File file) {	
+		ArrayList<String> content = new ArrayList<String>();	
 		try {
 			FileReader fr = new FileReader(file);
 			BufferedReader br = new BufferedReader(fr);
 			String text = null;
 			while ((text = br.readLine()) != null) {
-				fileContent.add(text);
+				content.add(text);
 			}
 			br.close();
 			fr.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		return fileContent;
-}
-
-	static void addTaskToFile(File file, String task) {
-		fileContent.add(task);
-		updateFileContent(file, fileContent);
-	}
-
-	static void deleteTaskFromFile(File file, int index) {
-		fileContent.remove(index);
-		updateFileContent(file, fileContent);
-	}
-
-
-	static void updateTaskInFile(File file, int index, String newTask) {
-		fileContent.set(index,newTask);
-		updateFileContent(file, fileContent);		
-	}
+		return content;
+		}	
 	
-	
-	private static void updateFileContent(File file, ArrayList<String> fileContent) {
+	/**
+	 * This method will fresh the file
+	 * @param file
+	 * @param fileContent
+	 */
+    static void updateFileContent(File file, ArrayList<String> fileContent) {
 		try {
 			FileWriter fw = new FileWriter(file);
 			BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
@@ -61,4 +54,5 @@ public class FileManager {
 				e.printStackTrace();
 				}
 		}
+
 }

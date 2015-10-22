@@ -2,7 +2,8 @@ package src;
 
 /**
  * The Storage saves all the data of the user,
- * and will be updated according to commands, i.e. add/delete/update.
+ * and will be updated after every action.
+ * This part only aims to connect with the TaskLogic Part.
  * @@author Fang Juping A0126415M
  */
 import java.io.*;
@@ -10,40 +11,43 @@ import java.util.ArrayList;
 
 public class Storage {
 	
+	public static final String ERROR_MESSAGE = "Failed to create new file!";
+	public static final String FILE_EXISTED_MESSAGE = "This file is existed!";
+		
 	public Storage () {
 		//default
 	}
 	
-	public static final String ERROR_MESSAGE = "Failed to create new file!";
-	
-	static File file;
-	static ArrayList<String> fileContent = new ArrayList<String>();
-	
-	public ArrayList<String> accessToFile (File file) {
-		//ArrayList<String> fileContent = new ArrayList<String>();
+	/**
+	 * This method will create a file based on the fileName if the file does not exist
+	 * @param fileName
+	 */
+	static void prepareFile (String fileName) {
+		File file = new File(fileName);
 		if (!file.exists()) {
 			try {
 				file.createNewFile();
-				fileContent = null;
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.err.println("ERROR_MESSAGE");
-			}} else {
-				fileContent = FileManager.getContent(file);
 			}
-		return fileContent;
+		} else {
+				System.out.println(FILE_EXISTED_MESSAGE);
+			}
 	}
 	
-	public void addToFile(String task) {
-		FileManager.addTaskToFile(file, task);
+	/**
+	 * This method allows connection between file and Logic to get content
+	 */
+	static ArrayList<String> accessToFile (File file) {
+		return FileManager.getContent(file);
 	}
 	
-	public void deleteFromFile (int index) {
-		FileManager.deleteTaskFromFile(file, index);
-	}
-	
-	public void updateTask (int index, String newTask) {
-		FileManager.updateTaskInFile(file, index,newTask);
+	/**
+	 * This method allows connection between file and Logic to update file
+	 */		
+	static void updateToFile (File file, ArrayList<String> fileContent) {
+		FileManager.updateFileContent(file,fileContent);
 	}
 
 }
