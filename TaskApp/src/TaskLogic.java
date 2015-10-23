@@ -11,7 +11,7 @@ public class TaskLogic {
 	private static CommandParser parser;
 	private static Storage store;
 	
-	private ArrayList<String> taskList;
+	public ArrayList<String> taskList;
 	private ArrayList<String> returnList;
 	private Command LastCommand;
 	private Stack<Command> commandStack;
@@ -109,7 +109,6 @@ public class TaskLogic {
 	private ArrayList<String> searchForTask(Command command) {
 		
 		ArrayList<String> pass = new ArrayList<>();
-		
 		
 		for (String curTask : taskList){
 			
