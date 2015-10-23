@@ -39,14 +39,14 @@ public class Storage {
 	/**
 	 * This method allows connection between file and Logic to get content
 	 */
-	static ArrayList<String> accessToFile (File file) {
+	public ArrayList<String> accessToFile (File file) {
 		return FileManager.getContent(file);
 	}
 	
 	/**
 	 * This method allows connection between file and Logic to update file
 	 */		
-	static void updateToFile (File file, ArrayList<String> fileContent) {
+	public void updateToFile (File file, ArrayList<String> fileContent) {
 		FileManager.updateFileContent(file,fileContent);
 	}
 
