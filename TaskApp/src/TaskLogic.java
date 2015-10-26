@@ -12,6 +12,7 @@ public class TaskLogic {
 	private static Storage store;
 	
 	public ArrayList<String> taskList;
+	
 	private ArrayList<String> returnList;
 	private Command LastCommand;
 	private Stack<Command> commandStack;

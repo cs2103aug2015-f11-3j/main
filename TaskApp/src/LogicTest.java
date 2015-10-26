@@ -10,7 +10,7 @@ public class LogicTest {
 	public void testAdd() {
 		TaskLogic logic = new TaskLogic();
 		
-		logic.executeCommand("Add test1 on 12 12 2015");
+		logic.executeCommand("add test 12 12 2015");
 		
 		assertTrue(!logic.taskList.isEmpty());
 		
@@ -18,10 +18,10 @@ public class LogicTest {
 	}
 	
 	@Test
-	public void testSearch(){
+	public void testUndo(){
 		TaskLogic logic = new TaskLogic();
 		
-		logic.executeCommand("Add test2 on 12 12 2015");
+		logic.executeCommand("add test 13 12 2015");
 		logic.executeCommand("undo");
 		
 		assertTrue(logic.taskList.isEmpty());
