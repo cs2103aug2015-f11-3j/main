@@ -104,25 +104,40 @@ public class CommandParser {
 	//oct 3 2015
 	//3 oct 2015
 	private void convertToDate(Command cmd, ArrayList<String> tokens, ArrayList<Date> dateList) {
-		ArrayList<SimpleDateFormat> knownPatterns = new ArrayList<SimpleDateFormat>();
-		knownPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
-		knownPatterns.add(new SimpleDateFormat("d MM yyyy"));
-		knownPatterns.add(new SimpleDateFormat("MMM d yyyy"));
-		knownPatterns.add(new SimpleDateFormat("d MMM yyyy"));
-//		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
+		ArrayList<SimpleDateFormat> knownPatterns = initTimeFormatBank();
 		for(int i=0; i<tokens.size(); i++) {
 			for (SimpleDateFormat pattern : knownPatterns) {
 				try {
-		        Date date = pattern.parse(tokens.get(i).trim());
-		        dateList.add(date);
-		        break;
+					if(pattern.toLocalizedPattern().length()==tokens.get(i).trim().length()){
+						pattern.setLenient(false);
+						Date date = pattern.parse(tokens.get(i).trim());
+						System.out.println(date.toString());
+						dateList.add(date);
+						break;
+					}
 				} catch (ParseException pe) {
 				}
 			}
 		}
-		if(dateList.size()!=tokens.size()) {
+		if(dateList.size()!=tokens.size()||dateList.size()>2) {
 			cmd.setCommandType(Command.TYPE.INVALID);
 		}
+	}
+
+	private ArrayList<SimpleDateFormat> initTimeFormatBank() {
+		ArrayList<SimpleDateFormat> knownPatterns = new ArrayList<SimpleDateFormat>();
+		knownPatterns.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
+		knownPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
+		knownPatterns.add(new SimpleDateFormat("dd/MM/yyyy"));
+		knownPatterns.add(new SimpleDateFormat("d/MM/yyyy"));
+		knownPatterns.add(new SimpleDateFormat("d/M/yyyy"));
+		knownPatterns.add(new SimpleDateFormat("dd/M/yyyy"));
+		knownPatterns.add(new SimpleDateFormat("MMM d yyyy"));
+		knownPatterns.add(new SimpleDateFormat("MMM dd yyyy"));
+		knownPatterns.add(new SimpleDateFormat("d MMM yyyy"));
+		knownPatterns.add(new SimpleDateFormat("dd MMM yyyy"));
+//		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
+		return knownPatterns;
 	}
 
 	private Command initExitCommand() {
@@ -144,6 +159,9 @@ public class CommandParser {
 	private Command initSearchCommand(String remainStr) {
         Command cmd = new Command(Command.TYPE.SEARCH);
         cmd.setTask(remainStr);
+        if(remainStr.length()==0) {
+        	cmd.setCommandType(Command.TYPE.INVALID);
+        }
         return cmd;
     }
 	
