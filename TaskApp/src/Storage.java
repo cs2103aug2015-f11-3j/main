@@ -1,5 +1,8 @@
 package src;
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 /**
  * The Storage saves all the data of the user,
  * and will be updated after every action.
