@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.StackPane?>
+
+<fx:root type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TableView fx:id="updateTable" prefHeight="200.0" prefWidth="221.0">
+        <columns>
+          <TableColumn fx:id="indexColumn" prefWidth="75.0" text="Task No" />
+          <TableColumn fx:id="eventColumn" prefWidth="75.0" text="Event" />
+            <TableColumn fx:id="dateColumn" prefWidth="75.0" text="Date" />
+        </columns>
+      </TableView>
+   </children>
+</fx:root>

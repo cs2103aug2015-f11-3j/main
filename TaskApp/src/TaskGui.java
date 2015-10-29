@@ -32,16 +32,31 @@ public class TaskGui extends Application{
 	private BorderPane root;
 	private Stage primaryStage;
 	private ListViewController listViewController;
+	private UpdateTableController updateTableController;
+	private TaskLogic taskLogic;
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
 		initialRootLayout();
 		initialPrimaryStage(primaryStage);
+		initialLogic();
 		addCommandBar(this);
 		addListView();
+		addTableView();
 	}
 	
+	private void addTableView() {
+		// TODO Auto-generated method stub
+		updateTableController = new UpdateTableController(); 
+		root.setCenter(updateTableController);
+	}
+
+	private void initialLogic() {
+		// TODO Auto-generated method stub
+		taskLogic = new TaskLogic();
+	}
+
 	private void addListView() {
 		// TODO Auto-generated method stub
 		//root.setLeft(new ListViewController(userInput));
@@ -83,7 +98,8 @@ public class TaskGui extends Application{
 	private void handleEnterPress(CommandBarController commandBarController, String userInput) {
 		// TODO Auto-generated method stub
 		//addListView(userInput);
-		listViewController.addItemToListView(userInput);
+		listViewController.addItemToListView("Command Enter: " + taskLogic.executeCommand(userInput));
+		commandBarController.clear();
 	}
 
 	public static void main(String[] args) {
