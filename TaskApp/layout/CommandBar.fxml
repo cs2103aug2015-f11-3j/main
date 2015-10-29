@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<fx:root type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <TextField fx:id="commandTextfield" onKeyPressed="#onKeyPress" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="System Bold Italic" size="13.0" />
+         </font>
+      </TextField>
+   </center>
+   <top>
+      <Label fx:id="messageLabel" text="Welcome to Task Manager" textFill="#472dbc" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Arial Hebrew" size="13.0" />
+         </font>
+      </Label>
+   </top>
+</fx:root>

@@ -2,6 +2,7 @@ package src;
 
 //test
 import java.io.IOException;
+import java.util.logging.*;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -12,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -23,7 +25,85 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import src.TaskLogic;
 
+public class TaskGui extends Application{
 
+	private static final String ROOT_LAYOUT_FXML = "/layout/RootLayout.fxml";
+	private static final String WINDOW_TITLE = "Task Manager";
+	private BorderPane root;
+	private Stage primaryStage;
+	private ListViewController listViewController;
+	
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		// TODO Auto-generated method stub
+		initialRootLayout();
+		initialPrimaryStage(primaryStage);
+		addCommandBar(this);
+		addListView();
+	}
+	
+	private void addListView() {
+		// TODO Auto-generated method stub
+		//root.setLeft(new ListViewController(userInput));
+		listViewController = new ListViewController();
+		root.setLeft(listViewController);
+	}
+
+	private void addCommandBar(TaskGui taskGui) {
+		// TODO Auto-generated method stub
+		root.setBottom(new CommandBarController(taskGui));
+	}
+
+	private void initialPrimaryStage(Stage primaryStage) {
+		// TODO Auto-generated method stub
+		this.primaryStage = primaryStage;
+        this.primaryStage.setTitle(WINDOW_TITLE);
+        this.primaryStage.setScene(new Scene(root));
+        this.primaryStage.show();
+	}
+
+	private void initialRootLayout() {
+		// TODO Auto-generated method stub
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(ROOT_LAYOUT_FXML));
+		try {
+            root = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	
+	public void handleKeyPress(CommandBarController commandBarController, KeyCode key, String userInput) {
+		
+		if (key == KeyCode.ENTER) {
+			System.out.println(userInput);
+			handleEnterPress(commandBarController, userInput);
+		}
+	}
+
+	private void handleEnterPress(CommandBarController commandBarController, String userInput) {
+		// TODO Auto-generated method stub
+		//addListView(userInput);
+		listViewController.addItemToListView(userInput);
+	}
+
+	public static void main(String[] args) {
+		try{
+			launch(args);
+		}catch(Throwable e){
+			System.out.println(e.getMessage());
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+/*
 public class TaskGui extends Application {
 	
 	TextField textfield;
@@ -33,12 +113,21 @@ public class TaskGui extends Application {
 	ListView<String> console;
 	
 	TaskLogic tasklogic;
+	
+	private static Logger logger = Logger.getLogger("Foo");
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+<<<<<<< Updated upstream
 
 		tasklogic = new TaskLogic();
+=======
+		// TODO Auto-generated method stub
+>>>>>>> Stashed changes
 		
+		logger.log(Level.INFO, "going to start processing");
+		
+		tasklogic = new TaskLogic();
 		primaryStage.setTitle("TaskManager");
 		
 		Text scenetitle = new Text("Welcome to TaskManager!");
@@ -64,9 +153,10 @@ public class TaskGui extends Application {
         
         tasklogic = new TaskLogic();
         
-        //add a key listeners
+        //add a key listenersa
         textfield.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
+            	//assert ke.getCode() == KeyCode.ENTER: "correct";
             	if(ke.getCode() == KeyCode.ENTER){
 
             		handleEnterPress();
@@ -77,7 +167,17 @@ public class TaskGui extends Application {
 
 			private void handleEnterPress() {
 
+<<<<<<< Updated upstream
+=======
+				// TODO Auto-generated method stub
+				logger.log(Level.INFO, "end of processing");
+				assert tasklogic.executeCommand(textfield.getText()).equals("Added task do homework for Fri, 16 Oct"): "message correct";
+				
+>>>>>>> Stashed changes
 				console.getItems().add("Key Pressed: " + tasklogic.executeCommand(textfield.getText()));
+				//assertEquals("add do homework", tasklogic.executeCommand(textfield.getText()));
+				
+				
 				actiontarget.setFill(Color.FIREBRICK);
                 actiontarget.setText("thanks for type in command.\n"+textfield.getText());
 			}
@@ -98,10 +198,15 @@ public class TaskGui extends Application {
 	}
 	
 	public static void main(String[] args) {
+		try{
         launch(args);
-    }
+		}catch(Throwable e){
+			System.out.println(e.getMessage());
+		}
+	}
+}*/
 
-}
+
 
 
 
