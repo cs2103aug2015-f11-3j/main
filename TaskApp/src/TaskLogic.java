@@ -48,19 +48,15 @@ public class TaskLogic {
 		command = parser.parse(userCommand);
 		commandStack.push(command);
 		
-		store.updateToFile(file, taskList);//add by ZHOU
-		
 		switch(command.getCommandType()){
 			case ADD:{
 				returnList.add(addTask(command.getTask()+" "+command.getDates()));
-				return addTask(command.getTask()+" "+command.getDates());//add by ZHOU
-				//break;
+				break;
 			}
 			
 			case DELETE:{
 				returnList.add(deleteTask(command.getTask()));
-				return deleteTask(command.getTask());//add by ZHOU
-				//break;
+				break;
 			}
 			
 			case UPDATE:{
@@ -77,41 +73,41 @@ public class TaskLogic {
 				}else {
 					returnList.add("There are no options found!");
 				}
-				return "NULL";//add by ZHOU
-				//break;
+				//return "NULL";//add by ZHOU
+				break;
 			}
 			
 			case UNDO:{
 				if(commandStack.size()==1){
 					commandStack.pop();
 					returnList.add(ERROR_UNDO);
-					return ERROR_UNDO;// add by ZHOU
-					//break;
+					//return ERROR_UNDO;// add by ZHOU
+					break;
 				}else{
 					commandStack.pop();
 					returnList.add(undoTask(commandStack.pop()));
-					return undoTask(commandStack.pop());// add by ZHOU
-					//break;
+					//return undoTask(commandStack.pop());// add by ZHOU
+					break;
 
 				}
 			}
 			
 			case EXIT:{
 				returnList.add("Still not implemented");
-				return "till not implemented";//add by ZHOU
-				//break;
+				//return "till not implemented";//add by ZHOU
+				break;
 			}
 			
 			default:{
 				log.log(Level.INFO, "Entered command: "+command.getTask());
 				commandStack.pop();
 				returnList.add(ERROR_KEYWORD);
-				return ERROR_KEYWORD;
+				//return ERROR_KEYWORD;//add by ZHOU
 			}
 		}
 				
-		//store.updateToFile(file, taskList);
-		//return returnList.get(0);
+		store.updateToFile(file, taskList);
+		return returnList.get(0);
 	}
 	
 
