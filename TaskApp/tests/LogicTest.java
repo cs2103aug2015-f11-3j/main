@@ -1,8 +1,10 @@
-package src;
+package tests;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import src.TaskLogic;
 
 public class LogicTest {
 

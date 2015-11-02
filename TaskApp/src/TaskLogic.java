@@ -1,6 +1,11 @@
 package src;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -28,7 +33,7 @@ public class TaskLogic {
 		parser = new CommandParser();
 		store = new Storage();
 		
-		file = new File("saveFile");
+		file = new File("saveFile.txt");
 		
 		taskList = new ArrayList<>();
 		taskList = store.accessToFile(file);
@@ -81,20 +86,25 @@ public class TaskLogic {
 				if(commandStack.size()==1){
 					commandStack.pop();
 					returnList.add(ERROR_UNDO);
-					//return ERROR_UNDO;// add by ZHOU
 					break;
 				}else{
 					commandStack.pop();
 					returnList.add(undoTask(commandStack.pop()));
-					//return undoTask(commandStack.pop());// add by ZHOU
 					break;
 
 				}
 			}
 			
+			case FILE:{
+				String originalLocation = file.getAbsolutePath();
+				file = movedFile(file, command.getTask());
+				returnList.add("file is moved from "+ originalLocation +" to "+command.getTask());
+				break;
+		
+			}
+			
 			case EXIT:{
-				returnList.add("Still not implemented");
-				//return "till not implemented";//add by ZHOU
+				System.exit(0);
 				break;
 			}
 			
@@ -110,7 +120,18 @@ public class TaskLogic {
 		return returnList.get(0);
 	}
 	
-
+	private File movedFile(File oldFile, String directory) {
+		Path movefrom = FileSystems.getDefault().getPath(oldFile.getAbsolutePath());
+        Path target = FileSystems.getDefault().getPath(directory);
+        try {
+            Files.move(movefrom, target, StandardCopyOption.REPLACE_EXISTING);
+            File file = new File(target.toString());
+            return file;
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+        return null;
+	}
 
 	private ArrayList<String> searchForTask(Command command) {
 		

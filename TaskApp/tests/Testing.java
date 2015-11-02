@@ -1,4 +1,4 @@
-package src;
+package tests;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.Test;
+
+import src.Storage;
+import src.TaskLogic;
 
 public class Testing {
 

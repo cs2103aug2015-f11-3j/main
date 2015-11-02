@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Command {
 	
 	public enum TYPE {
-		ADD, DELETE, READ, UNDO, UPDATE, EXIT, INVALID, SEARCH
+		ADD, DELETE, READ, UNDO, UPDATE, EXIT, INVALID, SEARCH, FILE
 	};
 	private TYPE commandType;
 	private String task;

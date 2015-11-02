@@ -1,4 +1,6 @@
 package src;
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +17,7 @@ public class CommandParser {
     private static final String USER_COMMAND_SEARCH = "search";
     private static final String USER_COMMAND_UNDO = "undo";
     private static final String USER_COMMAND_EXIT = "exit";
+    private static final String USER_COMMAND_MOVE_FILE ="file";
 	
 	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON"};
 	private static final String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
@@ -57,13 +60,37 @@ public class CommandParser {
         	case USER_COMMAND_UNDO :
         		command = initUndoCommand();
         		break;
+        	
+        	case USER_COMMAND_MOVE_FILE :
+        		System.out.println("entre parser move File");
+        		command = initFileLocation(remainStr);
+        		System.out.println(command.getCommandType());
+        		break;
         
         	default :
         		command = initInvalidCommand();
-		}				
+		}
 		return command;
 	}
 	
+	private Command initFileLocation(String directory) {
+		Command cmd = new Command(Command.TYPE.FILE);
+		File file = new File(directory);
+		System.out.println(file.getName());
+		try {
+			if((!directory.isEmpty()) && file.createNewFile()) {
+				cmd.setTask(directory);
+			}
+			else {
+				cmd.setCommandType(Command.TYPE.INVALID);
+			}
+		} catch (IOException e) {
+			cmd.setCommandType(Command.TYPE.INVALID);
+			e.printStackTrace();
+		}		
+		return cmd;
+	}
+
 	private Command initUpdateCommand(String remainStr) {
 		Command cmd = new Command(Command.TYPE.UPDATE);
 		createTask(remainStr, cmd);
@@ -100,7 +127,7 @@ public class CommandParser {
 	
 	//supporting format example:
 	//1800 oct 3 2015
-	//3 10 2015
+	// 3/10/2015
 	//oct 3 2015
 	//3 oct 2015
 	private void convertToDate(Command cmd, ArrayList<String> tokens, ArrayList<Date> dateList) {
@@ -136,7 +163,6 @@ public class CommandParser {
 		knownPatterns.add(new SimpleDateFormat("MMM dd yyyy"));
 		knownPatterns.add(new SimpleDateFormat("d MMM yyyy"));
 		knownPatterns.add(new SimpleDateFormat("dd MMM yyyy"));
-//		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
 		return knownPatterns;
 	}
 
