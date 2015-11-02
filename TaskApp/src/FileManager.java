@@ -50,9 +50,18 @@ public class FileManager {
 				}
 			bw.close();
 			fw.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-				}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
+	}
+    //Overloading method updateFileContent
+    static void updateFileContent(File file, String str) {
+    	try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+			bw.write(str+'\n');
+			bw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	} 
 }

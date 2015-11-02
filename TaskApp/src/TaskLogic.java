@@ -22,7 +22,8 @@ public class TaskLogic {
 	private Command LastCommand;
 	private Stack<Command> commandStack;
 	private Stack<String> deletedStack;
-	private File file;
+	private File directoryFile;
+	private File taskFile;
 	
 	private String ERROR_KEYWORD = "Keyword not recognized!";
 	private String ERROR_UNDO = "You have no cammand to undo!";
@@ -33,19 +34,18 @@ public class TaskLogic {
 		parser = new CommandParser();
 		store = new Storage();
 		
-		file = new File("saveFile.txt");
-		
+		directoryFile = store.prepareFile("directory.txt");
+		taskFile = store.prepareFile("savefile.txt");	
 		taskList = new ArrayList<>();
-		taskList = store.accessToFile(file);
-		
 		commandStack = new Stack<>();	
 		deletedStack = new Stack<>();
 	}
 	
 	
-	public String executeCommand(String userCommand){		
-		log.entering(getClass().getName(), "executeCommand with"+userCommand);
+	public String executeCommand(String userCommand){	
 		
+		prepareSystem();
+		log.entering(getClass().getName(), "executeCommand with"+userCommand);
 		Command command;
 		returnList = new ArrayList<>();
 		
@@ -96,8 +96,9 @@ public class TaskLogic {
 			}
 			
 			case FILE:{
-				String originalLocation = file.getAbsolutePath();
-				file = movedFile(file, command.getTask());
+				String originalLocation = taskFile.getAbsolutePath();
+				taskFile = movedFile(taskFile, command.getTask());
+				store.updateToFile(directoryFile, taskFile.getAbsolutePath());
 				returnList.add("file is moved from "+ originalLocation +" to "+command.getTask());
 				break;
 		
@@ -112,14 +113,22 @@ public class TaskLogic {
 				log.log(Level.INFO, "Entered command: "+command.getTask());
 				commandStack.pop();
 				returnList.add(ERROR_KEYWORD);
-				//return ERROR_KEYWORD;//add by ZHOU
 			}
 		}
 				
-		store.updateToFile(file, taskList);
+		store.updateToFile(taskFile, taskList);
 		return returnList.get(0);
 	}
 	
+	private void prepareSystem() {
+		if(store.isEmptyFile(directoryFile)) {
+			store.updateToFile(directoryFile,taskFile.getAbsolutePath());
+		}
+		taskFile = new File(store.readLastLineFromFile(directoryFile));	
+		taskList = store.accessToFile(taskFile);
+	}
+
+
 	private File movedFile(File oldFile, String directory) {
 		Path movefrom = FileSystems.getDefault().getPath(oldFile.getAbsolutePath());
         Path target = FileSystems.getDefault().getPath(directory);
@@ -132,7 +141,7 @@ public class TaskLogic {
         }
         return null;
 	}
-
+	
 	private ArrayList<String> searchForTask(Command command) {
 		
 		ArrayList<String> pass = new ArrayList<>();
