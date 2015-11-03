@@ -2,6 +2,8 @@ package src;
 
 //test
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.*;
 
 import javafx.scene.control.Label;
@@ -12,12 +14,14 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -29,11 +33,22 @@ public class TaskGui extends Application{
 
 	private static final String ROOT_LAYOUT_FXML = "/layout/RootLayout.fxml";
 	private static final String WINDOW_TITLE = "Task Manager";
+	private static final String CONTAINER_LAYOUT_FXML = "/layout/Container.fxml";
 	private BorderPane root;
+	private GridPane container;
 	private Stage primaryStage;
 	private ListViewController listViewController;
 	private UpdateTableController updateTableController;
+	private TodoTableController todoTableController;
+	private OverdueTableController overdueTableController;
 	private TaskLogic taskLogic;
+	
+	//private ArrayList<Message> list = new ArrayList<Message>();
+
+	//private Message msg = new Message(12, "hello", "Sat");
+	ObservableList<Message> data, data1, data2;
+	
+	
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -44,12 +59,72 @@ public class TaskGui extends Application{
 		addCommandBar(this);
 		addListView();
 		addTableView();
+		addTableView1();
+		addTableView2();
 	}
 	
+	private void addTableView2() {
+		// TODO Auto-generated method stub
+		data2 = getInitialTableData2();
+		overdueTableController = new OverdueTableController(data2);
+		container.add(overdueTableController, 1, 1);
+	}
+
+	private ObservableList<Message> getInitialTableData2() {
+		// TODO Auto-generated method stub
+		List<Message> list = new ArrayList<Message>();
+		
+		list.add(new Message(1, "drink", "Sat"));
+		list.add(new Message(1, "drink", "Sat"));
+		
+		//ObservableList<Message> data = FXCollections.observableArrayList(list);
+		data = FXCollections.observableArrayList(list);
+		
+		return data;
+	}
+
+	private void addTableView1() {
+		// TODO Auto-generated method stub
+		data1 = getInitialTableData1();
+		
+		todoTableController = new TodoTableController(data1);
+		container.add(todoTableController, 0, 1);
+	}
+
+	private ObservableList<Message> getInitialTableData1() {
+		// TODO Auto-generated method stub
+		List<Message> list = new ArrayList<Message>();
+		
+		list.add(new Message(1, "sleep", "Sat"));
+		list.add(new Message(1, "sleep", "Sat"));
+		
+		//ObservableList<Message> data = FXCollections.observableArrayList(list);
+		data = FXCollections.observableArrayList(list);
+		
+		return data;
+	}
+
+	private ObservableList<Message> getInitialTableData() {
+		// TODO Auto-generated method stub
+		List<Message> list = new ArrayList<Message>();
+		
+		list.add(new Message(1, "homework", "Sat"));
+		list.add(new Message(1, "homework", "Sat"));
+		
+		//ObservableList<Message> data = FXCollections.observableArrayList(list);
+		data = FXCollections.observableArrayList(list);
+		
+		return data;
+	}
+
 	private void addTableView() {
 		// TODO Auto-generated method stub
-		updateTableController = new UpdateTableController(); 
-		root.setCenter(updateTableController);
+		
+		data = getInitialTableData();
+		updateTableController = new UpdateTableController(data); 
+		//listViewController.getChildren().add(updateTableController);
+		//root.setCenter(updateTableController);
+		container.add(updateTableController, 1, 0);
 	}
 
 	private void initialLogic() {
@@ -61,12 +136,22 @@ public class TaskGui extends Application{
 		// TODO Auto-generated method stub
 		//root.setLeft(new ListViewController(userInput));
 		listViewController = new ListViewController();
-		root.setLeft(listViewController);
+		container.add(listViewController, 0, 0);
+		//root.setTop(listViewController);
 	}
 
 	private void addCommandBar(TaskGui taskGui) {
 		// TODO Auto-generated method stub
 		root.setBottom(new CommandBarController(taskGui));
+		
+		FXMLLoader contain = new FXMLLoader(getClass().getResource(CONTAINER_LAYOUT_FXML));
+		try {
+			container = contain.load();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        root.setCenter(container);
 	}
 
 	private void initialPrimaryStage(Stage primaryStage) {
@@ -80,6 +165,7 @@ public class TaskGui extends Application{
 	private void initialRootLayout() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(ROOT_LAYOUT_FXML));
+		//FXMLLoader contain = new FXMLLoader(getClass().getResource(CONTAINER_LAYOUT_FXML));
 		try {
             root = loader.load();
         } catch (IOException e) {
@@ -98,7 +184,7 @@ public class TaskGui extends Application{
 	private void handleEnterPress(CommandBarController commandBarController, String userInput) {
 		// TODO Auto-generated method stub
 		//addListView(userInput);
-		listViewController.addItemToListView("Command Enter: " + taskLogic.executeCommand(userInput));
+		listViewController.addItemToListView(taskLogic.executeCommand(userInput));
 		commandBarController.clear();
 	}
 

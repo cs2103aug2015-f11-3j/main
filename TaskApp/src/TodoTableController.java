@@ -14,12 +14,12 @@ import javafx.scene.layout.StackPane;
 
 
 
-public class UpdateTableController extends StackPane{
+public class TodoTableController extends StackPane{
 	
-	private static final String UPDATE_TABLE_FXML = "/layout/UpdateTable.fxml";
+	private static final String UPDATE_TABLE_FXML = "/layout/TodoTable.fxml";
 	private int count = 1;
 	@FXML
-	private TableView<Message> updateTable;
+	private TableView<Message> todoTable;
 	
 	@FXML
 	private TableColumn<Message, Integer> indexColumn;
@@ -39,7 +39,7 @@ public class UpdateTableController extends StackPane{
 			
 	);*/
 	
-	public UpdateTableController(ObservableList<Message> data){
+	public TodoTableController(ObservableList<Message> data){
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(UPDATE_TABLE_FXML));
 		loader.setController(this);
         loader.setRoot(this);
@@ -51,7 +51,7 @@ public class UpdateTableController extends StackPane{
         
         //ObservableList<Message> data = FXCollections.observableArrayList(msg);
         
-        updateTable.setItems(data);
+        todoTable.setItems(data);
         indexColumn.setCellValueFactory(new PropertyValueFactory<Message, Integer>("Index"));
         eventColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Event"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Date"));
