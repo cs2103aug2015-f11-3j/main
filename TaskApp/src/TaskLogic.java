@@ -16,10 +16,9 @@ public class TaskLogic {
 	private static CommandParser parser;
 	private static Storage store;
 	
-	public ArrayList<String> taskList;
+	public ArrayList<Tasks> taskList;
 	
 	private ArrayList<String> returnList;
-	private Command LastCommand;
 	private Stack<Command> commandStack;
 	private Stack<String> deletedStack;
 	private File directoryFile;
@@ -27,6 +26,7 @@ public class TaskLogic {
 	
 	private String ERROR_KEYWORD = "Keyword not recognized!";
 	private String ERROR_UNDO = "You have no cammand to undo!";
+	
 	private final static Logger log = Logger.getLogger(TaskLogic.class.getName());
 	
 	public TaskLogic(){
@@ -37,6 +37,7 @@ public class TaskLogic {
 		directoryFile = store.prepareFile("directory.txt");
 		taskFile = store.prepareFile("savefile.txt");	
 		taskList = new ArrayList<>();
+		
 		commandStack = new Stack<>();	
 		deletedStack = new Stack<>();
 	}
@@ -178,9 +179,12 @@ public class TaskLogic {
 		
 		case UPDATE:{
 			returnText = "Undo UPDATE command";
-			updateTask(pop);
-			deletedStack.pop();
+			//updateTask(pop);
+			
+			int i = searchFor(pop.getTask());
+			taskList.set(i, deletedStack.pop());
 			break;
+			
 		}
 		default:{
 			returnText = "Cannot undo this command";
