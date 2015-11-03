@@ -1,8 +1,15 @@
 package src;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Logic {
@@ -11,6 +18,8 @@ public class Logic {
 	private static Storage store;
 
 	public ArrayList<Tasks> taskList;
+	private ArrayList<Tasks> oldTaskList;
+	public ArrayList<String> taskListString;
 	private ArrayList<String> returnList;
 	private ArrayList<String> consoleList;
 	private ArrayList<Tasks> searchList;
@@ -19,7 +28,8 @@ public class Logic {
 	private Stack<Tasks> deletedStack;
 	private Stack<Command> searchStack;
 	
-	private File file;
+	private File directoryFile;
+	private File taskFile;
 	
 	private String ERROR_KEYWORD = "Keyword not recognized!";
 	private String ERROR_UNDO = "You have no cammand to undo!";
@@ -31,9 +41,13 @@ public class Logic {
 		parser = new CommandParser();
 		store = new Storage();
 		
-		file = new File("saveFile");
+		directoryFile = store.prepareFile("directory.txt");
+		taskFile = store.prepareFile("savefile.txt");	
 		
 		taskList = new ArrayList<>();
+		oldTaskList = new ArrayList<>();
+		taskListString = new ArrayList<>();
+		
 		consoleList = new ArrayList<>();
 		searchList = new ArrayList<>();
 		
@@ -45,6 +59,8 @@ public class Logic {
 	public void executeCommand(String userCommand){
 		log.entering(getClass().getName(), "executeCommand with "+userCommand);
 		
+		prepareSystem();
+		
 		Command command;
 		returnList = new ArrayList<>();
 		
@@ -54,14 +70,17 @@ public class Logic {
 		switch (command.getCommandType()) {
 		case ADD:
 			addTask(command);
+			taskListToString();
 			break;
 			
 		case DELETE:
 			deleteTask(command);
+			taskListToString();
 			break;
 			
 		case DELETEI:
 			deleteIndex(command);
+			taskListToString();
 			break;
 			
 		case SEARCH:
@@ -71,6 +90,7 @@ public class Logic {
 		
 		case UPDATE:
 			updateTask(command);
+			taskListToString();
 			break;
 		
 		case UPDATES:
@@ -84,13 +104,27 @@ public class Logic {
 		case UNDO:
 			commandStack.pop();
 			undoTask(commandStack.pop());
+			taskListToString();
 			break;
 			
-			
+		case FILE:
+			String originalLocation = taskFile.getAbsolutePath();
+			taskFile = movedFile(taskFile, command.getTask());
+			store.updateToFile(directoryFile, taskFile.getAbsolutePath());
+			returnList.add("file is moved from "+ originalLocation +" to "+command.getTask());
+			break;		
 
 		default:
+			log.log(Level.INFO, "Entered command: "+command.getTask());
+			commandStack.pop();
+			returnList.add(ERROR_KEYWORD);
 			break;
 		}
+		
+		store.updateToFile(taskFile, taskListString);
+	}
+
+	private void undoTask(Command pop) {
 		
 	}
 
@@ -103,49 +137,49 @@ public class Logic {
 		}
 	}
 
-	private void undoTask(Command command) {
-		
-		switch (command.getCommandType()) {
-		case ADD:
-			consoleList.add("Undo ADD command");
-			
-			deleteTask(command);
-			break;
-			
-		case DELETE:
-			consoleList.add("Undo DELETE command");
-			
-			command.setDates(deletedStack.peek().getDate());
-			command.setTask(deletedStack.pop().getEvent());
-			addTask(command);
-			break;
-			
-		case DELETEI:
-			consoleList.add("Undo DELETE command");
-			
-			command.setDates(deletedStack.peek().getDate());
-			command.setTask(deletedStack.pop().getEvent());
-			addTask(command);
-			break;
-			
-		case UPDATE:
-			consoleList.add("Undo UPDATE command");
-			
-			int i = searchFor(command.getTask());
-			taskList.get(i).setDate(deletedStack.pop().getDate());
-			break;
-		
-		case UPDATES:
-			consoleList.add("Undo DELETE STATUS command");
-			
-			updateStatus(command);
-			break;
-
-		default:
-			consoleList.add("Cannot undo this command");
-			break;
-		}
-	}
+//	private void undoTask(Command command) {
+//		
+//		switch (command.getCommandType()) {
+//		case ADD:
+//			consoleList.add("Undo ADD command");
+//			
+//			deleteTask(command);
+//			break;
+//			
+//		case DELETE:
+//			consoleList.add("Undo DELETE command");
+//			
+//			command.setDates(deletedStack.peek().getDate());
+//			command.setTask(deletedStack.pop().getEvent());
+//			addTask(command);
+//			break;
+//			
+//		case DELETEI:
+//			consoleList.add("Undo DELETE command");
+//			
+//			command.setDates(deletedStack.peek().getDate());
+//			command.setTask(deletedStack.pop().getEvent());
+//			addTask(command);
+//			break;
+//			
+//		case UPDATE:
+//			consoleList.add("Undo UPDATE command");
+//			
+//			int i = searchFor(command.getTask());
+//			taskList.get(i).setDate(deletedStack.pop().getDate());
+//			break;
+//		
+//		case UPDATES:
+//			consoleList.add("Undo DELETE STATUS command");
+//			
+//			updateStatus(command);
+//			break;
+//
+//		default:
+//			consoleList.add("Cannot undo this command");
+//			break;
+//		}
+//	}
 
 	private void deleteIndex(Command command) {
 		int i = Integer.parseInt(command.getTask());
@@ -210,6 +244,8 @@ public class Logic {
 			Tasks removed = taskList.get(i);
 			deletedStack.push(removed);
 			
+			oldTaskList = taskList;
+			
 			taskList.remove(i);
 			consoleList.add("Task *"+removed.toString()+" has been deleted!");
 		}else{
@@ -219,6 +255,8 @@ public class Logic {
 
 	private void addTask(Command command) {
 		Tasks task = new Tasks(command.getTask(), command.getDates());
+		
+		oldTaskList = taskList;
 		
 		taskList.add(task);
 		consoleList.add("Added task "+command.getTask()+" on "+command.getDates());
@@ -233,5 +271,50 @@ public class Logic {
 			i++;
 		}
 		return i;
+	}
+	
+	private void taskListToString(){
+		taskListString.clear();
+		
+		for(Tasks curTask : taskList){
+			taskListString.add(curTask.toString());
+		}
+	}
+	
+	private void prepareSystem() {
+		if(store.isEmptyFile(directoryFile)) {
+			store.updateToFile(directoryFile,taskFile.getAbsolutePath());
+		}
+		taskFile = new File(store.readLastLineFromFile(directoryFile));	
+		taskListString = store.accessToFile(taskFile);
+		
+		taskList = new ArrayList<>(parser.parseArrlist(taskListString));
+	}
+	
+	private File movedFile(File oldFile, String directory) {
+		Path movefrom = FileSystems.getDefault().getPath(oldFile.getAbsolutePath());
+        Path target = FileSystems.getDefault().getPath(directory);
+        try {
+            Files.move(movefrom, target, StandardCopyOption.REPLACE_EXISTING);
+            File file = new File(target.toString());
+            return file;
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+        return null;
+	}
+	
+	public ArrayList<String> getConsole(){
+		return consoleList;
+	}
+	
+	public ArrayList<Tasks> getToDoTask(){
+		Date today;
+		ArrayList<Tasks> toDoList = new ArrayList<>();
+		
+		
+		for(Tasks curTask : taskList){
+			if(curTask.getDate().)
+		}
 	}
 }

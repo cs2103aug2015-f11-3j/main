@@ -117,7 +117,7 @@ public class TaskLogic {
 			}
 		}
 				
-		store.updateToFile(taskFile, taskList);
+//		store.updateToFile(taskFile, taskList);
 		return returnList.get(0);
 	}
 	

@@ -3,10 +3,9 @@ import java.util.Date;
 import java.util.ArrayList;
 
 public class Command {
-	
-	public enum TYPE {
-		ADD, DELETE, READ, UNDO, UPDATE, UPDATES, UPDATEI, EXIT, INVALID, SEARCH, FILE, DELETEI
+		public enum TYPE {ADD, DELETE, READ, UNDO, UPDATE, EXIT, INVALID, SEARCH, UPDATES, DELETEI, FILE
 	};
+	
 	private TYPE commandType;
 	private String task;
 	private ArrayList<Date> dates;
