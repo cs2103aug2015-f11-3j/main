@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 
 public class CommandParser {
@@ -14,14 +15,17 @@ public class CommandParser {
     private static final String USER_COMMAND_DELETE = "delete";
     private static final String USER_COMMAND_DELETE_INDEX = "deletei";
     private static final String USER_COMMAND_READ = "read";
-    private static final String USER_COMMAND_UPDATE = "update";
+    private static final String USER_COMMAND_UPDATE_BY_NAME = "update";
     private static final String USER_COMMAND_UPDATE_STATUS = "updates";
+    private static final String USER_COMMAND_UPDATE_BY_INDEX = "updatei";
     private static final String USER_COMMAND_SEARCH = "search";
     private static final String USER_COMMAND_UNDO = "undo";
     private static final String USER_COMMAND_EXIT = "exit";
     private static final String USER_COMMAND_MOVE_FILE ="file";
     
+    
     private static final String PARSE_PATTERN = "EEE MMM dd HH:mm:ss Z yyyy";
+    private static final String END_OF_DAY_PATTERN = "EEE MMM dd 23:59:59 Z yyyy";
 	
 	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON", "UNTIL"};
 	private static final String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
@@ -82,8 +86,12 @@ public class CommandParser {
         		command = initDeleteIndex(remainStr);
         		break;
         		
-        	case USER_COMMAND_UPDATE :
-        		command = initUpdateCommand(remainStr);
+        	case USER_COMMAND_UPDATE_BY_NAME :
+        		command = initUpdateCommandByName(remainStr);
+        		break;
+        		
+        	case USER_COMMAND_UPDATE_BY_INDEX :
+        		command = initUpdateCommandByIndex(remainStr);
         		break;
         	
         	case USER_COMMAND_UPDATE_STATUS :
@@ -91,7 +99,7 @@ public class CommandParser {
         		break;
         		
         	case USER_COMMAND_READ :
-        		command = initReadCommand();
+        		command = initReadCommand(remainStr);
         		break;
         
         	case USER_COMMAND_SEARCH :
@@ -118,20 +126,103 @@ public class CommandParser {
 		return command;
 	}
 	
-	private Command initDeleteIndex(String remainStr) {
-		Command cmd = new Command(Command.TYPE.DELETEI);
-		if(isNumeric(remainStr)) {
-			cmd.setIndex(Integer.valueOf(remainStr));
+	//READ a date
+	private Command initReadCommand(String str) {
+        Command cmd = new Command(Command.TYPE.READ);
+        ArrayList<Date> dates = new ArrayList<Date>();
+        Date date = new Date();
+        
+        if(str.equalsIgnoreCase("today")) {
+        	date = endOfDay(date);
+        }
+        else if(str.equalsIgnoreCase("tmr")){
+        	Calendar c = Calendar.getInstance(); 
+        	c.setTime(date); 
+        	c.add(Calendar.DATE, 1);
+        	date = endOfDay(c.getTime());
+        }
+        else if(str.equalsIgnoreCase("this week")){
+        	date = getNextOccurenceOfDay(date, Calendar.SUNDAY);
+        	date = endOfDay(date);
+        }
+        else {
+        	date = convertToDate(str);
+        	if(date==null) {
+        		return initInvalidCommand();
+        	}
+        	date = endOfDay(date);
+        }
+        dates.add(date);
+        cmd.setDates(dates);
+        return cmd;
+    }
+	
+	private Date getNextOccurenceOfDay(Date today, int dayOfWeek) {  
+		  Calendar cal = Calendar.getInstance();  
+		  cal.setTime(today);  
+		  int dow = cal.get(Calendar.DAY_OF_WEEK);  
+		  int numDays = 7 - ((dow - dayOfWeek) % 7 + 7) % 7;  
+		  cal.add(Calendar.DAY_OF_YEAR, numDays);  
+		  return cal.getTime();  
+	} 
+	
+	private Date endOfDay(Date date) {
+		SimpleDateFormat standardSdf = new SimpleDateFormat(PARSE_PATTERN);
+        SimpleDateFormat endOfDay = new SimpleDateFormat(END_OF_DAY_PATTERN);
+        String str = endOfDay.format(date);
+		try {
+			date = standardSdf.parse(str);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		else {
-			cmd.setCommandType(Command.TYPE.INVALID);
-		}
+		return date;
+	}
+
+	private Command initUpdateCommandByName(String remainStr) {
+		Command cmd = new Command(Command.TYPE.UPDATE);
+		createTask(remainStr, cmd);
 		return cmd;
 	}
 
+	private Command initUpdateCommandByIndex(String remainStr) {
+		Command cmd = new Command(Command.TYPE.UPDATEI);
+		ArrayList<Date> dates = new ArrayList<Date>();
+		String str = getFirstWord(remainStr);
+		if(!isNumeric(str)) {
+			return initInvalidCommand();
+		}
+		cmd.setTask(str);
+		String rawDate = removeString(remainStr, str);
+		createTimeConstraint(cmd, rawDate, dates);	
+		cmd.setDates(dates);
+		return cmd;
+	}
+	//update status with task index
 	private Command initUpdateStatusCommand(String remainStr) {
-		// TODO Auto-generated method stub
-		return null;
+		if(!isNumeric(remainStr)) {
+			return initInvalidCommand();
+		}
+		Command cmd = new Command(Command.TYPE.UPDATES);
+		cmd.setTask(remainStr);
+		return cmd;
+	}
+	
+	//delete by task index
+	private Command initDeleteIndex(String remainStr) {
+		if(!isNumeric(remainStr)) {
+			return initInvalidCommand();
+		}
+		Command cmd = new Command(Command.TYPE.DELETEI);
+		cmd.setTask(remainStr);
+		return cmd;
+	}
+	
+	//delete by string	
+	private Command initDeleteComamnd(String remainStr) {
+		Command cmd = new Command(Command.TYPE.DELETE);
+		cmd.setTask(remainStr);
+		return cmd;
 	}
 
 	private Command initFileLocation(String directory) {
@@ -140,30 +231,14 @@ public class CommandParser {
 		System.out.println(file.getName());
 		try {
 			if((!directory.isEmpty()) && file.createNewFile()) {
-				cmd.setTask(directory);
-			}
-			else {
-				cmd.setCommandType(Command.TYPE.INVALID);
+				cmd.setTask(directory);				
 			}
 		} catch (IOException e) {
-			cmd.setCommandType(Command.TYPE.INVALID);
-			e.printStackTrace();
-		}		
+			return initInvalidCommand();
+		}	
 		return cmd;
 	}
-
-	private Command initUpdateCommand(String remainStr) {
-		Command cmd = new Command(Command.TYPE.UPDATE);
-		createTask(remainStr, cmd);
-		return cmd;
-	}
-
-	private Command initDeleteComamnd(String remainStr) {
-		Command cmd = new Command(Command.TYPE.DELETE);
-		cmd.setTask(initEvent(remainStr));
-		return cmd;
-	}
-
+	//add command
 	private Command initAddCommand(String remainStr) {
 		Command cmd = new Command(Command.TYPE.ADD);
 		createTask(remainStr, cmd);
@@ -199,7 +274,7 @@ public class CommandParser {
 					if(pattern.toLocalizedPattern().length()==tokens.get(i).trim().length()){
 						pattern.setLenient(false);
 						Date date = pattern.parse(tokens.get(i).trim());
-						System.out.println(date.toString());
+						System.out.println(date.toString()+"    "+1);
 						dateList.add(date);
 						break;
 					}
@@ -207,9 +282,25 @@ public class CommandParser {
 				}
 			}
 		}
-		if(dateList.size()!=tokens.size()||dateList.size()>2) {
+		if(dateList.size()!=tokens.size()) {
 			cmd.setCommandType(Command.TYPE.INVALID);
 		}
+	}
+	
+	private Date convertToDate(String str) {
+		ArrayList<SimpleDateFormat> knownPatterns = initTimeFormatBank();
+		for (SimpleDateFormat pattern : knownPatterns) {
+			try {
+				if(pattern.toLocalizedPattern().length()==str.trim().length()){
+					pattern.setLenient(false);
+					Date date = pattern.parse(str.trim());	
+					System.out.println(date.toString()+"    "+pattern.toLocalizedPattern());
+					return date;
+				}
+			} catch (ParseException pe) {
+			}
+		}
+		return null;
 	}
 
 	private ArrayList<SimpleDateFormat> initTimeFormatBank() {
@@ -226,29 +317,27 @@ public class CommandParser {
 		knownPatterns.add(new SimpleDateFormat("dd MMM yyyy"));
 		return knownPatterns;
 	}
-
+	
+	//EXIT
 	private Command initExitCommand() {
         return new Command(Command.TYPE.EXIT);
     }
-
+	//INVALID
 	private Command initInvalidCommand() {
         return new Command(Command.TYPE.INVALID);
     }
-	
+	//UNDO
 	private Command initUndoCommand() {
         return new Command(Command.TYPE.UNDO);
     }
-	
-	private Command initReadCommand() {
-        return new Command(Command.TYPE.READ);
-    }
-	
+
+	//SEARCH a string
 	private Command initSearchCommand(String remainStr) {
-        Command cmd = new Command(Command.TYPE.SEARCH);
-        cmd.setTask(remainStr);
-        if(remainStr.length()==0) {
-        	cmd.setCommandType(Command.TYPE.INVALID);
+		if(remainStr.length()==0) {
+        	return initInvalidCommand();
         }
+		Command cmd = new Command(Command.TYPE.SEARCH);
+        cmd.setTask(remainStr);
         return cmd;
     }
 	
@@ -273,8 +362,6 @@ public class CommandParser {
 		}
 		return sb.toString().trim();
 	}
-
-	
 	
 	private boolean isTimeFormat(String str) { 
 		if (str.contains("/") || isNumeric(str) ||isDay(str)||isMonth(str)) { 
@@ -319,8 +406,7 @@ public class CommandParser {
 		}
 		if(isTimeFormat(arr[i]) && i>=1 && !isTimeFormat(arr[i-1]) && !isPrepositionKeyword(arr[i-1])) {
 			return true;
-		}
-			
+		}		
 		return false;
 	}
 	

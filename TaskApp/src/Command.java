@@ -5,19 +5,19 @@ import java.util.ArrayList;
 public class Command {
 	
 	public enum TYPE {
-		ADD, DELETE, READ, UNDO, UPDATE, UPDATES, EXIT, INVALID, SEARCH, FILE, DELETEI
+		ADD, DELETE, READ, UNDO, UPDATE, UPDATES, UPDATEI, EXIT, INVALID, SEARCH, FILE, DELETEI
 	};
 	private TYPE commandType;
 	private String task;
 	private ArrayList<Date> dates;
-	private int indexOfUpdateDeleteItem;
+//	private int indexOfUpdateDeleteItem;
 	private int reoccuringKey;
 	
 	public Command(TYPE commandType) {
 		this.commandType = commandType;
 		task = new String();
 		dates = new ArrayList<Date>();
-		indexOfUpdateDeleteItem = -1;
+//		indexOfUpdateDeleteItem = -1;
 		reoccuringKey = 0;
 	}
 	
@@ -46,12 +46,12 @@ public class Command {
 		dates = datesArr;
 	}
 	
-	public void setIndex(int i) {
-		indexOfUpdateDeleteItem = i;
-	}
-	public int getIndex() {
-		return indexOfUpdateDeleteItem;
-	}
+//	public void setIndex(int i) {
+//		indexOfUpdateDeleteItem = i;
+//	}
+//	public int getIndex() {
+//		return indexOfUpdateDeleteItem;
+//	}
 	public void setKey(int i) {
 		reoccuringKey = i;
 	}
