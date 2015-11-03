@@ -4,11 +4,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.sun.jmx.snmp.tasks.Task;
-
-import src.Command.TYPE;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +30,7 @@ public class CommandParser {
 	public CommandParser() {
 	}
 	
-	public ArrayList<Tasks> parseArrayListString(ArrayList<String> arrList) {
+	public ArrayList<Tasks> parseArrList(ArrayList<String> arrList) {
 		ArrayList<Tasks> tasks = new ArrayList<Tasks>();
 			for(int i=0; i<arrList.size(); i++) {
 				String event = createEvent(arrList.get(i));
