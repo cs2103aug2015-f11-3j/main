@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,20 +18,20 @@ public class Logic {
 
 	public ArrayList<Tasks> taskList;
 	private ArrayList<Tasks> oldTaskList;
-	public ArrayList<String> taskListString;
-	private ArrayList<String> returnList;
-	private ArrayList<String> consoleList;
 	private ArrayList<Tasks> searchList;
 	
-	private Stack<Command> commandStack;
-	private Stack<Tasks> deletedStack;
-	private Stack<Command> searchStack;
+	public ArrayList<String> taskListString;
+	private ArrayList<String> consoleList;
+	
 	
 	private File directoryFile;
 	private File taskFile;
 	
+	private static final String ERROR_UNDO = "Cannot UNDO";
 	private String ERROR_KEYWORD = "Keyword not recognized!";
-	private String ERROR_UNDO = "You have no cammand to undo!";
+	private String ERROR_INDEX = "Index not found";
+	
+	private int index = 0;
 	
 	private final static Logger log = Logger.getLogger(Logic.class.getName());
 	
@@ -51,9 +50,6 @@ public class Logic {
 		consoleList = new ArrayList<>();
 		searchList = new ArrayList<>();
 		
-		commandStack = new Stack<>();
-		deletedStack = new Stack<>();
-		searchStack = new Stack<>();
 	}
 	
 	public void executeCommand(String userCommand){
@@ -62,10 +58,8 @@ public class Logic {
 		prepareSystem();
 		
 		Command command;
-		returnList = new ArrayList<>();
 		
 		command =  parser.parse(userCommand);
-		commandStack.push(command);
 		
 		switch (command.getCommandType()) {
 		case ADD:
@@ -83,11 +77,6 @@ public class Logic {
 			taskListToString();
 			break;
 			
-		case SEARCH:
-			searchThroughTasks(command);
-			searchStack.push(command);
-			break;
-		
 		case UPDATE:
 			updateTask(command);
 			taskListToString();
@@ -97,13 +86,26 @@ public class Logic {
 			updateStatus(command);
 			break;
 			
+		case UPDATEI:
+			updateIndex(command);
+			taskListToString();
+			break;
+			
+		case STATUSI:
+			updateStatusFromIndex(command);
+			taskListToString();
+			break;
+			
+		case SEARCH:
+			searchThroughTasks(command);
+			break;	
+			
 		case READ:
 			searchForDate(command);
 			break;
 			
 		case UNDO:
-			commandStack.pop();
-			undoTask(commandStack.pop());
+			undoTask();
 			taskListToString();
 			break;
 			
@@ -111,20 +113,62 @@ public class Logic {
 			String originalLocation = taskFile.getAbsolutePath();
 			taskFile = movedFile(taskFile, command.getTask());
 			store.updateToFile(directoryFile, taskFile.getAbsolutePath());
-			returnList.add("file is moved from "+ originalLocation +" to "+command.getTask());
+			consoleList.add("file is moved from "+ originalLocation +" to "+command.getTask());
 			break;		
 
 		default:
 			log.log(Level.INFO, "Entered command: "+command.getTask());
-			commandStack.pop();
-			returnList.add(ERROR_KEYWORD);
+			consoleList.add(ERROR_KEYWORD);
 			break;
 		}
 		
 		store.updateToFile(taskFile, taskListString);
 	}
 
-	private void undoTask(Command pop) {
+	private void updateStatusFromIndex(Command command) {
+		int i = Integer.parseInt(command.getTask());
+		boolean updated = false;
+
+		for(int j=0;i<taskList.size();j++){
+			if(taskList.get(j).getIndex()==i){
+				taskList.get(j).setStatus(!taskList.get(j).getStatus());
+				consoleList.add("Task with index:"+i+" has had it's status updated");
+				
+				updated = true;
+			}
+		}
+		
+		if (!updated) {
+			consoleList.add(ERROR_INDEX);
+		}
+	}
+
+	private void updateIndex(Command command) {
+		int i = Integer.parseInt(command.getTask());
+		boolean updated = false;
+		
+		for(int j=0;i<taskList.size();j++){
+			if(taskList.get(j).getIndex()==i){
+				taskList.get(j).setDate(command.getDates());
+				consoleList.add("Task with index:"+i+" has had it's date updated");
+				
+				updated = true;
+			}
+		}
+		if (!updated) {
+			consoleList.add(ERROR_INDEX);
+		}
+	}
+
+	private void undoTask() {
+		if (!oldTaskList.isEmpty()) {
+			taskList = oldTaskList;
+			oldTaskList.clear();
+			
+			consoleList.add("UNDO command performed");	
+		} else {
+			consoleList.add(ERROR_UNDO);
+		}
 		
 	}
 
@@ -137,54 +181,16 @@ public class Logic {
 		}
 	}
 
-//	private void undoTask(Command command) {
-//		
-//		switch (command.getCommandType()) {
-//		case ADD:
-//			consoleList.add("Undo ADD command");
-//			
-//			deleteTask(command);
-//			break;
-//			
-//		case DELETE:
-//			consoleList.add("Undo DELETE command");
-//			
-//			command.setDates(deletedStack.peek().getDate());
-//			command.setTask(deletedStack.pop().getEvent());
-//			addTask(command);
-//			break;
-//			
-//		case DELETEI:
-//			consoleList.add("Undo DELETE command");
-//			
-//			command.setDates(deletedStack.peek().getDate());
-//			command.setTask(deletedStack.pop().getEvent());
-//			addTask(command);
-//			break;
-//			
-//		case UPDATE:
-//			consoleList.add("Undo UPDATE command");
-//			
-//			int i = searchFor(command.getTask());
-//			taskList.get(i).setDate(deletedStack.pop().getDate());
-//			break;
-//		
-//		case UPDATES:
-//			consoleList.add("Undo DELETE STATUS command");
-//			
-//			updateStatus(command);
-//			break;
-//
-//		default:
-//			consoleList.add("Cannot undo this command");
-//			break;
-//		}
-//	}
 
 	private void deleteIndex(Command command) {
 		int i = Integer.parseInt(command.getTask());
 		
-		delete(i);
+		for(Tasks curTask : taskList){
+			if(curTask.getIndex()==i){
+				taskList.remove(curTask);
+				consoleList.add("Deleted task with index:"+i);
+			}
+		}
 	}
 
 	private void updateStatus(Command command) {
@@ -210,13 +216,12 @@ public class Logic {
 		int i = searchFor(command.getTask());
 		
 		if (i != taskList.size()) {
-			deletedStack.push(taskList.get(i));
+			ArrayList<Date> removed = taskList.get(i).getDate();
 			taskList.get(i).setDate(command.getDates());
 			
-			consoleList.add("Task "+taskList.get(i).getEvent()+
-					" has been updated from "+
-					deletedStack.peek().getDate()+
-					" to "+command.getDates());
+			consoleList.add("Task "+taskList.get(i).getEvent() +
+					" has been updated from " +
+					removed + " to "+command.getDates());
 		} else{
 			consoleList.add("Task "+command.getTask()+
 					" hasn't been found");
@@ -242,7 +247,6 @@ public class Logic {
 	private void delete(int i) {
 		if(i != taskList.size()){
 			Tasks removed = taskList.get(i);
-			deletedStack.push(removed);
 			
 			oldTaskList = taskList;
 			
@@ -254,11 +258,40 @@ public class Logic {
 	}
 
 	private void addTask(Command command) {
-		Tasks task = new Tasks(command.getTask(), command.getDates());
+		int n = command.getKey();
 		
-		oldTaskList = taskList;
-		
-		taskList.add(task);
+		if(n>0){
+			for(int i=0; i<command.getDates().size();i+=n){
+				ArrayList<Date> limit = new ArrayList<>();
+				
+				if (n==2) {
+					limit.add(command.getDates().get(i));
+					limit.add(command.getDates().get(i+1));
+				}else{
+					limit.add(command.getDates().get(i));
+				}
+				
+				Tasks task = new Tasks(command.getTask(), limit);
+				task.setIndex(index++);
+				
+				oldTaskList = taskList;
+				
+				taskList.add(task);
+			}
+		}else{
+			Tasks task = new Tasks(command.getTask(), command.getDates());
+			task.setIndex(index++);
+			
+			oldTaskList = taskList;
+			
+			taskList.add(task);
+		}
+//		Tasks task = new Tasks(command.getTask(), command.getDates());
+//		task.setIndex(index++);
+//		
+//		oldTaskList = taskList;
+//		
+//		taskList.add(task);
 		consoleList.add("Added task "+command.getTask()+" on "+command.getDates());
 	}
 	
@@ -285,12 +318,20 @@ public class Logic {
 		if(store.isEmptyFile(directoryFile)) {
 			store.updateToFile(directoryFile,taskFile.getAbsolutePath());
 		}
+		
 		taskFile = new File(store.readLastLineFromFile(directoryFile));	
 		taskListString = store.accessToFile(taskFile);
 		
-		taskList = new ArrayList<>(parser.parseArrlist(taskListString));
+		taskList = new ArrayList<>(parser.parseArrList(taskListString));
+		setIndex();
 	}
 	
+	private void setIndex() {
+		for(index = 1; index <= taskList.size();index++){
+			taskList.get(index-1).setIndex(index);
+		}
+	}
+
 	private File movedFile(File oldFile, String directory) {
 		Path movefrom = FileSystems.getDefault().getPath(oldFile.getAbsolutePath());
         Path target = FileSystems.getDefault().getPath(directory);
@@ -309,12 +350,87 @@ public class Logic {
 	}
 	
 	public ArrayList<Tasks> getToDoTask(){
-		Date today;
+		Date today = new Date();
+	
 		ArrayList<Tasks> toDoList = new ArrayList<>();
 		
+		for(Tasks curTask : taskList){
+			if(!curTask.getStatus()){
+				if(!curTask.getDate().isEmpty()){
+					if(curTask.getDate().get(curTask.getDate().size()-1).after(today)){
+						toDoList.add(curTask);
+					}
+				}
+			}
+		}
+		return toDoList;
+		
+	}
+	
+	public ArrayList<Tasks> getDiscard() {
+		Date today = new Date();
+		
+		ArrayList<Tasks> discardList = new ArrayList<>();
 		
 		for(Tasks curTask : taskList){
-			if(curTask.getDate().)
+			if(curTask.getStatus()){
+				discardList.add(curTask);
+			}else {
+				if(curTask.getDate().isEmpty()){
+					discardList.add(curTask);
+				}else {
+					if(curTask.getDate().get(curTask.getDate().size()-1).before(today)){
+						discardList.add(curTask);
+					}
+				}
+				
+			}
 		}
+		return discardList;
 	}
 }
+
+//private void undoTask(Command command) {
+//
+//switch (command.getCommandType()) {
+//case ADD:
+//	consoleList.add("Undo ADD command");
+//	
+//	deleteTask(command);
+//	break;
+//	
+//case DELETE:
+//	consoleList.add("Undo DELETE command");
+//	
+//	command.setDates(deletedStack.peek().getDate());
+//	command.setTask(deletedStack.pop().getEvent());
+//	addTask(command);
+//	break;
+//	
+//case DELETEI:
+//	consoleList.add("Undo DELETE command");
+//	
+//	command.setDates(deletedStack.peek().getDate());
+//	command.setTask(deletedStack.pop().getEvent());
+//	addTask(command);
+//	break;
+//	
+//case UPDATE:
+//	consoleList.add("Undo UPDATE command");
+//	
+//	int i = searchFor(command.getTask());
+//	taskList.get(i).setDate(deletedStack.pop().getDate());
+//	break;
+//
+//case UPDATES:
+//	consoleList.add("Undo DELETE STATUS command");
+//	
+//	updateStatus(command);
+//	break;
+//
+//default:
+//	consoleList.add("Cannot undo this command");
+//	break;
+//}
+//}
+

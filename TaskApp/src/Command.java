@@ -3,7 +3,7 @@ import java.util.Date;
 import java.util.ArrayList;
 
 public class Command {
-		public enum TYPE {ADD, DELETE, READ, UNDO, UPDATE, EXIT, INVALID, SEARCH, UPDATES, DELETEI, FILE
+		public enum TYPE {ADD, DELETE, READ, UNDO, UPDATE, EXIT, INVALID, SEARCH, UPDATES, DELETEI, FILE, UPDATEI, STATUSI
 	};
 	
 	private TYPE commandType;

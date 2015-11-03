@@ -8,11 +8,16 @@ public class Tasks {
 	private String event;
 	private ArrayList<Date> date;
 	private boolean status;
+	private int index;
 	
 	public Tasks(String task, ArrayList<Date> dates) {
 		event = task;
 		date = dates;
 		status = false;
+	}
+	
+	public void setIndex(int newIndex){
+		index = newIndex;
 	}
 
 	public void setEvent(String newEvent){
@@ -25,6 +30,10 @@ public class Tasks {
 	
 	public void setStatus(boolean newStatus){
 		status = newStatus;
+	}
+	
+	public int getIndex() {
+		return index;
 	}
 	
 	public ArrayList<Date> getDate(){
