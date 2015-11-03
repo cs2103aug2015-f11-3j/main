@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.sun.jmx.snmp.tasks.Task;
+
+import src.Command.TYPE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,21 +17,58 @@ public class CommandParser {
 	
 	private static final String USER_COMMAND_ADD = "add";
     private static final String USER_COMMAND_DELETE = "delete";
+    private static final String USER_COMMAND_DELETE_INDEX = "deletei";
     private static final String USER_COMMAND_READ = "read";
     private static final String USER_COMMAND_UPDATE = "update";
+    private static final String USER_COMMAND_UPDATE_STATUS = "updates";
     private static final String USER_COMMAND_SEARCH = "search";
     private static final String USER_COMMAND_UNDO = "undo";
     private static final String USER_COMMAND_EXIT = "exit";
     private static final String USER_COMMAND_MOVE_FILE ="file";
+    
+    private static final String PARSE_PATTERN = "EEE MMM dd HH:mm:ss Z yyyy";
 	
-	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON"};
+	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON", "UNTIL"};
 	private static final String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-	private static final String[] DAY_OF_THE_WEEK = {"MON", "TUE","WED","THU","FRI","SAT","SUN",
-												"MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY","SUNDAY"};
+	private static final String[] DAY_OF_THE_WEEK = {"MON", "TUE","WED","THU","FRI","SAT","SUN"};
 	
 	public CommandParser() {
 	}
 	
+	public ArrayList<Tasks> parseArrayListString(ArrayList<String> arrList) {
+		ArrayList<Tasks> tasks = new ArrayList<Tasks>();
+			for(int i=0; i<arrList.size(); i++) {
+				String event = createEvent(arrList.get(i));
+				ArrayList<Date> dates = toDateList(arrList.get(i));
+				tasks.add(new Tasks(event, dates));
+			}
+		return tasks;
+	}
+	
+	private String createEvent(String string) {
+		String[] tokens = string.split("[");
+		return tokens[0].trim();
+	}
+
+	private ArrayList<Date> toDateList(String string) {
+		String[] tokens = string.split("[");
+		tokens[1].replace(']',' ');
+		String[] rawDate = tokens[1].split(",");
+		ArrayList<Date> dates = new ArrayList<Date>();
+		SimpleDateFormat sdf = new SimpleDateFormat(PARSE_PATTERN);
+		
+		for(int i=0; i<tokens.length; i++) {
+			try {
+				Date date = sdf.parse(rawDate[i].trim());
+				dates.add(date);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+		}
+		return dates;
+	}
+
 	public Command parse(String input) {
 		Command command;
 		String commandTypeString = getFirstWord(input);
@@ -40,11 +82,19 @@ public class CommandParser {
         	case USER_COMMAND_DELETE :
         		command = initDeleteComamnd(remainStr);
         		break;
-
+        	
+        	case USER_COMMAND_DELETE_INDEX :
+        		command = initDeleteIndex(remainStr);
+        		break;
+        		
         	case USER_COMMAND_UPDATE :
         		command = initUpdateCommand(remainStr);
         		break;
-               
+        	
+        	case USER_COMMAND_UPDATE_STATUS :
+        		command = initUpdateStatusCommand(remainStr);
+        		break;
+        		
         	case USER_COMMAND_READ :
         		command = initReadCommand();
         		break;
@@ -66,13 +116,29 @@ public class CommandParser {
         		command = initFileLocation(remainStr);
         		System.out.println(command.getCommandType());
         		break;
-        
+        	
         	default :
         		command = initInvalidCommand();
 		}
 		return command;
 	}
 	
+	private Command initDeleteIndex(String remainStr) {
+		Command cmd = new Command(Command.TYPE.DELETEI);
+		if(isNumeric(remainStr)) {
+			cmd.setIndex(Integer.valueOf(remainStr));
+		}
+		else {
+			cmd.setCommandType(Command.TYPE.INVALID);
+		}
+		return cmd;
+	}
+
+	private Command initUpdateStatusCommand(String remainStr) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private Command initFileLocation(String directory) {
 		Command cmd = new Command(Command.TYPE.FILE);
 		File file = new File(directory);
@@ -216,7 +282,7 @@ public class CommandParser {
 	
 	
 	private boolean isTimeFormat(String str) { 
-		if (str.contains("/") || str.contains(":")||str.matches(".*\\d+.*")||isDay(str)||isMonth(str)) { 
+		if (str.contains("/") || isNumeric(str) ||isDay(str)||isMonth(str)) { 
 			return true;
 		}
 		else 
@@ -256,7 +322,16 @@ public class CommandParser {
 		if(isPrepositionKeyword(arr[i])==true && i <arr.length-1 && !isTimeFormat(arr[i+1])) {
 			return true;
 		}
+		if(isTimeFormat(arr[i]) && i>=1 && !isTimeFormat(arr[i-1]) && !isPrepositionKeyword(arr[i-1])) {
+			return true;
+		}
+			
 		return false;
+	}
+	
+	private boolean isNumeric(String str) {
+		String regex = "^[0-9]";
+		return str.matches(regex);
 	}
 }
 	

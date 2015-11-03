@@ -2,23 +2,23 @@ package src;
 import java.util.Date;
 import java.util.ArrayList;
 
-//package src;
-//import java.lang.String;
-
 public class Command {
 	
-
-	public enum TYPE {ADD, DELETE, READ, UNDO, UPDATE, EXIT, INVALID, SEARCH, UPDATES, DELETEI
-
+	public enum TYPE {
+		ADD, DELETE, READ, UNDO, UPDATE, UPDATES, EXIT, INVALID, SEARCH, FILE, DELETEI
 	};
 	private TYPE commandType;
 	private String task;
 	private ArrayList<Date> dates;
+	private int indexOfUpdateDeleteItem;
+	private int reoccuringKey;
 	
 	public Command(TYPE commandType) {
 		this.commandType = commandType;
 		task = new String();
 		dates = new ArrayList<Date>();
+		indexOfUpdateDeleteItem = -1;
+		reoccuringKey = 0;
 	}
 	
 	public void setCommandType(TYPE type) {
@@ -43,8 +43,19 @@ public class Command {
 	}
 
 	public void setDates(ArrayList<Date> datesArr) {
-		// TODO Auto-generated method stub
 		dates = datesArr;
 	}
-
+	
+	public void setIndex(int i) {
+		indexOfUpdateDeleteItem = i;
+	}
+	public int getIndex() {
+		return indexOfUpdateDeleteItem;
+	}
+	public void setKey(int i) {
+		reoccuringKey = i;
+	}
+	public int getKey() {
+		return reoccuringKey;
+	}
 }
