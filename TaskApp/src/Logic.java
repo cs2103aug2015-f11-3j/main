@@ -359,6 +359,8 @@ public class Logic {
 					if(curTask.getDate().get(curTask.getDate().size()-1).after(today)){
 						toDoList.add(curTask);
 					}
+				}else {
+					toDoList.add(curTask);
 				}
 			}
 		}
