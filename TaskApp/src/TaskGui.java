@@ -120,22 +120,23 @@ public class TaskGui extends Application{
 		return data;
 	}
 	
-	/*private ObservableList<Message> getInitialTableData3(ArrayList<Task> listTask) {
+	private ObservableList<Message> getInitialTableData3(ArrayList<Tasks> listTask) {
 		// TODO Auto-generated method stub
 		List<Message> list = new ArrayList<Message>();
-		listTask = new ArrayList<Task>();
-		Tasks task = new Tasks(null, null);
+		listTask = new ArrayList<Tasks>();
+		//Tasks task = new Tasks(null, null);
 		//list.add(new Message(1, "homework", "Sat"));
 		//list.add(new Message(1, "homework", "Sat"));
 		
 		for(int i=0; i<listTask.size(); i++){
-			list.add(new Message());
+			list.add(new Message(listTask.get(i).getIndex(), listTask.get(i).getEvent(),
+					listTask.get(i).getDate().get(listTask.get(i).getDate().size()-1).toString()));
 		}
 		//ObservableList<Message> data = FXCollections.observableArrayList(list);
 		data = FXCollections.observableArrayList(list);
 		
 		return data;
-	}*/
+	}
 	
 	private void addTableView() {
 		// TODO Auto-generated method stub
@@ -210,6 +211,7 @@ public class TaskGui extends Application{
 		//System.out.println("$$$$$$$$$$"+ logic.getConsole().get(0));
 		//listViewController.addItemToListView(logic.getConsole().get(0));
 		listViewController.addArrayList(logic.getConsole());
+		
 		commandBarController.clear();
 	}
 

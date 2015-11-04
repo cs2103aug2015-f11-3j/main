@@ -36,8 +36,9 @@ public class CommandParser {
 	
 	public ArrayList<Tasks> parseArrList(ArrayList<String> arrList) {
 		ArrayList<Tasks> tasks = new ArrayList<Tasks>();
-		ArrayList<Date> dates = new ArrayList<Date>();
+		
 			for(int i=0; i<arrList.size(); i++) {
+				ArrayList<Date> dates = new ArrayList<Date>();
 				String event = createEvent(arrList.get(i));
 				toDateList(dates ,arrList.get(i));
 				tasks.add(new Tasks(event, dates));
@@ -287,6 +288,7 @@ public class CommandParser {
 		}
 		if(dateList.size()!=tokens.size()) {
 			cmd.setCommandType(Command.TYPE.INVALID);
+			cmd.setKey(dateList.size());
 		}
 	}
 	
