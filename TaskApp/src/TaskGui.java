@@ -209,6 +209,7 @@ public class TaskGui extends Application{
 		logic.executeCommand(userInput);
 		//System.out.println("$$$$$$$$$$"+ logic.getConsole().get(0));
 		//listViewController.addItemToListView(logic.getConsole().get(0));
+		listViewController.addArrayList(logic.getConsole());
 		commandBarController.clear();
 	}
 

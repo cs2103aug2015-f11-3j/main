@@ -17,6 +17,7 @@ public class ListViewController extends BorderPane{
 	
 	@FXML
 	private ListView<String> listView = new ListView<String>(FXCollections.<String>observableArrayList());
+	//private ListView<String> listView;
 	
 	public ListViewController(){
 	//public ListViewController(String userInput){
@@ -36,6 +37,7 @@ public class ListViewController extends BorderPane{
 		 listView.getItems().add(items);
 	 }
 	 public void addArrayList(ArrayList<String> list){
+		 listView.getItems().clear();
 		 for(int i=0; i<list.size(); i++){
 			 listView.getItems().add(list.get(i));
 		 }
