@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.*;
 
+import com.sun.jmx.snmp.tasks.Task;
+
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -41,7 +43,8 @@ public class TaskGui extends Application{
 	private UpdateTableController updateTableController;
 	private TodoTableController todoTableController;
 	private OverdueTableController overdueTableController;
-	private TaskLogic taskLogic;
+	//private TaskLogic taskLogic;
+	private Logic logic;
 	
 	//private ArrayList<Message> list = new ArrayList<Message>();
 
@@ -116,7 +119,24 @@ public class TaskGui extends Application{
 		
 		return data;
 	}
-
+	
+	/*private ObservableList<Message> getInitialTableData3(ArrayList<Task> listTask) {
+		// TODO Auto-generated method stub
+		List<Message> list = new ArrayList<Message>();
+		listTask = new ArrayList<Task>();
+		Tasks task = new Tasks(null, null);
+		//list.add(new Message(1, "homework", "Sat"));
+		//list.add(new Message(1, "homework", "Sat"));
+		
+		for(int i=0; i<listTask.size(); i++){
+			list.add(new Message());
+		}
+		//ObservableList<Message> data = FXCollections.observableArrayList(list);
+		data = FXCollections.observableArrayList(list);
+		
+		return data;
+	}*/
+	
 	private void addTableView() {
 		// TODO Auto-generated method stub
 		
@@ -129,7 +149,8 @@ public class TaskGui extends Application{
 
 	private void initialLogic() {
 		// TODO Auto-generated method stub
-		taskLogic = new TaskLogic();
+		//taskLogic = new TaskLogic();
+		logic = new Logic();
 	}
 
 	private void addListView() {
@@ -184,7 +205,10 @@ public class TaskGui extends Application{
 	private void handleEnterPress(CommandBarController commandBarController, String userInput) {
 		// TODO Auto-generated method stub
 		//addListView(userInput);
-		listViewController.addItemToListView(taskLogic.executeCommand(userInput));
+		//listViewController.addItemToListView(taskLogic.executeCommand(userInput));
+		logic.executeCommand(userInput);
+		//System.out.println("$$$$$$$$$$"+ logic.getConsole().get(0));
+		//listViewController.addItemToListView(logic.getConsole().get(0));
 		commandBarController.clear();
 	}
 

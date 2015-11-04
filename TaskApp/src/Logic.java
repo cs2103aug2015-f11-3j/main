@@ -54,11 +54,9 @@ public class Logic {
 	
 	public void executeCommand(String userCommand){
 		log.entering(getClass().getName(), "executeCommand with "+userCommand);
-		
 		prepareSystem();
 		
 		Command command;
-		
 		command =  parser.parse(userCommand);
 		
 		switch (command.getCommandType()) {
@@ -346,6 +344,7 @@ public class Logic {
 	}
 	
 	public ArrayList<String> getConsole(){
+		
 		return consoleList;
 	}
 	

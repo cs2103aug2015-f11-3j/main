@@ -35,6 +35,11 @@ public class ListViewController extends BorderPane{
 	 public void addItemToListView(String items) {
 		 listView.getItems().add(items);
 	 }
+	 public void addArrayList(ArrayList<String> list){
+		 for(int i=0; i<list.size(); i++){
+			 listView.getItems().add(list.get(i));
+		 }
+	 }
 	/*private void initialListView(String userInput) {
 		// TODO Auto-generated method stub
 		

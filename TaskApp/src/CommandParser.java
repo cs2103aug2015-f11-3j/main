@@ -36,36 +36,39 @@ public class CommandParser {
 	
 	public ArrayList<Tasks> parseArrList(ArrayList<String> arrList) {
 		ArrayList<Tasks> tasks = new ArrayList<Tasks>();
+		ArrayList<Date> dates = new ArrayList<Date>();
 			for(int i=0; i<arrList.size(); i++) {
 				String event = createEvent(arrList.get(i));
-				ArrayList<Date> dates = toDateList(arrList.get(i));
+				toDateList(dates ,arrList.get(i));
 				tasks.add(new Tasks(event, dates));
 			}
 		return tasks;
 	}
 	
 	private String createEvent(String string) {
-		String[] tokens = string.split("[");
+		System.out.println(string+"    1111");
+		String[] tokens = string.split("\\[");
+		System.out.println("abcd");
+		System.out.println(tokens[0].trim()+ "    22222");
 		return tokens[0].trim();
 	}
 
-	private ArrayList<Date> toDateList(String string) {
-		String[] tokens = string.split("[");
-		tokens[1].replace(']',' ');
-		String[] rawDate = tokens[1].split(",");
-		ArrayList<Date> dates = new ArrayList<Date>();
+	private void toDateList(ArrayList<Date> dates, String string) {
+		String[] tokens = string.split("\\[");
+		String str =tokens[1].substring(0, tokens[1].length()-1);
+		System.out.println(str+"x   5555");
+		String[] rawDate = str.split(",");
 		SimpleDateFormat sdf = new SimpleDateFormat(PARSE_PATTERN);
 		
-		for(int i=0; i<tokens.length; i++) {
+		for(int i=0; i<rawDate.length; i++) {
 			try {
 				Date date = sdf.parse(rawDate[i].trim());
 				dates.add(date);
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			// TODO Auto-generated catch block
+				System.err.println("fuck");
 			}	
 		}
-		return dates;
 	}
 
 	public Command parse(String input) {
@@ -404,7 +407,7 @@ public class CommandParser {
 		if(isPrepositionKeyword(arr[i])==true && i <arr.length-1 && !isTimeFormat(arr[i+1])) {
 			return true;
 		}
-		if(isTimeFormat(arr[i]) && i>=1 && !isTimeFormat(arr[i-1]) && !isPrepositionKeyword(arr[i-1])) {
+		if(isNumeric(arr[i]) && i>=1 && !isPrepositionKeyword(arr[i-1])) {
 			return true;
 		}		
 		return false;
