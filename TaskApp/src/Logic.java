@@ -23,7 +23,6 @@ public class Logic {
 	public ArrayList<String> taskListString;
 	private ArrayList<String> consoleList;
 	
-	
 	private File directoryFile;
 	private File taskFile;
 	
@@ -160,7 +159,7 @@ public class Logic {
 
 	private void undoTask() {
 		if (!oldTaskList.isEmpty()) {
-			taskList = oldTaskList;
+			taskList = new ArrayList<>(oldTaskList);
 			oldTaskList.clear();
 			
 			consoleList.add("UNDO command performed");	
@@ -172,6 +171,8 @@ public class Logic {
 
 	private void searchForDate(Command command) {
 		searchList.clear();
+		
+		consoleList.add("Search for date: " + command.getDates());
 		for (Tasks curTask : taskList){
 			if(curTask.getDate().equals(command.getDates())){
 				searchList.add(curTask);
@@ -228,6 +229,8 @@ public class Logic {
 
 	private void searchThroughTasks(Command command) {
 		searchList.clear();
+		
+		consoleList.add("Searched for: " + command.getTask());
 		for(Tasks curTask : taskList){
 			
 			if(curTask.getEvent().contains(command.getTask())){
@@ -257,6 +260,7 @@ public class Logic {
 
 	private void addTask(Command command) {
 		int n = command.getKey();
+		System.out.println(n);
 		
 		if(n>0){
 			for(int i=0; i<command.getDates().size();i+=n){
@@ -282,14 +286,10 @@ public class Logic {
 			
 			oldTaskList = taskList;
 			
+			
 			taskList.add(task);
 		}
-//		Tasks task = new Tasks(command.getTask(), command.getDates());
-//		task.setIndex(index++);
-//		
-//		oldTaskList = taskList;
-//		
-//		taskList.add(task);
+		
 		consoleList.add("Added task "+command.getTask()+" on "+command.getDates());
 	}
 	
@@ -387,49 +387,8 @@ public class Logic {
 		}
 		return discardList;
 	}
+	
+	public ArrayList<Tasks> getSearch() {
+		return searchList;
+	}
 }
-
-//private void undoTask(Command command) {
-//
-//switch (command.getCommandType()) {
-//case ADD:
-//	consoleList.add("Undo ADD command");
-//	
-//	deleteTask(command);
-//	break;
-//	
-//case DELETE:
-//	consoleList.add("Undo DELETE command");
-//	
-//	command.setDates(deletedStack.peek().getDate());
-//	command.setTask(deletedStack.pop().getEvent());
-//	addTask(command);
-//	break;
-//	
-//case DELETEI:
-//	consoleList.add("Undo DELETE command");
-//	
-//	command.setDates(deletedStack.peek().getDate());
-//	command.setTask(deletedStack.pop().getEvent());
-//	addTask(command);
-//	break;
-//	
-//case UPDATE:
-//	consoleList.add("Undo UPDATE command");
-//	
-//	int i = searchFor(command.getTask());
-//	taskList.get(i).setDate(deletedStack.pop().getDate());
-//	break;
-//
-//case UPDATES:
-//	consoleList.add("Undo DELETE STATUS command");
-//	
-//	updateStatus(command);
-//	break;
-//
-//default:
-//	consoleList.add("Cannot undo this command");
-//	break;
-//}
-//}
-
