@@ -159,6 +159,8 @@ public class Logic {
 
 	private void undoTask() {
 		if (!oldTaskList.isEmpty()) {
+			System.out.println("DIFF: "+ taskList.size()+" and "+oldTaskList.size() );
+			
 			taskList = new ArrayList<>(oldTaskList);
 			oldTaskList.clear();
 			
@@ -249,7 +251,7 @@ public class Logic {
 		if(i != taskList.size()){
 			Tasks removed = taskList.get(i);
 			
-			oldTaskList = taskList;
+			oldTaskList = new ArrayList<>(taskList);
 			
 			taskList.remove(i);
 			consoleList.add("Task *"+removed.toString()+" has been deleted!");
@@ -276,7 +278,7 @@ public class Logic {
 				Tasks task = new Tasks(command.getTask(), limit);
 				task.setIndex(index++);
 				
-				oldTaskList = taskList;
+				oldTaskList = new ArrayList<>(taskList);
 				
 				taskList.add(task);
 			}
@@ -284,8 +286,7 @@ public class Logic {
 			Tasks task = new Tasks(command.getTask(), command.getDates());
 			task.setIndex(index++);
 			
-			oldTaskList = taskList;
-			
+			oldTaskList = new ArrayList<>(taskList);
 			
 			taskList.add(task);
 		}
@@ -348,7 +349,6 @@ public class Logic {
 	}
 	
 	public ArrayList<String> getConsole(){
-		
 		return consoleList;
 	}
 	
@@ -368,8 +368,7 @@ public class Logic {
 				}
 			}
 		}
-		return toDoList;
-		
+		return toDoList;	
 	}
 	
 	public ArrayList<Tasks> getDiscard() {
