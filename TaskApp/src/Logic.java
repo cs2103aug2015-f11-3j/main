@@ -290,6 +290,10 @@ public class Logic {
 			taskList.add(task);
 		}
 		
+//		System.out.println("TODO:"+getToDoTask().get(getToDoTask().size()-1));
+//		
+//		System.out.println("DISCARD:"+getDiscard().get(getDiscard().size()-1));
+		
 		consoleList.add("Added task "+command.getTask()+" on "+command.getDates());
 	}
 	
@@ -376,17 +380,11 @@ public class Logic {
 		for(Tasks curTask : taskList){
 			if(curTask.getStatus()){
 				discardList.add(curTask);
-			}else {
-				if(curTask.getDate().isEmpty()){
-					discardList.add(curTask);
-				}else {
-					if(curTask.getDate().get(curTask.getDate().size()-1).before(today)){
-						discardList.add(curTask);
+			}else { if(curTask.getDate().get(curTask.getDate().size()-1).before(today)){
+						discardList.add(curTask);	
 					}
 				}
-				
 			}
-		}
 		return discardList;
 	}
 	
