@@ -16,16 +16,16 @@ import src.TaskLogic;
 public class Testing {
 
 	@Test
+	//Test add - valid input.
 	public void testAdd() throws IOException {
 		TaskLogic logic = new TaskLogic();
 		Storage store = new Storage();
-		File file = new File("textShownOnGUI");
+		File file = new File("testFile");
 		BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 		ArrayList<String> content = new ArrayList<String>();
-		//logic.executeCommand("add test1 30/10/2015");
-		bw.write(logic.executeCommand("add test 30/10/2015"));
-		//bw.newLine();
-		content.add("Added task test [Fri Oct 30 00:00:00 CST 2015]");
+		bw.write(logic.executeCommand("add CS3204 group meeting at 18/11/2015"));
+		bw.newLine();
+		content.add("task CS3204 group meeting [Wed Nov 18 00:00:00 CST 2015]");
 		//logic.executeCommand("add test2 30/10/2015");
 		//bw.write("test2 30/10/2015");
 		//bw.newLine();
