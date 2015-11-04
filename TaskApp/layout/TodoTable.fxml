@@ -5,14 +5,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.StackPane?>
 
-
-<fx:root type="StackPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<fx:root type="StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TableView fx:id="todoTable" prefHeight="200.0" prefWidth="223.0">
+      <TableView fx:id="todoTable" prefHeight="200.0" prefWidth="230.0">
         <columns>
-          <TableColumn fx:id="indexColumn" prefWidth="75.0" text="Task No" />
-          <TableColumn fx:id="eventColumn" prefWidth="75.0" text="Event" />
-            <TableColumn fx:id="dateColumn" prefWidth="75.0" text="Date" />
+          <TableColumn fx:id="indexColumn" prefWidth="35.0" text="No." />
+          <TableColumn fx:id="eventColumn" prefWidth="65.0" text="Event" />
+            <TableColumn fx:id="dateColumn" prefWidth="130.0" text="Date" />
         </columns>
       </TableView>
    </children>
