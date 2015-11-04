@@ -11,8 +11,17 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/**
+ * This class is the main logic class of the Software Engineering class CS2104 taken at NUS.
+ * My team name is F11-3J.
+ * @author ionutmoraru
+ * @version 0.4
+ *
+ */
 public class Logic {
 	
+	private static final String UNDO_COMMAND_PERFORMED = "UNDO command performed";
 	private static CommandParser parser;
 	private static Storage store;
 
@@ -34,6 +43,9 @@ public class Logic {
 	
 	private final static Logger log = Logger.getLogger(Logic.class.getName());
 	
+	/**
+	 * This method is the constructor of the Logic class.
+	 */
 	public Logic(){
 		
 		parser = new CommandParser();
@@ -51,6 +63,10 @@ public class Logic {
 		
 	}
 	
+	/**
+	 * Execute command method is used to modify the content of the application by the command of the user.
+	 * @param userCommand The String input of the user
+	 */
 	public void executeCommand(String userCommand){
 		log.entering(getClass().getName(), "executeCommand with "+userCommand);
 		prepareSystem();
@@ -122,6 +138,7 @@ public class Logic {
 		store.updateToFile(taskFile, taskListString);
 	}
 
+	//Updates the status after searching for it by the index
 	private void updateStatusFromIndex(Command command) {
 		int i = Integer.parseInt(command.getTask());
 		boolean updated = false;
@@ -140,6 +157,7 @@ public class Logic {
 		}
 	}
 
+	//Updates the date after searching for it by its index
 	private void updateIndex(Command command) {
 		int i = Integer.parseInt(command.getTask());
 		boolean updated = false;
@@ -157,6 +175,7 @@ public class Logic {
 		}
 	}
 
+	//Undo the latest change to the task manager
 	private void undoTask() {
 		if (!oldTaskList.isEmpty()) {
 			System.out.println("DIFF: "+ taskList.size()+" and "+oldTaskList.size() );
@@ -164,13 +183,14 @@ public class Logic {
 			taskList = new ArrayList<>(oldTaskList);
 			oldTaskList.clear();
 			
-			consoleList.add("UNDO command performed");	
+			consoleList.add(UNDO_COMMAND_PERFORMED);	
 		} else {
 			consoleList.add(ERROR_UNDO);
 		}
 		
 	}
 
+	//Searches for all the task in a specific dare and stores them in an ArrayList
 	private void searchForDate(Command command) {
 		searchList.clear();
 		
@@ -182,7 +202,7 @@ public class Logic {
 		}
 	}
 
-
+	//Delete a task by using it's index
 	private void deleteIndex(Command command) {
 		int i = Integer.parseInt(command.getTask());
 		
@@ -194,6 +214,7 @@ public class Logic {
 		}
 	}
 
+	//Updates a tasks status by searching it after it's event
 	private void updateStatus(Command command) {
 		int i = searchFor(command.getTask());
 		
@@ -213,6 +234,7 @@ public class Logic {
 		}
 	}
 
+	//Updates task date after it's event
 	private void updateTask(Command command) {
 		int i = searchFor(command.getTask());
 		
@@ -228,7 +250,8 @@ public class Logic {
 					" hasn't been found");
 		}
 	}
-
+	
+	//Searches through the task for a certain substring and adds them to an ArrayList
 	private void searchThroughTasks(Command command) {
 		searchList.clear();
 		
@@ -241,12 +264,14 @@ public class Logic {
 		}
 	}
 
+	//Delete a certain task after it's event.
 	private void deleteTask(Command command) {
 		int i = searchFor(command.getTask());
 		
 		delete(i);
 	}
 
+	//Delete a task from the ArrayList 
 	private void delete(int i) {
 		if(i != taskList.size()){
 			Tasks removed = taskList.get(i);
@@ -260,6 +285,7 @@ public class Logic {
 		}
 	}
 
+	//Add a task to the task ArrayList
 	private void addTask(Command command) {
 		int n = command.getKey();
 		System.out.println(n);
@@ -291,13 +317,10 @@ public class Logic {
 			taskList.add(task);
 		}
 		
-//		System.out.println("TODO:"+getToDoTask().get(getToDoTask().size()-1));
-//		
-//		System.out.println("DISCARD:"+getDiscard().get(getDiscard().size()-1));
-		
 		consoleList.add("Added task "+command.getTask()+" on "+command.getDates());
 	}
 	
+	//Searches for the first appearance of a substring in the taskList and return its index.
 	private int searchFor(String string){
 		int i = 0;
 		for(Tasks curTask : taskList){
@@ -309,6 +332,7 @@ public class Logic {
 		return i;
 	}
 	
+	//Transforms the Tasks into Strings
 	private void taskListToString(){
 		taskListString.clear();
 		
@@ -329,6 +353,7 @@ public class Logic {
 		setIndex();
 	}
 	
+	//Sets the index at the begining of the application
 	private void setIndex() {
 		for(index = 1; index <= taskList.size();index++){
 			taskList.get(index-1).setIndex(index);
@@ -348,10 +373,18 @@ public class Logic {
         return null;
 	}
 	
+	/**
+	 * This method returns the content of the console.
+	 * @return ArrayList of the console results.
+	 */
 	public ArrayList<String> getConsole(){
 		return consoleList;
 	}
 	
+	/**
+	 * This method returns the tasks that are still in progres and at a later dare
+	 * @return ArrayList containing the tasks that are not completed and still on time.
+	 */
 	public ArrayList<Tasks> getToDoTask(){
 		Date today = new Date();
 	
@@ -362,15 +395,24 @@ public class Logic {
 				if(!curTask.getDate().isEmpty()){
 					if(curTask.getDate().get(curTask.getDate().size()-1).after(today)){
 						toDoList.add(curTask);
+					}else{
+						if((curTask.getDate().get(curTask.getDate().size()-1).equals(today))){
+								toDoList.add(curTask);
+						}
 					}
 				}else {
 					toDoList.add(curTask);
 				}
 			}
 		}
+		
 		return toDoList;	
 	}
 	
+	/**
+	 * This method returns the tasks that are completed or overdue
+	 * @return ArrayList that contains the tasks that are either completed or overdue
+	 */
 	public ArrayList<Tasks> getDiscard() {
 		Date today = new Date();
 		
@@ -387,6 +429,10 @@ public class Logic {
 		return discardList;
 	}
 	
+	/**
+	 * This method returns the ArrayList of the items found in the file that correspond to the search
+	 * @return Array List that contains the search results tasks
+	 */
 	public ArrayList<Tasks> getSearch() {
 		return searchList;
 	}
