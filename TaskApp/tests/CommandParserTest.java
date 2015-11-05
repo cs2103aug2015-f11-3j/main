@@ -16,22 +16,18 @@ public class CommandParserTest {
 	CommandParser cm = new CommandParser();
 	//test on event with only one time
 	@Test
-	public void testParse1() {
+	public void testAddIlligalDate() {
 		String str = "add go to school by 0700 oct 32 2015";
-		Date date = new GregorianCalendar(2015, Calendar.OCTOBER, 32, 7,0).getTime();
+//		Date date = new GregorianCalendar(2015, Calendar.OCTOBER, 32, 7,0).getTime();
 		assertEquals(Command.TYPE.INVALID, cm.parse(str).getCommandType());
 //		assertEquals("go to school", cm.parse(str).getTask());
 //		assertEquals(1, cm.parse(str).getDates().size());
 //		assertEquals(date, cm.parse(str).getDates().get(0));
 	}
-	// test on not fully entered input
 	@Test
-	public void testParse2() {
-		String str = "add go to school on";
-		assertEquals(Command.TYPE.ADD, cm.parse(str).getCommandType());
-		assertEquals("go to school", cm.parse(str).getTask());
-		assertEquals(0, cm.parse(str).getDates().size());
-		
+	public void testParseAddInvertedDates() {
+		String str = "add go to school from 15/10/2015 to 13/10/2015";
+		assertEquals(Command.TYPE.INVALID, cm.parse(str).getCommandType());
 	}
 	// test on empty input
 	@Test
@@ -80,9 +76,41 @@ public class CommandParserTest {
 		assertEquals(Command.TYPE.INVALID, cm.parse(str).getCommandType());
 	}
 	// test on update
-		@Test
-	public void testParse9() {
-		String str ="update go to school on oct 10 2015";
+	@Test
+	public void testParseUpdate_Normal1() {
+		String str ="update 3 on oct 10 2015";
+		Date date1 = new GregorianCalendar(2015, Calendar.OCTOBER, 10).getTime();
 		assertEquals(Command.TYPE.UPDATE, cm.parse(str).getCommandType());
+		assertEquals("3", cm.parse(str).getTask());
+		assertEquals(cm.parse(str).getDates().size(), 1);
+		assertEquals(cm.parse(str).getDates().get(0),date1);	
 	}
+	@Test
+	public void testParseUpdate_Normal2() {
+		String str ="update 3 from oct 10 2015 to oct 20 2015";
+		Date date0 = new GregorianCalendar(2015, Calendar.OCTOBER, 10).getTime();
+		Date date1 = new GregorianCalendar(2015, Calendar.OCTOBER, 20).getTime();
+		assertEquals(Command.TYPE.UPDATE, cm.parse(str).getCommandType());
+		assertEquals("3", cm.parse(str).getTask());
+		assertEquals(cm.parse(str).getDates().size(), 2);
+		assertEquals(cm.parse(str).getDates().get(0),date0);
+		assertEquals(cm.parse(str).getDates().get(1),date1);
+	}
+	@Test	
+	public void testParseUpdate_IlligalIndex1() {
+		String str ="update hqgwhqgw on oct 10 2015";
+		assertEquals(Command.TYPE.INVALID, cm.parse(str).getCommandType());	
+	}
+	@Test
+	public void testParseUpdate_IlligalIndex2() {
+		String str ="update 31873817 yuqwyuq on oct 10 2015";
+		assertEquals(Command.TYPE.INVALID, cm.parse(str).getCommandType());	
+	}
+	@Test
+	public void testParseFile_IlligalLocation() {
+		String str ="file /Users/C/1.txt";
+		assertEquals(Command.TYPE.INVALID, cm.parse(str).getCommandType());	
+	}
+	
+	
 }
