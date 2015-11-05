@@ -38,8 +38,6 @@ public class Logic {
 	
 	private static final String ERROR_UNDO = "Cannot UNDO";
 	private String ERROR_KEYWORD = "Keyword not recognized!";
-	private String ERROR_INDEX = "Index not found";
-	
 	private int index = 0;
 	
 	private final static Logger log = Logger.getLogger(Logic.class.getName());
@@ -62,6 +60,7 @@ public class Logic {
 		consoleList = new ArrayList<>();
 		searchList = new ArrayList<>();
 		
+		prepareSystem();
 	}
 	
 	/**
@@ -70,7 +69,6 @@ public class Logic {
 	 */
 	public void executeCommand(String userCommand){
 		log.entering(getClass().getName(), "executeCommand with "+userCommand);
-		prepareSystem();
 		
 		Command command;
 		command =  parser.parse(userCommand);
@@ -92,21 +90,12 @@ public class Logic {
 			break;
 			
 		case UPDATE:
-			updateTask(command);
-			taskListToString();
-			break;
-		
-		case UPDATES:
-			updateStatus(command);
-			break;
-			
-		case UPDATEI:
 			updateIndex(command);
 			taskListToString();
 			break;
-			
-		case STATUSI:
-			updateStatusFromIndex(command);
+
+		case STATUS:
+			updateStatus(command);
 			taskListToString();
 			break;
 			
@@ -130,6 +119,10 @@ public class Logic {
 			consoleList.add("file is moved from "+ originalLocation +" to "+command.getTask());
 			break;		
 
+		case EXIT:
+			System.exit(1);
+			break;
+			
 		default:
 			log.log(Level.INFO, "Entered command: "+command.getTask());
 			consoleList.add(ERROR_KEYWORD);
@@ -137,43 +130,6 @@ public class Logic {
 		}
 		
 		store.updateToFile(taskFile, taskListString);
-	}
-
-	//Updates the status after searching for it by the index
-	private void updateStatusFromIndex(Command command) {
-		int i = Integer.parseInt(command.getTask());
-		boolean updated = false;
-
-		for(int j=0;i<taskList.size();j++){
-			if(taskList.get(j).getIndex()==i){
-				taskList.get(j).setStatus(!taskList.get(j).getStatus());
-				consoleList.add("Task with index:"+i+" has had it's status updated");
-				
-				updated = true;
-			}
-		}
-		
-		if (!updated) {
-			consoleList.add(ERROR_INDEX);
-		}
-	}
-
-	//Updates the date after searching for it by its index
-	private void updateIndex(Command command) {
-		int i = Integer.parseInt(command.getTask());
-		boolean updated = false;
-		
-		for(int j=0;i<taskList.size();j++){
-			if(taskList.get(j).getIndex()==i){
-				taskList.get(j).setDate(command.getDates());
-				consoleList.add("Task with index:"+i+" has had it's date updated");
-				
-				updated = true;
-			}
-		}
-		if (!updated) {
-			consoleList.add(ERROR_INDEX);
-		}
 	}
 
 	//Undo the latest change to the task manager
@@ -191,12 +147,19 @@ public class Logic {
 	}
 
 	//Searches for all the task in a specific dare and stores them in an ArrayList
+	@SuppressWarnings("deprecation")
 	private void searchForDate(Command command) {
 		searchList.clear();
 		
 		consoleList.add("Search for date: " + command.getDates());
 		for (Tasks curTask : taskList){
-			if(curTask.getDate().equals(command.getDates())){
+			if(curTask.getDate().get(curTask.getDate().size()-1).getDate()
+					==(command.getDates().get(command.getDates().size()-1).getDate())&&
+					curTask.getDate().get(curTask.getDate().size()-1).getMonth()
+					==(command.getDates().get(command.getDates().size()-1).getMonth())&&
+					curTask.getDate().get(curTask.getDate().size()-1).getYear()
+					==(command.getDates().get(command.getDates().size()-1).getYear())){
+				
 				searchList.add(curTask);
 			}
 		}
@@ -210,52 +173,58 @@ public class Logic {
 			for(int j = 0; j<taskList.size();j++){
 				if(taskList.get(j).getIndex()==i){
 					oldTaskList = new ArrayList<>(taskList);
-					
+					System.out.println(oldTaskList);
+
 					taskList.remove(j);
-					consoleList.add("Deleted task with index:"+i);
-					
-					break;
+					System.out.println(oldTaskList);
+
+					consoleList.add("Deleted task with index:"+i);					
 				}
 			}
 		}else{
 			consoleList.add(INDEX_OUT_OF_BOUNDS);
 		}
 	}
-
-	//Updates a tasks status by searching it after it's event
-	private void updateStatus(Command command) {
-		int i = searchFor(command.getTask());
-		
-		if (i != taskList.size()) {
-			taskList.get(i).setStatus(!taskList.get(i).getStatus());
-			
-			if (taskList.get(i).getStatus()) {
-				consoleList.add("Task "+taskList.get(i).toString()+
-						" completed!");
-			}else{
-				consoleList.add("Task "+taskList.get(i).toString()+
-						" set to incomplete");
+	
+	//Updates the date after searching for it by its index
+	private void updateIndex(Command command) {
+		int i = Integer.parseInt(command.getTask());
+					
+		if (i<=index&&i>0) {
+			for(int j = 0; j<taskList.size(); j++){
+				if(taskList.get(j).getIndex()==i){
+					oldTaskList = new ArrayList<>(taskList);
+//					System.out.println(oldTaskList);
+						
+					taskList.get(j).setDate(command.getDates());
+					
+//					System.out.println(oldTaskList);
+//					System.out.println(taskList);
+					consoleList.add("Task with index:"+i+" has had it's date updated");
+				}
 			}
 		} else {
-			consoleList.add("Task "+command.getTask()+
-					" hasn't been found");
+			consoleList.add(INDEX_OUT_OF_BOUNDS);
 		}
 	}
-
-	//Updates task date after it's event
-	private void updateTask(Command command) {
-		int i = searchFor(command.getTask());
+	
+	//Updates the status after searching for it by the index
+	private void updateStatus(Command command) {
+		int i = Integer.parseInt(command.getTask());
 		
-		if (i != taskList.size()) {
-			ArrayList<Date> removed = taskList.get(i).getDate();
-			taskList.get(i).setDate(command.getDates());
+		if(i<=index&&i>0){
 			
-			consoleList.add("Task "+taskList.get(i).getEvent() +
-					" has been updated from " +
-					removed + " to "+command.getDates());
-		} else{
-			consoleList.add("Task "+command.getTask()+
-					" hasn't been found");
+			for(int j=0;j<taskList.size();j++){
+				if(taskList.get(j).getIndex()==i){
+					
+					boolean status = taskList.get(j).getStatus();
+					
+					taskList.get(j).setStatus(!status);
+					consoleList.add("Task with index:"+i+" has had it's status updated");
+				}
+			}
+		} else {
+			consoleList.add(INDEX_OUT_OF_BOUNDS);
 		}
 	}
 	
@@ -273,19 +242,11 @@ public class Logic {
 	}
 
 	//Delete a certain task after it's event.
-	private void deleteTask(Command command) {
-		int i = 0;
-		
+	private void deleteTask(Command command) {		
 		ArrayList<Tasks> removeList = new ArrayList<>();
 		
-		//System.out.println(taskList);
 		for(int j=0;j<taskList.size();j++){
 			if(taskList.get(j).getEvent().contains(command.getTask())){
-//				if(i==0){
-//					oldTaskList = new ArrayList<>(taskList);
-//				}
-//				taskList.remove(j);
-//				i++;
 				removeList.add(taskList.get(j));
 			}
 		}
@@ -299,13 +260,11 @@ public class Logic {
 			consoleList.add(removeList.size()+ " tasks have been deleted from your file");
 		}
 		
-		//delete(i);
 	}
 
 	//Add a task to the task ArrayList
 	private void addTask(Command command) {
 		int n = command.getKey();
-		System.out.println(n);
 		
 		if(n>0){
 			for(int i=0; i<command.getDates().size();i+=n){
@@ -337,24 +296,14 @@ public class Logic {
 		consoleList.add("Added task "+command.getTask()+" on "+command.getDates());
 	}
 	
-	//Searches for the first appearance of a substring in the taskList and return its index.
-	private int searchFor(String string){
-		int i = 0;
-		for(Tasks curTask : taskList){
-			if(curTask.getEvent().contains(string)){
-				break;
-			}
-			i++;
-		}
-		return i;
-	}
-	
 	//Transforms the Tasks into Strings
 	private void taskListToString(){
 		taskListString.clear();
 		
 		for(Tasks curTask : taskList){
-			taskListString.add(curTask.toString());
+			if(!curTask.getStatus()){
+				taskListString.add(curTask.toString());
+			}
 		}
 	}
 	
@@ -370,7 +319,7 @@ public class Logic {
 		setIndex();
 	}
 	
-	//Sets the index at the begining of the application
+	//Sets the index at the beginning of the application
 	private void setIndex() {
 		for(index = 1; index <= taskList.size();index++){
 			taskList.get(index-1).setIndex(index);
@@ -438,13 +387,16 @@ public class Logic {
 		for(Tasks curTask : taskList){
 			if(curTask.getStatus()){
 				discardList.add(curTask);
-			}else { if(curTask.getDate().get(curTask.getDate().size()-1).before(today)){
+			}else 
+			{
+				if(!curTask.getDate().isEmpty()){ 
+					if(curTask.getDate().get(curTask.getDate().size()-1).before(today)){
 						discardList.add(curTask);	
-					}
+					}	
 				}
 			}
+		}
 		
-		System.out.println("discard:"+discardList);
 		return discardList;
 	}
 	
