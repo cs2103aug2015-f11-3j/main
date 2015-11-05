@@ -15,12 +15,13 @@ import java.util.logging.Logger;
 /**
  * This class is the main logic class of the Software Engineering class CS2104 taken at NUS.
  * My team name is F11-3J.
- * @author ionutmoraru
+ * @author A0145617A
  * @version 0.4
  *
  */
 public class Logic {
 	
+	private static final String INDEX_OUT_OF_BOUNDS = "Index you searched for is out of bounds";
 	private static final String UNDO_COMMAND_PERFORMED = "UNDO command performed";
 	private static CommandParser parser;
 	private static Storage store;
@@ -178,7 +179,6 @@ public class Logic {
 	//Undo the latest change to the task manager
 	private void undoTask() {
 		if (!oldTaskList.isEmpty()) {
-			System.out.println("DIFF: "+ taskList.size()+" and "+oldTaskList.size() );
 			
 			taskList = new ArrayList<>(oldTaskList);
 			oldTaskList.clear();
@@ -206,11 +206,19 @@ public class Logic {
 	private void deleteIndex(Command command) {
 		int i = Integer.parseInt(command.getTask());
 		
-		for(Tasks curTask : taskList){
-			if(curTask.getIndex()==i){
-				taskList.remove(curTask);
-				consoleList.add("Deleted task with index:"+i);
+		if(i<=index&&i>0){
+			for(int j = 0; j<taskList.size();j++){
+				if(taskList.get(j).getIndex()==i){
+					oldTaskList = new ArrayList<>(taskList);
+					
+					taskList.remove(j);
+					consoleList.add("Deleted task with index:"+i);
+					
+					break;
+				}
 			}
+		}else{
+			consoleList.add(INDEX_OUT_OF_BOUNDS);
 		}
 	}
 
@@ -266,23 +274,32 @@ public class Logic {
 
 	//Delete a certain task after it's event.
 	private void deleteTask(Command command) {
-		int i = searchFor(command.getTask());
+		int i = 0;
 		
-		delete(i);
-	}
-
-	//Delete a task from the ArrayList 
-	private void delete(int i) {
-		if(i != taskList.size()){
-			Tasks removed = taskList.get(i);
-			
-			oldTaskList = new ArrayList<>(taskList);
-			
-			taskList.remove(i);
-			consoleList.add("Task *"+removed.toString()+" has been deleted!");
-		}else{
-			consoleList.add("Task hasn't been found!");
+		ArrayList<Tasks> removeList = new ArrayList<>();
+		
+		//System.out.println(taskList);
+		for(int j=0;j<taskList.size();j++){
+			if(taskList.get(j).getEvent().contains(command.getTask())){
+//				if(i==0){
+//					oldTaskList = new ArrayList<>(taskList);
+//				}
+//				taskList.remove(j);
+//				i++;
+				removeList.add(taskList.get(j));
+			}
 		}
+		
+		if (removeList.isEmpty()) {
+			consoleList.add("No task has been found with the event: "+command.getTask());
+		} else {
+			oldTaskList = new ArrayList<>(taskList);
+			taskList.removeAll(removeList);
+
+			consoleList.add(removeList.size()+ " tasks have been deleted from your file");
+		}
+		
+		//delete(i);
 	}
 
 	//Add a task to the task ArrayList
@@ -426,6 +443,8 @@ public class Logic {
 					}
 				}
 			}
+		
+		System.out.println("discard:"+discardList);
 		return discardList;
 	}
 	
