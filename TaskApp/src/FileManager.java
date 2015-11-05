@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 /**
  * In this class, it will do the file content updating and allows to be accessed to get the content of the file.
- * @@author Fang Juping A0126415M
+ * @@author A0126415M
  */
 public class FileManager {
 	

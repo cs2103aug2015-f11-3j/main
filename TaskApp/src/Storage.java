@@ -4,7 +4,7 @@ package src;
  * The Storage saves all the data of the user,
  * and will be updated after every action.
  * This part only aims to connect with the TaskLogic Part.
- * @@author Fang Juping A0126415M
+ * @@author A0126415M
  */
 import java.io.*;
 import java.util.ArrayList;
