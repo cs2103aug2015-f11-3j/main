@@ -38,8 +38,6 @@ public class Logic {
 	
 	private static final String ERROR_UNDO = "Cannot UNDO";
 	private String ERROR_KEYWORD = "Keyword not recognized!";
-	private String ERROR_INDEX = "Index not found";
-	
 	private int index = 0;
 	
 	private final static Logger log = Logger.getLogger(Logic.class.getName());
@@ -62,6 +60,7 @@ public class Logic {
 		consoleList = new ArrayList<>();
 		searchList = new ArrayList<>();
 		
+		prepareSystem();
 	}
 	
 	/**
@@ -70,7 +69,7 @@ public class Logic {
 	 */
 	public void executeCommand(String userCommand){
 		log.entering(getClass().getName(), "executeCommand with "+userCommand);
-		prepareSystem();
+//		prepareSystem();
 		
 		Command command;
 		command =  parser.parse(userCommand);
@@ -97,7 +96,7 @@ public class Logic {
 			break;
 
 		case STATUS:
-			updateStatusFromIndex(command);
+			updateStatus(command);
 			taskListToString();
 			break;
 			
@@ -130,26 +129,7 @@ public class Logic {
 		store.updateToFile(taskFile, taskListString);
 	}
 
-	//Updates the status after searching for it by the index
-	private void updateStatusFromIndex(Command command) {
-		int i = Integer.parseInt(command.getTask());
-		boolean updated = false;
-		
-		if(i<=index&&i>0){
-			
-			for(int j=0;i<taskList.size();j++){
-				if(taskList.get(j).getIndex()==i){
-					taskList.get(j).setStatus(!taskList.get(j).getStatus());
-					consoleList.add("Task with index:"+i+" has had it's status updated");
-					
-					updated = true;
-				}
-			}
-		}
-		if (!updated) {
-			consoleList.add(ERROR_INDEX);
-		}
-	}
+
 
 	
 	//Undo the latest change to the task manager
@@ -207,12 +187,12 @@ public class Logic {
 			for(int j = 0; j<taskList.size(); j++){
 				if(taskList.get(j).getIndex()==i){
 					oldTaskList = new ArrayList<>(taskList);
-					System.out.println(oldTaskList);
+//					System.out.println(oldTaskList);
 						
 					taskList.get(j).setDate(command.getDates());
 					
-					System.out.println(oldTaskList);
-					System.out.println(taskList);
+//					System.out.println(oldTaskList);
+//					System.out.println(taskList);
 					consoleList.add("Task with index:"+i+" has had it's date updated");
 				}
 			}
@@ -220,44 +200,40 @@ public class Logic {
 			consoleList.add(INDEX_OUT_OF_BOUNDS);
 		}
 	}
+	
+	//Updates the status after searching for it by the index
+	private void updateStatus(Command command) {
+		int i = Integer.parseInt(command.getTask());
+		
+		if(i<=index&&i>0){
+			
+			for(int j=0;j<taskList.size();j++){
+				if(taskList.get(j).getIndex()==i){
+					
+					boolean status = taskList.get(j).getStatus();
+					
+					System.out.println();
+					System.out.println();
+					System.out.println();
+					
+					System.out.println(taskList.get(j).getStatus());
 
+					taskList.get(j).setStatus(!status);
+					consoleList.add("Task with index:"+i+" has had it's status updated");
+					
+					System.out.println(taskList.get(j).getStatus());
 
-	//Updates a tasks status by searching it after it's event
-//	private void updateStatus(Command command) {
-//		int i = searchFor(command.getTask());
-//		
-//		if (i != taskList.size()) {
-//			taskList.get(i).setStatus(!taskList.get(i).getStatus());
-//			
-//			if (taskList.get(i).getStatus()) {
-//				consoleList.add("Task "+taskList.get(i).toString()+
-//						" completed!");
-//			}else{
-//				consoleList.add("Task "+taskList.get(i).toString()+
-//						" set to incomplete");
-//			}
-//		} else {
-//			consoleList.add("Task "+command.getTask()+
-//					" hasn't been found");
-//		}
-//	}
+				
+					System.out.println();
+					System.out.println();
+					System.out.println();
 
-	//Updates task date after it's event
-//	private void updateTask(Command command) {
-//		int i = searchFor(command.getTask());
-//		
-//		if (i != taskList.size()) {
-//			ArrayList<Date> removed = taskList.get(i).getDate();
-//			taskList.get(i).setDate(command.getDates());
-//			
-//			consoleList.add("Task "+taskList.get(i).getEvent() +
-//					" has been updated from " +
-//					removed + " to "+command.getDates());
-//		} else{
-//			consoleList.add("Task "+command.getTask()+
-//					" hasn't been found");
-//		}
-//	}
+				}
+			}
+		} else {
+			consoleList.add(INDEX_OUT_OF_BOUNDS);
+		}
+	}
 	
 	//Searches through the task for a certain substring and adds them to an ArrayList
 	private void searchThroughTasks(Command command) {
@@ -327,24 +303,14 @@ public class Logic {
 		consoleList.add("Added task "+command.getTask()+" on "+command.getDates());
 	}
 	
-	//Searches for the first appearance of a substring in the taskList and return its index.
-//	private int searchFor(String string){
-//		int i = 0;
-//		for(Tasks curTask : taskList){
-//			if(curTask.getEvent().contains(string)){
-//				break;
-//			}
-//			i++;
-//		}
-//		return i;
-//	}
-	
 	//Transforms the Tasks into Strings
 	private void taskListToString(){
 		taskListString.clear();
 		
 		for(Tasks curTask : taskList){
-			taskListString.add(curTask.toString());
+			if(!curTask.getStatus()){
+				taskListString.add(curTask.toString());
+			}
 		}
 	}
 	
@@ -360,7 +326,7 @@ public class Logic {
 		setIndex();
 	}
 	
-	//Sets the index at the begining of the application
+	//Sets the index at the beginning of the application
 	private void setIndex() {
 		for(index = 1; index <= taskList.size();index++){
 			taskList.get(index-1).setIndex(index);
