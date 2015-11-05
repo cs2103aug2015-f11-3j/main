@@ -12,15 +12,11 @@ import javafx.scene.layout.BorderPane;
 public class ListViewController extends BorderPane{
 
 	private static final String LISTVIEW_LAYOUT_FXML = "/layout/ListView.fxml";
-	private TaskGui taskGui;
-	//private ArrayList<String> items = new ArrayList<String>();;
 	
 	@FXML
 	private ListView<String> listView = new ListView<String>(FXCollections.<String>observableArrayList());
-	//private ListView<String> listView;
-	
+		
 	public ListViewController(){
-	//public ListViewController(String userInput){
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(LISTVIEW_LAYOUT_FXML));
 		loader.setController(this);
 		loader.setRoot(this);
@@ -42,12 +38,4 @@ public class ListViewController extends BorderPane{
 			 listView.getItems().add(list.get(i));
 		 }
 	 }
-	/*private void initialListView(String userInput) {
-		// TODO Auto-generated method stub
-		
-		listView.getItems().add(userInput);
-		//items.add(userInput);
-		//listView.setItems(FXCollections.observableArrayList(userInput));
-		//listView.setItems(FXCollections.observableList(items));
-	}*/
 }

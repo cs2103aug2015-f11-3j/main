@@ -5,66 +5,34 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.*;
-
-import com.sun.jmx.snmp.tasks.Task;
-
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.application.Application;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import src.TaskLogic;
 
 public class TaskGui extends Application{
 
 	private static final String ROOT_LAYOUT_FXML = "/layout/RootLayout.fxml";
 	private static final String WINDOW_TITLE = "Task Manager";
-	private static final String CONTAINER_LAYOUT_FXML = "/layout/Container.fxml";
 	private AnchorPane root;
-	private GridPane container;
 	private Stage primaryStage;
 	private ListViewController listViewController;
-	private UpdateTableController updateTableController;
-	private TodoTableController todoTableController;
 	private TodoController todoController;
 	private OverDueController overDueController;
 	private SearchController searchController;
-	private OverdueTableController overdueTableController;
-	//private CommandBarController commandBarController;
-	
-	//private TaskLogic taskLogic;
 	private Logic logic;
 	
-	//private ArrayList<Message> list = new ArrayList<Message>();
-
-	//private Message msg = new Message(12, "hello", "Sat");
 	ObservableList<Message> data, data1, data2, data3;
 	ArrayList<Boolean> status = new ArrayList<Boolean>();
-	
-	
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -81,67 +49,6 @@ public class TaskGui extends Application{
 		addOverdueTableView(logic.getDiscard());
 		addSearchTableView(logic.getSearch());
 	}
-	
-	private void addTableView2() {
-		// TODO Auto-generated method stub
-		data2 = getInitialTableData2();
-		overdueTableController = new OverdueTableController(data2);
-		container.add(overdueTableController, 1, 1);
-	}
-
-	private ObservableList<Message> getInitialTableData2() {
-		// TODO Auto-generated method stub
-		List<Message> list = new ArrayList<Message>();
-		
-		//list.add(new Message(1, "drink", "Sat"));
-		//list.add(new Message(1, "drink", "Sat"));
-		
-		//ObservableList<Message> data = FXCollections.observableArrayList(list);
-		data = FXCollections.observableArrayList(list);
-		
-		return data;
-	}
-
-	private void addTableView1() {
-		// TODO Auto-generated method stub
-		data1 = getInitialTableData1();
-		
-		todoTableController = new TodoTableController(data1);
-		container.add(todoTableController, 0, 1);
-	}
-
-	private ObservableList<Message> getInitialTableData1() {
-		// TODO Auto-generated method stub
-		List<Message> list = new ArrayList<Message>();
-		
-		//list.add(new Message(1, "sleep", "Sat"));
-		//list.add(new Message(1, "sleep", "Sat"));
-		
-		//ObservableList<Message> data = FXCollections.observableArrayList(list);
-		data = FXCollections.observableArrayList(list);
-		
-		return data;
-	}
-
-	private ObservableList<Message> getInitialTableData() {
-		// TODO Auto-generated method stub
-		List<Message> list = new ArrayList<Message>();
-		
-		//ObservableList<Message> data = FXCollections.observableArrayList(list);
-		data = FXCollections.observableArrayList(list);
-		
-		return data;
-	}
-	
-	/*private void addTableView() {
-		// TODO Auto-generated method stub
-		
-		data = getInitialTableData();
-		updateTableController = new UpdateTableController(data); 
-		//listViewController.getChildren().add(updateTableController);
-		//root.setCenter(updateTableController);
-		container.add(updateTableController, 1, 0);
-	}*/
 
 	private void initialLogic() {
 		// TODO Auto-generated method stub
@@ -156,7 +63,7 @@ public class TaskGui extends Application{
 		root.getChildren().add(listViewController);
 		AnchorPane.setTopAnchor(listViewController, 10.0);
 		AnchorPane.setLeftAnchor(listViewController, 15.0);
-		AnchorPane.setBottomAnchor(listViewController, 250.0);
+		AnchorPane.setBottomAnchor(listViewController, 300.0);
 	}
 
 	private void addCommandBar(TaskGui taskGui) {
@@ -180,7 +87,6 @@ public class TaskGui extends Application{
 	private void initialRootLayout() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(ROOT_LAYOUT_FXML));
-		//FXMLLoader contain = new FXMLLoader(getClass().getResource(CONTAINER_LAYOUT_FXML));
 		try {
             root = loader.load();
         } catch (IOException e) {
@@ -191,15 +97,13 @@ public class TaskGui extends Application{
 	public void handleKeyPress(CommandBarController commandBarController, KeyCode key, String userInput) {
 		
 		if (key == KeyCode.ENTER) {
-			//System.out.println(userInput);			
+			
 			handleEnterPress(commandBarController, userInput);
 		}
 	}
 
 	private void handleEnterPress(CommandBarController commandBarController, String userInput) {
-		// TODO Auto-generated method stub
-		//addListView(userInput);
-		//listViewController.addItemToListView(taskLogic.executeCommand(userInput));
+		
 		logic.executeCommand(userInput);
 		listViewController.addArrayList(logic.getConsole());
 		//System.out.println("SIZE: "+logic.getToDoTask().size());
@@ -209,15 +113,6 @@ public class TaskGui extends Application{
 		commandBarController.clear();
 	}
 	
-	private void addSearch() {
-		// TODO Auto-generated method stub
-		data3 = getInitialTableData();
-		searchController = new SearchController(data3);
-		root.getChildren().add(searchController);
-		AnchorPane.setTopAnchor(searchController, 10.0);
-		AnchorPane.setRightAnchor(searchController, 15.0);
-		AnchorPane.setBottomAnchor(searchController, 80.0);
-	}
 
 	private void addSearchTableView(ArrayList<Tasks> search) {
 		// TODO Auto-generated method stub
@@ -227,18 +122,8 @@ public class TaskGui extends Application{
 		root.getChildren().add(searchController);
 		AnchorPane.setTopAnchor(searchController, 10.0);
 		AnchorPane.setRightAnchor(searchController, 15.0);
-		AnchorPane.setBottomAnchor(searchController, 80.0);
+		AnchorPane.setBottomAnchor(searchController, 90.0);
 		
-	}
-
-	private void addOverdue() {
-		// TODO Auto-generated method stub
-		data3 = getInitialTableData();
-		overDueController = new OverDueController(data3);
-		root.getChildren().add(overDueController);
-		AnchorPane.setTopAnchor(overDueController, 10.0);
-		AnchorPane.setLeftAnchor(overDueController, 680.0);
-		AnchorPane.setBottomAnchor(overDueController, 80.0);
 	}
 	
 	private void addOverdueTableView(ArrayList<Tasks> discard) {
@@ -249,17 +134,7 @@ public class TaskGui extends Application{
 		root.getChildren().add(overDueController);
 		AnchorPane.setTopAnchor(overDueController, 10.0);
 		AnchorPane.setLeftAnchor(overDueController, 680.0);
-		AnchorPane.setBottomAnchor(overDueController, 80.0);
-	}
-
-	private void addTodo() {
-		// TODO Auto-generated method stub
-		data3 = getInitialTableData();
-		todoController = new TodoController(data3);
-		root.getChildren().add(todoController);
-		AnchorPane.setTopAnchor(todoController, 10.0);
-		AnchorPane.setLeftAnchor(todoController, 410.0);
-		AnchorPane.setBottomAnchor(todoController, 80.0);
+		AnchorPane.setBottomAnchor(overDueController, 90.0);
 	}
 	
 	private void addTodoTableView(ArrayList<Tasks> toDoTask) {
@@ -276,7 +151,7 @@ public class TaskGui extends Application{
 		root.getChildren().add(todoController);
 		AnchorPane.setTopAnchor(todoController, 10.0);
 		AnchorPane.setLeftAnchor(todoController, 390.0);
-		AnchorPane.setBottomAnchor(todoController, 100.0);
+		AnchorPane.setBottomAnchor(todoController, 90.0);
 	}
 	
 	private ObservableList<Message> getInitialTableData3(ArrayList<Tasks> listTask) {
@@ -309,8 +184,7 @@ public class TaskGui extends Application{
 	}
 
 	private String ConvertDateFormat(String string) {
-		// TODO Auto-generated method stub
-		//String dateStr = "Mon Jun 18 00:00:00 IST 2012";
+		
 		DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
 		Date date;
 

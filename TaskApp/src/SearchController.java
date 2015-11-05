@@ -12,7 +12,7 @@ import javafx.scene.layout.BorderPane;
 
 public class SearchController extends BorderPane{
 	private static final String UPDATE_TABLE_FXML = "/layout/Search.fxml";
-	private int count = 1;
+	
 	@FXML
 	private TableView<Message> searchTable;
 	
@@ -24,15 +24,6 @@ public class SearchController extends BorderPane{
 	
 	@FXML
 	private TableColumn<Message, String> dateColumn;
-	
-	/*ObservableList<Message> data = FXCollections.observableArrayList(
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today")
-			
-	);*/
 	
 	public SearchController(ObservableList<Message> data){
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(UPDATE_TABLE_FXML));

@@ -38,11 +38,6 @@ public class CommandBarController extends BorderPane{
 	}
 	
 	@FXML
-	public void setFeedback(String feedback){
-		messageLabel.setText(feedback);
-	}
-	
-	@FXML
 	public void clear() {
         commandTextfield.clear();
     }

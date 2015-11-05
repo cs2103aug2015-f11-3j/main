@@ -12,7 +12,7 @@ import javafx.scene.layout.BorderPane;
 
 public class TodoController extends BorderPane {
 	private static final String UPDATE_TABLE_FXML = "/layout/Todo.fxml";
-	private int count = 1;
+
 	@FXML
 	private TableView<Message> todoTable;
 	
@@ -25,14 +25,6 @@ public class TodoController extends BorderPane {
 	@FXML
 	private TableColumn<Message, String> dateColumn;
 	
-	/*ObservableList<Message> data = FXCollections.observableArrayList(
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today")
-			
-	);*/
 	
 	public TodoController(ObservableList<Message> data){
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(UPDATE_TABLE_FXML));
@@ -43,8 +35,6 @@ public class TodoController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        //ObservableList<Message> data = FXCollections.observableArrayList(msg);
         
         todoTable.setItems(data);
         indexColumn.setCellValueFactory(new PropertyValueFactory<Message, Integer>("Index"));

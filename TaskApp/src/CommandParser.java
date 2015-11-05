@@ -30,7 +30,6 @@ public class CommandParser {
     
     
     private static final String PARSE_PATTERN = "EEE MMM dd HH:mm:ss Z yyyy";
-    private static final String END_OF_DAY_PATTERN = "EEE MMM dd 23:59:59 Z yyyy";
 	
 	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON"};
 	

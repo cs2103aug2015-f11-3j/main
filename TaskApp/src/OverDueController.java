@@ -1,8 +1,6 @@
 package src;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,12 +9,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
-import javafx.util.Callback;
 
 public class OverDueController extends BorderPane{
 	private static final String UPDATE_TABLE_FXML = "/layout/Overdue.fxml";
-	private int count = 1;
 	@FXML
 	private TableView<Message> overDueTable;
 	
