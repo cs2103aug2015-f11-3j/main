@@ -16,7 +16,7 @@ public class CommandParser {
     private static final String USER_COMMAND_DELETE_INDEX = "deletei";
     private static final String USER_COMMAND_READ = "read";
     private static final String USER_COMMAND_UPDATE_BY_NAME = "update";
-    private static final String USER_COMMAND_UPDATE_STATUS = "updates";
+    private static final String USER_COMMAND_UPDATE_STATUS = "statusi";
     private static final String USER_COMMAND_UPDATE_BY_INDEX = "updatei";
     private static final String USER_COMMAND_SEARCH = "search";
     private static final String USER_COMMAND_UNDO = "undo";
@@ -27,7 +27,7 @@ public class CommandParser {
     private static final String PARSE_PATTERN = "EEE MMM dd HH:mm:ss Z yyyy";
     private static final String END_OF_DAY_PATTERN = "EEE MMM dd 23:59:59 Z yyyy";
 	
-	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON", "UNTIL"};
+	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON", "EVERY", "UNTIL"};
 	private static final String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 	private static final String[] DAY_OF_THE_WEEK = {"MON", "TUE","WED","THU","FRI","SAT","SUN"};
 	
@@ -46,18 +46,14 @@ public class CommandParser {
 		return tasks;
 	}
 	
-	private String createEvent(String string) {
-		System.out.println(string+"    1111");
+	public String createEvent(String string) {
 		String[] tokens = string.split("\\[");
-		System.out.println("abcd");
-		System.out.println(tokens[0].trim()+ "    22222");
 		return tokens[0].trim();
 	}
 
-	private void toDateList(ArrayList<Date> dates, String string) {
+	public void toDateList(ArrayList<Date> dates, String string) {
 		String[] tokens = string.split("\\[");
 		String str =tokens[1].substring(0, tokens[1].length()-1);
-		System.out.println(str+"x   5555");
 		String[] rawDate = str.split(",");
 		SimpleDateFormat sdf = new SimpleDateFormat(PARSE_PATTERN);
 		
@@ -66,8 +62,7 @@ public class CommandParser {
 				Date date = sdf.parse(rawDate[i].trim());
 				dates.add(date);
 			} catch (ParseException e) {
-			// TODO Auto-generated catch block
-				System.err.println("fuck");
+				System.err.println("cannot be parsed as date");
 			}	
 		}
 	}
@@ -119,9 +114,7 @@ public class CommandParser {
         		break;
         	
         	case USER_COMMAND_MOVE_FILE :
-        		System.out.println("entre parser move File");
         		command = initFileLocation(remainStr);
-        		System.out.println(command.getCommandType());
         		break;
         	
         	default :
@@ -177,7 +170,6 @@ public class CommandParser {
 		try {
 			date = standardSdf.parse(str);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return date;
@@ -254,12 +246,48 @@ public class CommandParser {
 		String event = initEvent(remainStr);
 		cmd.setTask(event);
 		String timeStr = removeString(remainStr, event);
-		createTimeConstraint(cmd, timeStr, dates);
+		timeStr=timeStr.toLowerCase();
+		if (timeStr.contains("every") && timeStr.contains("until")) {
+			System.out.println("entre reoccurring task");
+			System.out.println(timeStr);
+			createReoccurringTimeConstraint(cmd, timeStr, dates);			
+		}else {
+			
+			createTimeConstraint(cmd, timeStr, dates);
+		}
 		cmd.setDates(dates);
 	}
 	
+	private void createReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
+		ArrayList<String> arrList = new ArrayList<String>(Arrays.asList(timeStr.split("\\b(until)\\b")));
+		for(int i=0; i<arrList.size(); i++) {
+			System.out.println(i +" "+arrList.get(i));
+		}
+		Date endDate = endOfDay(convertToDate(arrList.get(arrList.size()-1).trim()));
+		if(endDate==null) {
+			cmd.setCommandType(Command.TYPE.INVALID);
+			return;
+		}
+		System.out.println(endDate.toString());
+		String str = arrList.get(0).replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "").trim();
+		System.out.println(str);
+		if (convertDayToInt(str)==0) {
+			System.out.println("entre escape 1");
+			cmd.setCommandType(Command.TYPE.INVALID);
+			return;
+		}
+		cmd.setKey(1);
+		Date baseDate = getNextOccurenceOfDay(new Date(), convertDayToInt(arrList.get(0)));
+		while(baseDate.getTime()<endDate.getTime()) {
+			dates.add(baseDate);
+			baseDate = getNextOccurenceOfDay(baseDate, convertDayToInt(arrList.get(0)));
+		}
+		cmd.setDates(dates);
+			
+	}
+
 	private void createTimeConstraint(Command cmd, String str, ArrayList<Date> dates) {
-		str = str.replaceAll("\\b(from|to|at|on|by)\\b",  "-");
+		str = str.replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "-");
 		ArrayList<String> tokens = new ArrayList<String>(Arrays.asList(str.split("-")));
 		tokens.removeAll(Collections.singleton(""));
 		convertToDate(cmd ,tokens, dates);
@@ -292,7 +320,7 @@ public class CommandParser {
 		}
 	}
 	
-	private Date convertToDate(String str) {
+	public Date convertToDate(String str) {
 		ArrayList<SimpleDateFormat> knownPatterns = initTimeFormatBank();
 		for (SimpleDateFormat pattern : knownPatterns) {
 			try {
@@ -358,9 +386,10 @@ public class CommandParser {
 		StringBuilder sb = new StringBuilder();
 		String[] pieces = str.split(" ");
 		for (int i = 0; i < pieces.length; i++) {
+			System.out.println(i+ " "+pieces[i]);
 			if(toAppend(pieces, i)) {
 				sb.append(" ");
-				sb.append(pieces[i]);
+				sb.append(pieces[i].trim());
 			}
 			else
 				break;
@@ -409,15 +438,44 @@ public class CommandParser {
 		if(isPrepositionKeyword(arr[i])==true && i <arr.length-1 && !isTimeFormat(arr[i+1])) {
 			return true;
 		}
-		if(isNumeric(arr[i]) && i>=1 && !isPrepositionKeyword(arr[i-1])) {
+		if(isNumeric(arr[i]) && i>=1  && !isPrepositionKeyword(arr[i-1])) {
 			return true;
-		}		
+		}
 		return false;
 	}
 	
-	private boolean isNumeric(String str) {
-		String regex = "^[0-9]";
+	public boolean isNumeric(String str) {
+		String regex = "\\d+";
 		return str.matches(regex);
+	}
+	
+	private int convertDayToInt(String str) {
+		int i;
+		switch (str.toLowerCase()) {
+    		case "mon" :
+    			i = 2;
+    			break;
+    		case "tue" :
+    			i = 3;
+    			break;
+    		case "wed" :
+    			i = 4;
+    		case "thu" :
+    			i = 5;
+    			break;
+    		case "fri" :
+    			i = 6;
+    			break;
+    		case "sat" :
+    			i = 7;
+    			break;
+    		case "sun" :
+    			i = 1;
+    			break;
+    		default :
+    			i = 0;
+		}
+    	return i;
 	}
 }
 	
