@@ -5,14 +5,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-
-<fx:root type="BorderPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<fx:root type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <TableView fx:id="overDueTable" prefHeight="200.0" prefWidth="230.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="overDueTable" prefHeight="200.0" prefWidth="320.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="indexColumn" prefWidth="35.0" text="No." />
           <TableColumn fx:id="eventColumn" prefWidth="65.0" text="Event" />
-            <TableColumn fx:id="dateColumn" prefWidth="130.0" text="Date" />
+            <TableColumn fx:id="dateColumn" prefWidth="170.0" text="Date" />
+            <TableColumn fx:id="statusColumn" prefWidth="50.0" text="Status" />
         </columns>
       </TableView>
    </center>

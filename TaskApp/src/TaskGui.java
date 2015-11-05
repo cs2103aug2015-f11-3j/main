@@ -2,7 +2,13 @@ package src;
 
 //test
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.*;
 
@@ -55,7 +61,8 @@ public class TaskGui extends Application{
 	//private ArrayList<Message> list = new ArrayList<Message>();
 
 	//private Message msg = new Message(12, "hello", "Sat");
-	ObservableList<Message> data, data1, data2;
+	ObservableList<Message> data, data1, data2, data3;
+	ArrayList<Boolean> status = new ArrayList<Boolean>();
 	
 	
 	
@@ -67,9 +74,12 @@ public class TaskGui extends Application{
 		initialLogic();
 		addCommandBar(this);
 		addListView();
-		//addTableView();
-		//addTableView1();
-		//addTableView2();
+		//addTodo();
+		//addOverdue();
+		//addSearch();
+		addTodoTableView(logic.getToDoTask());
+		addOverdueTableView(logic.getDiscard());
+		addSearchTableView(logic.getSearch());
 	}
 	
 	private void addTableView2() {
@@ -83,8 +93,8 @@ public class TaskGui extends Application{
 		// TODO Auto-generated method stub
 		List<Message> list = new ArrayList<Message>();
 		
-		list.add(new Message(1, "drink", "Sat"));
-		list.add(new Message(1, "drink", "Sat"));
+		//list.add(new Message(1, "drink", "Sat"));
+		//list.add(new Message(1, "drink", "Sat"));
 		
 		//ObservableList<Message> data = FXCollections.observableArrayList(list);
 		data = FXCollections.observableArrayList(list);
@@ -104,8 +114,8 @@ public class TaskGui extends Application{
 		// TODO Auto-generated method stub
 		List<Message> list = new ArrayList<Message>();
 		
-		list.add(new Message(1, "sleep", "Sat"));
-		list.add(new Message(1, "sleep", "Sat"));
+		//list.add(new Message(1, "sleep", "Sat"));
+		//list.add(new Message(1, "sleep", "Sat"));
 		
 		//ObservableList<Message> data = FXCollections.observableArrayList(list);
 		data = FXCollections.observableArrayList(list);
@@ -116,9 +126,6 @@ public class TaskGui extends Application{
 	private ObservableList<Message> getInitialTableData() {
 		// TODO Auto-generated method stub
 		List<Message> list = new ArrayList<Message>();
-		
-		list.add(new Message(1, "homework", "Sat"));
-		list.add(new Message(1, "homework", "Sat"));
 		
 		//ObservableList<Message> data = FXCollections.observableArrayList(list);
 		data = FXCollections.observableArrayList(list);
@@ -149,24 +156,11 @@ public class TaskGui extends Application{
 		root.getChildren().add(listViewController);
 		AnchorPane.setTopAnchor(listViewController, 10.0);
 		AnchorPane.setLeftAnchor(listViewController, 15.0);
-		AnchorPane.setBottomAnchor(listViewController, 80.0);
-		
-		//container.add(listViewController, 0, 0);
-		//root.setTop(listViewController);
+		AnchorPane.setBottomAnchor(listViewController, 250.0);
 	}
 
 	private void addCommandBar(TaskGui taskGui) {
-		// TODO Auto-generated method stub
-		/*root.setBottom(new CommandBarController(taskGui));
 		
-		FXMLLoader contain = new FXMLLoader(getClass().getResource(CONTAINER_LAYOUT_FXML));
-		try {
-			container = contain.load();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        root.setCenter(container);*/
 		CommandBarController commandBarController = new CommandBarController(taskGui);
 		root.getChildren().add(commandBarController);
 		AnchorPane.setBottomAnchor(commandBarController, 10.0);
@@ -197,7 +191,7 @@ public class TaskGui extends Application{
 	public void handleKeyPress(CommandBarController commandBarController, KeyCode key, String userInput) {
 		
 		if (key == KeyCode.ENTER) {
-			System.out.println(userInput);			
+			//System.out.println(userInput);			
 			handleEnterPress(commandBarController, userInput);
 		}
 	}
@@ -208,37 +202,69 @@ public class TaskGui extends Application{
 		//listViewController.addItemToListView(taskLogic.executeCommand(userInput));
 		logic.executeCommand(userInput);
 		listViewController.addArrayList(logic.getConsole());
-		System.out.println("SIZE: "+logic.getToDoTask().size());
+		//System.out.println("SIZE: "+logic.getToDoTask().size());
 		addTodoTableView(logic.getToDoTask());
 		addOverdueTableView(logic.getDiscard());
 		addSearchTableView(logic.getSearch());
 		commandBarController.clear();
 	}
+	
+	private void addSearch() {
+		// TODO Auto-generated method stub
+		data3 = getInitialTableData();
+		searchController = new SearchController(data3);
+		root.getChildren().add(searchController);
+		AnchorPane.setTopAnchor(searchController, 10.0);
+		AnchorPane.setRightAnchor(searchController, 15.0);
+		AnchorPane.setBottomAnchor(searchController, 80.0);
+	}
 
 	private void addSearchTableView(ArrayList<Tasks> search) {
 		// TODO Auto-generated method stub
+		System.out.println("SEARCH:  ");
 		data2 = getInitialTableData3(search);
 		searchController = new SearchController(data2);
 		root.getChildren().add(searchController);
 		AnchorPane.setTopAnchor(searchController, 10.0);
-		AnchorPane.setLeftAnchor(searchController, 950.0);
+		AnchorPane.setRightAnchor(searchController, 15.0);
 		AnchorPane.setBottomAnchor(searchController, 80.0);
 		
 	}
 
+	private void addOverdue() {
+		// TODO Auto-generated method stub
+		data3 = getInitialTableData();
+		overDueController = new OverDueController(data3);
+		root.getChildren().add(overDueController);
+		AnchorPane.setTopAnchor(overDueController, 10.0);
+		AnchorPane.setLeftAnchor(overDueController, 680.0);
+		AnchorPane.setBottomAnchor(overDueController, 80.0);
+	}
+	
 	private void addOverdueTableView(ArrayList<Tasks> discard) {
 		// TODO Auto-generated method stub
+		System.out.println("OVERDUE:  ");
 		data1 = getInitialTableData3(discard);
 		overDueController = new OverDueController(data1);
 		root.getChildren().add(overDueController);
 		AnchorPane.setTopAnchor(overDueController, 10.0);
 		AnchorPane.setLeftAnchor(overDueController, 680.0);
 		AnchorPane.setBottomAnchor(overDueController, 80.0);
-		
 	}
 
+	private void addTodo() {
+		// TODO Auto-generated method stub
+		data3 = getInitialTableData();
+		todoController = new TodoController(data3);
+		root.getChildren().add(todoController);
+		AnchorPane.setTopAnchor(todoController, 10.0);
+		AnchorPane.setLeftAnchor(todoController, 410.0);
+		AnchorPane.setBottomAnchor(todoController, 80.0);
+	}
+	
 	private void addTodoTableView(ArrayList<Tasks> toDoTask) {
 		// TODO Auto-generated method stub
+		System.out.println("TODO:  ");
 		data = getInitialTableData3(toDoTask);
 		//todoTableController = new TodoTableController(data);
 		todoController = new TodoController(data);
@@ -249,21 +275,58 @@ public class TaskGui extends Application{
 		AnchorPane.setBottomAnchor(todoTableController, 80.0);*/
 		root.getChildren().add(todoController);
 		AnchorPane.setTopAnchor(todoController, 10.0);
-		AnchorPane.setLeftAnchor(todoController, 410.0);
-		AnchorPane.setBottomAnchor(todoController, 80.0);
+		AnchorPane.setLeftAnchor(todoController, 390.0);
+		AnchorPane.setBottomAnchor(todoController, 100.0);
 	}
 	
 	private ObservableList<Message> getInitialTableData3(ArrayList<Tasks> listTask) {
 		// TODO Auto-generated method stub
 		List<Message> list = new ArrayList<Message>();
-		System.out.println("!@#$%^& "+ listTask.size());
+		
 		for(int i=0; i<listTask.size(); i++){
-			System.out.println(listTask.get(i).getDate().toString() + "	@@@@@");
-			list.add(new Message(listTask.get(i).getIndex(), listTask.get(i).getEvent(),
-					listTask.get(i).getDate().toString()));
+			/*list.add(new Message(listTask.get(i).getIndex(), listTask.get(i).getEvent(),
+					listTask.get(i).getDate().toString(), listTask.get(i).getStatus()));*/
+			System.out.println(listTask.get(i).getDate().size()+ "####");
+			if(listTask.get(i).getDate().size() == 0){
+				list.add(new Message(listTask.get(i).getIndex(), listTask.get(i).getEvent(),
+						"Not set yet", listTask.get(i).getStatus()));
+			}
+			if(listTask.get(i).getDate().size() == 1){
+				list.add(new Message(listTask.get(i).getIndex(), listTask.get(i).getEvent(),
+						ConvertDateFormat(listTask.get(i).getDate().get(0).toString()), listTask.get(i).getStatus()));
+			}
+			if(listTask.get(i).getDate().size() == 2)
+			{
+				String dateDisplay = ConvertDateFormat(listTask.get(i).getDate().get(0).toString()) + " - "
+						+ConvertDateFormat(listTask.get(i).getDate().get(1).toString());
+
+				list.add(new Message(listTask.get(i).getIndex(), listTask.get(i).getEvent(),
+						dateDisplay, listTask.get(i).getStatus()));
+			}
 		}
 		data = FXCollections.observableArrayList(list);
 		return data;
+	}
+
+	private String ConvertDateFormat(String string) {
+		// TODO Auto-generated method stub
+		//String dateStr = "Mon Jun 18 00:00:00 IST 2012";
+		DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+		Date date;
+
+		try {
+			date = (Date)formatter.parse(string);				
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+			String formatedDate = cal.get(Calendar.DATE) + "/" + (cal.get(Calendar.MONTH) + 1) + 
+					"/" +         cal.get(Calendar.YEAR);
+			return formatedDate;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 
 	public static void main(String[] args) {

@@ -1,8 +1,0 @@
-task1[Thu Nov 05 00:00:00 SGT 2015]
-task4[Sat Dec 05 00:00:00 SGT 2015]
-task7[Mon Dec 07 00:00:00 SGT 2015]
-task6[Wed Dec 02 00:00:00 SGT 2015]
-dodod[Wed Nov 11 00:00:00 SGT 2015, Thu Nov 12 00:00:00 SGT 2015]
-task11[Thu Nov 05 00:00:00 SGT 2015]
-task7[Sat Nov 07 00:00:00 SGT 2015]
-task 16[Thu Dec 03 00:00:00 SGT 2015]
