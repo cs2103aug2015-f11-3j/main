@@ -182,15 +182,6 @@ public class CommandParser {
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 59);
-		
-//		SimpleDateFormat standardSdf = new SimpleDateFormat(PARSE_PATTERN);
-//        SimpleDateFormat endOfDay = new SimpleDateFormat(END_OF_DAY_PATTERN);
-//        String str = endOfDay.format(date);
-//		try {
-//			date = standardSdf.parse(str);
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
 		return cal.getTime();
 	}
 	
@@ -236,6 +227,9 @@ public class CommandParser {
 	}
 
 	private Command initFileLocation(String directory) {
+		if(directory.length()==0) {
+			return initInvalidCommand();
+		}
 		Command cmd = new Command(Command.TYPE.FILE);
 		File file = new File(directory);
 		System.out.println(file.getName());
@@ -343,7 +337,8 @@ public class CommandParser {
 		}
 		if(dateList.size()!=tokens.size()) {
 			cmd.setCommandType(Command.TYPE.INVALID);
-			cmd.setKey(dateList.size());
+		}else if(dateList.size()==2 && dateList.get(0).getTime() > dateList.get(1).getTime()) {
+			cmd.setCommandType(Command.TYPE.INVALID);
 		}
 	}
 	
@@ -365,6 +360,10 @@ public class CommandParser {
 	private void initTimeFormatBank() {	
 		KNOWPATTERNS.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
 		KNOWPATTERNS.add(new SimpleDateFormat("HHmm MMM d yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("HHmm dd/MM/yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("HHmm d/MM/yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("HHmm dd/M/yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("HHmm d/M/yyyy"));
 		KNOWPATTERNS.add(new SimpleDateFormat("dd/MM/yyyy"));
 		KNOWPATTERNS.add(new SimpleDateFormat("d/MM/yyyy"));
 		KNOWPATTERNS.add(new SimpleDateFormat("d/M/yyyy"));
