@@ -159,7 +159,10 @@ public class CommandParser {
 		  cal.setTime(today);  
 		  int dow = cal.get(Calendar.DAY_OF_WEEK);  
 		  int numDays = 7 - ((dow - dayOfWeek) % 7 + 7) % 7;  
-		  cal.add(Calendar.DAY_OF_YEAR, numDays);  
+		  cal.add(Calendar.DAY_OF_YEAR, numDays); 
+		  cal.set(Calendar.HOUR_OF_DAY, 0);
+		  cal.set(Calendar.MINUTE, 0);
+		  cal.set(Calendar.SECOND, 0);
 		  return cal.getTime();  
 	} 
 	
@@ -259,6 +262,7 @@ public class CommandParser {
 	}
 	
 	private void createReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
+//		System.out.println("entre reoccuring");		//for debug
 		ArrayList<String> arrList = new ArrayList<String>(Arrays.asList(timeStr.split("\\b(until)\\b")));
 		for(int i=0; i<arrList.size(); i++) {
 			System.out.println(i +" "+arrList.get(i));
@@ -268,7 +272,7 @@ public class CommandParser {
 			cmd.setCommandType(Command.TYPE.INVALID);
 			return;
 		}
-		System.out.println(endDate.toString());
+//		System.out.println(endDate.toString());		//for debug
 		String str = arrList.get(0).replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "").trim();
 		System.out.println(str);
 		if (convertDayToInt(str)==0) {
@@ -277,7 +281,8 @@ public class CommandParser {
 			return;
 		}
 		cmd.setKey(1);
-		Date baseDate = getNextOccurenceOfDay(new Date(), convertDayToInt(arrList.get(0)));
+		Date baseDate = getNextOccurenceOfDay(new Date(), convertDayToInt(str));
+//		System.out.println("base date "+baseDate.toString());	//for debug
 		while(baseDate.getTime()<endDate.getTime()) {
 			dates.add(baseDate);
 			baseDate = getNextOccurenceOfDay(baseDate, convertDayToInt(arrList.get(0)));
