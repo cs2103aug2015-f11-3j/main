@@ -1,14 +1,18 @@
 package src;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.util.Callback;
 
 public class OverDueController extends BorderPane{
 	private static final String UPDATE_TABLE_FXML = "/layout/Overdue.fxml";
@@ -24,15 +28,9 @@ public class OverDueController extends BorderPane{
 	
 	@FXML
 	private TableColumn<Message, String> dateColumn;
-	
-	/*ObservableList<Message> data = FXCollections.observableArrayList(
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today"),
-			new Message(count++, "do homework", "today")
-			
-	);*/
+
+	@FXML
+	private TableColumn<Message, Boolean> statusColumn;
 	
 	public OverDueController(ObservableList<Message> data){
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(UPDATE_TABLE_FXML));
@@ -49,7 +47,27 @@ public class OverDueController extends BorderPane{
         overDueTable.setItems(data);
         indexColumn.setCellValueFactory(new PropertyValueFactory<Message, Integer>("Index"));
         eventColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Event"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Date"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Date"));   
+        statusColumn.setCellValueFactory(new PropertyValueFactory<Message, Boolean>("Status"));
         
+        statusColumn.setCellFactory(column ->{
+        	return new TableCell<Message, Boolean>(){
+        		@Override
+				protected void updateItem(Boolean item, boolean empty) {
+					super.updateItem(item, empty);
+					if (!empty) {
+						//setText(item.toString());
+						if (item) {
+							setStyle("-fx-background-color: green");
+							//getStyleClass().add("highlightedRow");
+						}
+						else{
+							setStyle("-fx-background-color: yellow");
+						}
+					}
+				}
+        	};
+        });
+       
 	}
 }
