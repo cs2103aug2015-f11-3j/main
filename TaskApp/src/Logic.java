@@ -120,7 +120,7 @@ public class Logic {
 			break;		
 
 		case EXIT:
-			System.exit(1);
+			System.exit(0);
 			break;
 			
 		default:
