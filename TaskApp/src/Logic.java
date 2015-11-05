@@ -69,7 +69,6 @@ public class Logic {
 	 */
 	public void executeCommand(String userCommand){
 		log.entering(getClass().getName(), "executeCommand with "+userCommand);
-//		prepareSystem();
 		
 		Command command;
 		command =  parser.parse(userCommand);
@@ -120,6 +119,10 @@ public class Logic {
 			consoleList.add("file is moved from "+ originalLocation +" to "+command.getTask());
 			break;		
 
+		case EXIT:
+			System.exit(1);
+			break;
+			
 		default:
 			log.log(Level.INFO, "Entered command: "+command.getTask());
 			consoleList.add(ERROR_KEYWORD);
@@ -129,9 +132,6 @@ public class Logic {
 		store.updateToFile(taskFile, taskListString);
 	}
 
-
-
-	
 	//Undo the latest change to the task manager
 	private void undoTask() {
 		if (!oldTaskList.isEmpty()) {
@@ -147,12 +147,19 @@ public class Logic {
 	}
 
 	//Searches for all the task in a specific dare and stores them in an ArrayList
+	@SuppressWarnings("deprecation")
 	private void searchForDate(Command command) {
 		searchList.clear();
 		
 		consoleList.add("Search for date: " + command.getDates());
 		for (Tasks curTask : taskList){
-			if(curTask.getDate().equals(command.getDates())){
+			if(curTask.getDate().get(curTask.getDate().size()-1).getDate()
+					==(command.getDates().get(command.getDates().size()-1).getDate())&&
+					curTask.getDate().get(curTask.getDate().size()-1).getMonth()
+					==(command.getDates().get(command.getDates().size()-1).getMonth())&&
+					curTask.getDate().get(curTask.getDate().size()-1).getYear()
+					==(command.getDates().get(command.getDates().size()-1).getYear())){
+				
 				searchList.add(curTask);
 			}
 		}
@@ -212,22 +219,8 @@ public class Logic {
 					
 					boolean status = taskList.get(j).getStatus();
 					
-					System.out.println();
-					System.out.println();
-					System.out.println();
-					
-					System.out.println(taskList.get(j).getStatus());
-
 					taskList.get(j).setStatus(!status);
 					consoleList.add("Task with index:"+i+" has had it's status updated");
-					
-					System.out.println(taskList.get(j).getStatus());
-
-				
-					System.out.println();
-					System.out.println();
-					System.out.println();
-
 				}
 			}
 		} else {
