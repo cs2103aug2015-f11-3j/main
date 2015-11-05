@@ -9,29 +9,36 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 
+/**
+ * 
+ * @author CYC
+ *
+ */
 public class CommandParser {
-	
 	private static final String USER_COMMAND_ADD = "add";
     private static final String USER_COMMAND_DELETE = "delete";
     private static final String USER_COMMAND_DELETE_INDEX = "deletei";
     private static final String USER_COMMAND_READ = "read";
-    private static final String USER_COMMAND_UPDATE_BY_NAME = "update";
-    private static final String USER_COMMAND_UPDATE_STATUS = "statusi";
-    private static final String USER_COMMAND_UPDATE_BY_INDEX = "updatei";
+    private static final String USER_COMMAND_UPDATE_BY_INDEX = "update";
+    private static final String USER_COMMAND_UPDATE_STATUS_BY_INDEX = "status";
     private static final String USER_COMMAND_SEARCH = "search";
     private static final String USER_COMMAND_UNDO = "undo";
     private static final String USER_COMMAND_EXIT = "exit";
     private static final String USER_COMMAND_MOVE_FILE ="file";
     
+    private static ArrayList<SimpleDateFormat> KNOWPATTERNS;
+    
     
     private static final String PARSE_PATTERN = "EEE MMM dd HH:mm:ss Z yyyy";
     private static final String END_OF_DAY_PATTERN = "EEE MMM dd 23:59:59 Z yyyy";
 	
-	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON", "EVERY", "UNTIL"};
+	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON"};
+	
 	private static final String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 	private static final String[] DAY_OF_THE_WEEK = {"MON", "TUE","WED","THU","FRI","SAT","SUN"};
 	
 	public CommandParser() {
+		KNOWPATTERNS = new ArrayList<SimpleDateFormat>();
 	}
 	
 	public ArrayList<Tasks> parseArrList(ArrayList<String> arrList) {
@@ -68,6 +75,7 @@ public class CommandParser {
 	}
 
 	public Command parse(String input) {
+		initTimeFormatBank();
 		Command command;
 		String commandTypeString = getFirstWord(input);
 		String remainStr = removeString(input, commandTypeString);
@@ -85,16 +93,12 @@ public class CommandParser {
         		command = initDeleteIndex(remainStr);
         		break;
         		
-        	case USER_COMMAND_UPDATE_BY_NAME :
-        		command = initUpdateCommandByName(remainStr);
-        		break;
-        		
         	case USER_COMMAND_UPDATE_BY_INDEX :
-        		command = initUpdateCommandByIndex(remainStr);
+        		command = initUpdateDate(remainStr);
         		break;
         	
-        	case USER_COMMAND_UPDATE_STATUS :
-        		command = initUpdateStatusCommand(remainStr);
+        	case USER_COMMAND_UPDATE_STATUS_BY_INDEX :
+        		command = initUpdateStatus(remainStr);
         		break;
         		
         	case USER_COMMAND_READ :
@@ -132,16 +136,16 @@ public class CommandParser {
         if(str.equalsIgnoreCase("today")) {
         	date = endOfDay(date);
         }
-        else if(str.equalsIgnoreCase("tmr")){
-        	Calendar c = Calendar.getInstance(); 
-        	c.setTime(date); 
-        	c.add(Calendar.DATE, 1);
-        	date = endOfDay(c.getTime());
-        }
-        else if(str.equalsIgnoreCase("this week")){
-        	date = getNextOccurenceOfDay(date, Calendar.SUNDAY);
-        	date = endOfDay(date);
-        }
+//        else if(str.equalsIgnoreCase("tmr")){
+//        	Calendar c = Calendar.getInstance(); 
+//        	c.setTime(date); 
+//        	c.add(Calendar.DATE, 1);
+//        	date = endOfDay(c.getTime());
+//        }
+//        else if(str.equalsIgnoreCase("this week")){
+//        	date = getNextOccurenceOfDay(date, Calendar.SUNDAY);
+//        	date = endOfDay(date);
+//      }
         else {
         	date = convertToDate(str);
         	if(date==null) {
@@ -160,32 +164,39 @@ public class CommandParser {
 		  int dow = cal.get(Calendar.DAY_OF_WEEK);  
 		  int numDays = 7 - ((dow - dayOfWeek) % 7 + 7) % 7;  
 		  cal.add(Calendar.DAY_OF_YEAR, numDays); 
-		  cal.set(Calendar.HOUR_OF_DAY, 0);
-		  cal.set(Calendar.MINUTE, 0);
-		  cal.set(Calendar.SECOND, 0);
 		  return cal.getTime();  
 	} 
 	
+	private Date startOfDay(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		return cal.getTime();
+	}
+	
 	private Date endOfDay(Date date) {
-		SimpleDateFormat standardSdf = new SimpleDateFormat(PARSE_PATTERN);
-        SimpleDateFormat endOfDay = new SimpleDateFormat(END_OF_DAY_PATTERN);
-        String str = endOfDay.format(date);
-		try {
-			date = standardSdf.parse(str);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return date;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 59);
+		
+//		SimpleDateFormat standardSdf = new SimpleDateFormat(PARSE_PATTERN);
+//        SimpleDateFormat endOfDay = new SimpleDateFormat(END_OF_DAY_PATTERN);
+//        String str = endOfDay.format(date);
+//		try {
+//			date = standardSdf.parse(str);
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//		}
+		return cal.getTime();
 	}
-
-	private Command initUpdateCommandByName(String remainStr) {
+	
+	// update date to task represented by unique index
+	private Command initUpdateDate(String remainStr) {
 		Command cmd = new Command(Command.TYPE.UPDATE);
-		createTask(remainStr, cmd);
-		return cmd;
-	}
-
-	private Command initUpdateCommandByIndex(String remainStr) {
-		Command cmd = new Command(Command.TYPE.UPDATEI);
 		ArrayList<Date> dates = new ArrayList<Date>();
 		String str = getFirstWord(remainStr);
 		if(!isNumeric(str)) {
@@ -198,11 +209,11 @@ public class CommandParser {
 		return cmd;
 	}
 	//update status with task index
-	private Command initUpdateStatusCommand(String remainStr) {
+	private Command initUpdateStatus(String remainStr) {
 		if(!isNumeric(remainStr)) {
 			return initInvalidCommand();
 		}
-		Command cmd = new Command(Command.TYPE.UPDATES);
+		Command cmd = new Command(Command.TYPE.STATUS);
 		cmd.setTask(remainStr);
 		return cmd;
 	}
@@ -250,19 +261,20 @@ public class CommandParser {
 		cmd.setTask(event);
 		String timeStr = removeString(remainStr, event);
 		timeStr=timeStr.toLowerCase();
+		System.out.println("timeStr is " +timeStr);
 		if (timeStr.contains("every") && timeStr.contains("until")) {
 			System.out.println("entre reoccurring task");
 			System.out.println(timeStr);
 			createReoccurringTimeConstraint(cmd, timeStr, dates);			
 		}else {
-			
+			System.out.println("entre noraml task");
 			createTimeConstraint(cmd, timeStr, dates);
 		}
 		cmd.setDates(dates);
 	}
 	
 	private void createReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
-//		System.out.println("entre reoccuring");		//for debug
+		System.out.println("entre reoccuring");		//for debug
 		ArrayList<String> arrList = new ArrayList<String>(Arrays.asList(timeStr.split("\\b(until)\\b")));
 		for(int i=0; i<arrList.size(); i++) {
 			System.out.println(i +" "+arrList.get(i));
@@ -272,23 +284,34 @@ public class CommandParser {
 			cmd.setCommandType(Command.TYPE.INVALID);
 			return;
 		}
-//		System.out.println(endDate.toString());		//for debug
+		System.out.println("end Date "+endDate.toString());		//for debug
 		String str = arrList.get(0).replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "").trim();
 		System.out.println(str);
-		if (convertDayToInt(str)==0) {
+		int dayOfWeek = convertDayToInt(str);
+		if (dayOfWeek==-1) {
 			System.out.println("entre escape 1");
 			cmd.setCommandType(Command.TYPE.INVALID);
 			return;
 		}
 		cmd.setKey(1);
-		Date baseDate = getNextOccurenceOfDay(new Date(), convertDayToInt(str));
-//		System.out.println("base date "+baseDate.toString());	//for debug
+		if(isSameDay(new Date(), dayOfWeek)) {
+			dates.add(startOfDay(new Date()));
+		}
+		Date baseDate = getNextOccurenceOfDay(new Date(), dayOfWeek);
+		System.out.println("base date "+baseDate.toString());	//for debug
 		while(baseDate.getTime()<endDate.getTime()) {
 			dates.add(baseDate);
-			baseDate = getNextOccurenceOfDay(baseDate, convertDayToInt(arrList.get(0)));
+			baseDate = startOfDay(getNextOccurenceOfDay(baseDate, dayOfWeek));
+			System.out.println("base date in loop "+baseDate.toString());
 		}
 		cmd.setDates(dates);
 			
+	}
+
+	private boolean isSameDay(Date date, int dayOfWeek) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);	 
+		return dayOfWeek == cal.get(Calendar.DAY_OF_WEEK);
 	}
 
 	private void createTimeConstraint(Command cmd, String str, ArrayList<Date> dates) {
@@ -304,9 +327,8 @@ public class CommandParser {
 	//oct 3 2015
 	//3 oct 2015
 	private void convertToDate(Command cmd, ArrayList<String> tokens, ArrayList<Date> dateList) {
-		ArrayList<SimpleDateFormat> knownPatterns = initTimeFormatBank();
 		for(int i=0; i<tokens.size(); i++) {
-			for (SimpleDateFormat pattern : knownPatterns) {
+			for (SimpleDateFormat pattern : KNOWPATTERNS) {
 				try {
 					if(pattern.toLocalizedPattern().length()==tokens.get(i).trim().length()){
 						pattern.setLenient(false);
@@ -326,8 +348,7 @@ public class CommandParser {
 	}
 	
 	public Date convertToDate(String str) {
-		ArrayList<SimpleDateFormat> knownPatterns = initTimeFormatBank();
-		for (SimpleDateFormat pattern : knownPatterns) {
+		for (SimpleDateFormat pattern : KNOWPATTERNS) {
 			try {
 				if(pattern.toLocalizedPattern().length()==str.trim().length()){
 					pattern.setLenient(false);
@@ -341,19 +362,17 @@ public class CommandParser {
 		return null;
 	}
 
-	private ArrayList<SimpleDateFormat> initTimeFormatBank() {
-		ArrayList<SimpleDateFormat> knownPatterns = new ArrayList<SimpleDateFormat>();
-		knownPatterns.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
-		knownPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
-		knownPatterns.add(new SimpleDateFormat("dd/MM/yyyy"));
-		knownPatterns.add(new SimpleDateFormat("d/MM/yyyy"));
-		knownPatterns.add(new SimpleDateFormat("d/M/yyyy"));
-		knownPatterns.add(new SimpleDateFormat("dd/M/yyyy"));
-		knownPatterns.add(new SimpleDateFormat("MMM d yyyy"));
-		knownPatterns.add(new SimpleDateFormat("MMM dd yyyy"));
-		knownPatterns.add(new SimpleDateFormat("d MMM yyyy"));
-		knownPatterns.add(new SimpleDateFormat("dd MMM yyyy"));
-		return knownPatterns;
+	private void initTimeFormatBank() {	
+		KNOWPATTERNS.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("HHmm MMM d yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("dd/MM/yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("d/MM/yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("d/M/yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("dd/M/yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("MMM d yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("MMM dd yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("d MMM yyyy"));
+		KNOWPATTERNS.add(new SimpleDateFormat("dd MMM yyyy"));
 	}
 	
 	//EXIT
@@ -392,6 +411,7 @@ public class CommandParser {
 		String[] pieces = str.split(" ");
 		for (int i = 0; i < pieces.length; i++) {
 			System.out.println(i+ " "+pieces[i]);
+			System.out.println(toAppend(pieces,i));
 			if(toAppend(pieces, i)) {
 				sb.append(" ");
 				sb.append(pieces[i].trim());
@@ -435,9 +455,13 @@ public class CommandParser {
 		return false;
 	}
 	
+	private boolean isReoccurringKeyword(String str) {
+		return str.equalsIgnoreCase("EVERY") || str.equalsIgnoreCase("UNTIL") || str.equalsIgnoreCase("EVERYDAY");
+	}
+	
 	private boolean toAppend(String[] arr, int i) {
 //		assert i<arr.length;
-		if(isPrepositionKeyword(arr[i])==false && isTimeFormat(arr[i])==false) {
+		if(!isPrepositionKeyword(arr[i]) && !isTimeFormat(arr[i]) && !isReoccurringKeyword(arr[i])) {
 			return true;
 		}
 		if(isPrepositionKeyword(arr[i])==true && i <arr.length-1 && !isTimeFormat(arr[i+1])) {
@@ -478,7 +502,7 @@ public class CommandParser {
     			i = 1;
     			break;
     		default :
-    			i = 0;
+    			i = -1;
 		}
     	return i;
 	}
