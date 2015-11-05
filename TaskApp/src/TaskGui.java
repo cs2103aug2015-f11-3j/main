@@ -43,6 +43,9 @@ public class TaskGui extends Application{
 	private ListViewController listViewController;
 	private UpdateTableController updateTableController;
 	private TodoTableController todoTableController;
+	private TodoController todoController;
+	private OverDueController overDueController;
+	private SearchController searchController;
 	private OverdueTableController overdueTableController;
 	//private CommandBarController commandBarController;
 	
@@ -146,7 +149,7 @@ public class TaskGui extends Application{
 		root.getChildren().add(listViewController);
 		AnchorPane.setTopAnchor(listViewController, 10.0);
 		AnchorPane.setLeftAnchor(listViewController, 15.0);
-		AnchorPane.setBottomAnchor(listViewController, 70.0);
+		AnchorPane.setBottomAnchor(listViewController, 80.0);
 		
 		//container.add(listViewController, 0, 0);
 		//root.setTop(listViewController);
@@ -215,33 +218,39 @@ public class TaskGui extends Application{
 	private void addSearchTableView(ArrayList<Tasks> search) {
 		// TODO Auto-generated method stub
 		data2 = getInitialTableData3(search);
-		updateTableController = new UpdateTableController(data2);
-		root.getChildren().add(updateTableController);
-		AnchorPane.setTopAnchor(updateTableController, 25.0);
-		AnchorPane.setLeftAnchor(updateTableController, 950.0);
-		AnchorPane.setBottomAnchor(updateTableController, 70.0);
+		searchController = new SearchController(data2);
+		root.getChildren().add(searchController);
+		AnchorPane.setTopAnchor(searchController, 10.0);
+		AnchorPane.setLeftAnchor(searchController, 950.0);
+		AnchorPane.setBottomAnchor(searchController, 80.0);
 		
 	}
 
 	private void addOverdueTableView(ArrayList<Tasks> discard) {
 		// TODO Auto-generated method stub
 		data1 = getInitialTableData3(discard);
-		overdueTableController = new OverdueTableController(data1);
-		root.getChildren().add(overdueTableController);
-		AnchorPane.setTopAnchor(overdueTableController, 25.0);
-		AnchorPane.setLeftAnchor(overdueTableController, 680.0);
-		AnchorPane.setBottomAnchor(overdueTableController, 70.0);
+		overDueController = new OverDueController(data1);
+		root.getChildren().add(overDueController);
+		AnchorPane.setTopAnchor(overDueController, 10.0);
+		AnchorPane.setLeftAnchor(overDueController, 680.0);
+		AnchorPane.setBottomAnchor(overDueController, 80.0);
 		
 	}
 
 	private void addTodoTableView(ArrayList<Tasks> toDoTask) {
 		// TODO Auto-generated method stub
 		data = getInitialTableData3(toDoTask);
-		todoTableController = new TodoTableController(data);
-		root.getChildren().add(todoTableController);
+		//todoTableController = new TodoTableController(data);
+		todoController = new TodoController(data);
+		
+		/*root.getChildren().add(todoTableController);
 		AnchorPane.setTopAnchor(todoTableController, 25.0);
 		AnchorPane.setLeftAnchor(todoTableController, 410.0);
-		AnchorPane.setBottomAnchor(todoTableController, 70.0);
+		AnchorPane.setBottomAnchor(todoTableController, 80.0);*/
+		root.getChildren().add(todoController);
+		AnchorPane.setTopAnchor(todoController, 10.0);
+		AnchorPane.setLeftAnchor(todoController, 410.0);
+		AnchorPane.setBottomAnchor(todoController, 80.0);
 	}
 	
 	private ObservableList<Message> getInitialTableData3(ArrayList<Tasks> listTask) {
