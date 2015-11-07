@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -121,6 +123,10 @@ public class Logic {
             store.updateToFile(directoryFile, taskFile.getAbsolutePath());
             consoleList.add("file is moved from " + originalLocation + " to " + command.getTask());
             break;
+            
+        case INVALID:
+            consoleList.add(ERROR_KEYWORD);
+            break;
 
         case EXIT:
             System.exit(0);
@@ -128,11 +134,29 @@ public class Logic {
 
         default:
             log.log(Level.INFO, "Entered command: " + command.getTask());
-            consoleList.add(ERROR_KEYWORD);
             break;
         }
-
+        
+        sortTaskList();
         store.updateToFile(taskFile, taskListString);
+    }
+
+    private void sortTaskList() {
+                
+        Collections.sort(taskList, new Comparator<Tasks>() {
+            public int compare(Tasks task1, Tasks task2) {
+                
+                if(task1.getDate().isEmpty() && (!task2.getDate().isEmpty())){
+                    return 1;
+                }else if(task2.getDate().isEmpty() && (!task1.getDate().isEmpty())){
+                    return -1;
+                }else if(task1.getDate().isEmpty()&&task2.getDate().isEmpty()){
+                    return 0;
+                }
+                return task1.getDate().get(task1.getDate().size()-1).
+                        compareTo(task2.getDate().get(task1.getDate().size()-1));
+            }
+        });
     }
 
     // Undo the latest change to the task manager
@@ -157,14 +181,16 @@ public class Logic {
 
         consoleList.add("Search for date: " + command.getDates());
         for (Tasks curTask : taskList) {
-            if (curTask.getDate().get(curTask.getDate().size() - 1)
-                    .getDate() == (command.getDates().get(command.getDates().size() - 1).getDate())
-                    && curTask.getDate().get(curTask.getDate().size() - 1)
-                            .getMonth() == (command.getDates().get(command.getDates().size() - 1).getMonth())
-                    && curTask.getDate().get(curTask.getDate().size() - 1)
-                            .getYear() == (command.getDates().get(command.getDates().size() - 1).getYear())) {
-
-                searchList.add(curTask);
+            if(!curTask.getDate().isEmpty()){
+                if (curTask.getDate().get(curTask.getDate().size() - 1)
+                        .getDate() == (command.getDates().get(command.getDates().size() - 1).getDate())
+                        && curTask.getDate().get(curTask.getDate().size() - 1)
+                                .getMonth() == (command.getDates().get(command.getDates().size() - 1).getMonth())
+                        && curTask.getDate().get(curTask.getDate().size() - 1)
+                                .getYear() == (command.getDates().get(command.getDates().size() - 1).getYear())) {
+    
+                    searchList.add(curTask);
+                }
             }
         }
     }
@@ -229,6 +255,7 @@ public class Logic {
         }
     }
 
+    //Creates an new ArrayList that is going to be used for the UNDO command
     private void setOldTask() {
         oldTaskList.clear();
         for(int i=0;i<taskList.size();i++){
@@ -415,23 +442,30 @@ public class Logic {
                 discardList.add(curTask);
             } else{
                 if (!curTask.getDate().isEmpty()) {
-                    if (curTask.getDate().get(curTask.getDate().size() - 1).before(today)&&
-                            curTask.getDate().get(curTask.getDate().size() - 1)
-                            .getDate() != today.getDate()&&curTask.getDate().get(curTask.getDate().size() - 1)
-                            .getMonth() != today.getMonth()&&curTask.getDate().get(curTask.getDate().size() - 1)
-                            .getYear() != today.getYear()) {
+                    if (curTask.getDate().get(curTask.getDate().size() - 1).before(today)) {
                         discardList.add(curTask);
                     }
+                    if (curTask.getDate().get(curTask.getDate().size() - 1)
+                        .getDate() == today.getDate()&&curTask.getDate().get(curTask.getDate().size() - 1)
+                        .getMonth() == today.getMonth()&&curTask.getDate().get(curTask.getDate().size() - 1)
+                        .getYear() == today.getYear()){
+                    discardList.remove(curTask);
                 }
+                }
+                
             }
-            
-          
         }
-        
-       
-
+        System.out.println("!!!!!!!!"+discardList.size());
+ 
         return discardList;
     }
+    
+    
+//    &&
+//    curTask.getDate().get(curTask.getDate().size() - 1)
+//    .getDate() != today.getDate()&&curTask.getDate().get(curTask.getDate().size() - 1)
+//    .getMonth() != today.getMonth()&&curTask.getDate().get(curTask.getDate().size() - 1)
+//    .getYear() != today.getYear()
 
     /**
      * This method returns the ArrayList of the items found in the file that
