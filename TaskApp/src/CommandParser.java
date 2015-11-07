@@ -9,7 +9,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 
-/**
+/**CommandParser parses the user's input to a command object that appropriate 
+ * fields initialized. 
  * 
  * @author CYC
  *
@@ -99,37 +100,9 @@ public class CommandParser {
 		return command;
 	}
 	
-	/**This method is to add known patterns of date to the pattern bank
-	 * 
-	 * @return knowPatterns: the known pattern bank that will be used in parser.
-	 */
-	private  ArrayList<SimpleDateFormat> initTimeFormatBank() {    
-        ArrayList<SimpleDateFormat> knowPatterns = new ArrayList<SimpleDateFormat>();
-        knowPatterns.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
-        knowPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
-        knowPatterns.add(new SimpleDateFormat("HHmm dd/MM/yyyy"));
-        knowPatterns.add(new SimpleDateFormat("HHmm d/MM/yyyy"));
-        knowPatterns.add(new SimpleDateFormat("HHmm dd/M/yyyy"));
-        knowPatterns.add(new SimpleDateFormat("HHmm d/M/yyyy"));
-        knowPatterns.add(new SimpleDateFormat("dd/MM/yyyy"));
-        knowPatterns.add(new SimpleDateFormat("d/MM/yyyy"));
-        knowPatterns.add(new SimpleDateFormat("d/M/yyyy"));
-        knowPatterns.add(new SimpleDateFormat("dd/M/yyyy"));
-        knowPatterns.add(new SimpleDateFormat("MMM d yyyy"));
-        knowPatterns.add(new SimpleDateFormat("MMM dd yyyy"));
-        knowPatterns.add(new SimpleDateFormat("d MMM yyyy"));
-        knowPatterns.add(new SimpleDateFormat("dd MMM yyyy"));
-        return knowPatterns;
-    }
-	
-	/**This method is to create the command based on the remaining String, 
-	 * if the remaining string cannot interpreted correctly, invalid type 
-	 * command will be created, otherwise read command is created.
-	 * 
-	 * @param String
-	 * @return command 
-	 *                 
-	 */
+    // ================================================================
+    // Create update read event on specific date command method
+    // ================================================================
 	private Command initReadCommand(String str) {
         Command cmd = new Command(Command.TYPE.READ);
         ArrayList<Date> dates = new ArrayList<Date>();
@@ -151,41 +124,9 @@ public class CommandParser {
         return cmd;
     }
 	
-	/**This method is to calculate the next nearest occurrence of specific day of the week after a specific date
-	 * 
-	 * @param Date: the reference date 
-	 * @param int: integer representation of day of the week
-	 * @return Date: next occurrence of the day
-	 */
-	private Date getNextOccurenceOfDay(Date today, int dayOfWeek) {  
-	    Calendar cal = Calendar.getInstance();  
-		cal.setTime(today);  
-		int dow = cal.get(Calendar.DAY_OF_WEEK);  
-		int numDays = 7 - ((dow - dayOfWeek) % 7 + 7) % 7;  
-		cal.add(Calendar.DAY_OF_YEAR, numDays); 
-		return cal.getTime();  
-	} 
-	
-	
-	private Date startOfDay(Date date) {
-	    Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		return cal.getTime();
-	}
-	
-	private Date endOfDay(Date date) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 59);
-		cal.set(Calendar.SECOND, 59);
-		return cal.getTime();
-	}
-	
-	// update date to task represented by unique index
+    // ================================================================
+    // Create update date command method
+    // ================================================================
 	private Command initUpdateDate(String remainStr) {
 		Command cmd = new Command(Command.TYPE.UPDATE);
 		ArrayList<Date> dates = new ArrayList<Date>();
@@ -199,7 +140,10 @@ public class CommandParser {
 		cmd.setDates(dates);
 		return cmd;
 	}
-	//update status with task index
+	
+	// ================================================================
+    // Create update status command method
+    // ================================================================
 	private Command initUpdateStatus(String remainStr) {
 		if(!isNumeric(remainStr)) {
 			return initInvalidCommand();
@@ -209,7 +153,9 @@ public class CommandParser {
 		return cmd;
 	}
 	
-	//delete by task index
+	// ================================================================
+    // Create delete by index command method 
+    // ================================================================
 	private Command initDeleteIndex(String remainStr) {
 		if(!isNumeric(remainStr)) {
 			return initInvalidCommand();
@@ -219,13 +165,18 @@ public class CommandParser {
 		return cmd;
 	}
 	
-	//delete by string	
+	// ================================================================
+    // Create delete by a given string command method 
+    // ================================================================
 	private Command initDeleteComamnd(String remainStr) {
 		Command cmd = new Command(Command.TYPE.DELETE);
 		cmd.setTask(remainStr);
 		return cmd;
 	}
 
+	// ================================================================
+    // Create file moving command method 
+    // ================================================================
 	private Command initFileLocation(String directory) {
 		if(directory.length()==0) {
 			return initInvalidCommand();
@@ -242,7 +193,41 @@ public class CommandParser {
 		}	
 		return cmd;
 	}
-	//add command
+	
+	// ================================================================
+    // Create exit command method 
+    // ================================================================
+    private Command initExitCommand() {
+        return new Command(Command.TYPE.EXIT);
+    }
+    // ================================================================
+    // Create invalid command method 
+    // ================================================================
+    private Command initInvalidCommand() {
+        return new Command(Command.TYPE.INVALID);
+    }
+    // ================================================================
+    // Create undo string command method 
+    // ================================================================
+    private Command initUndoCommand() {
+        return new Command(Command.TYPE.UNDO);
+    }
+
+    // ================================================================
+    // Create search by a given string command method 
+    // ================================================================
+    private Command initSearchCommand(String remainStr) {
+        if(remainStr.length()==0) {
+            return initInvalidCommand();
+        }
+        Command cmd = new Command(Command.TYPE.SEARCH);
+        cmd.setTask(remainStr);
+        return cmd;
+    }
+    
+    // ================================================================
+    // Create add command method 
+    // ================================================================
 	private Command initAddCommand(String remainStr) {
 		Command cmd = new Command(Command.TYPE.ADD);
 		createTask(remainStr, cmd);
@@ -254,7 +239,6 @@ public class CommandParser {
 		String event = initEvent(remainStr);
 		cmd.setTask(event);
 		String timeStr = removeString(remainStr, event).toLowerCase();
-		System.out.println("timeStr is " +timeStr);
 		if (timeStr.contains("every") && timeStr.contains("until")) {
 			createReoccurringTimeConstraint(cmd, timeStr, dates);			
 		}
@@ -268,7 +252,6 @@ public class CommandParser {
 	}
 	
 	private void createDurationReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
-        // TODO Auto-generated method stub
 	    System.out.println("entre duration reoccur");
 	    ArrayList<String> arrList = new ArrayList<String>(Arrays.asList(timeStr.split("\\b(to)\\b")));
 	    Date endDate = convertToDate(arrList.get(arrList.size()-1).trim());
@@ -280,12 +263,9 @@ public class CommandParser {
         }
 	    endDate = endOfDay(endDate);
 	    startDate = startOfDay(startDate);
-	    System.out.println("start "+startDate.toString());
-	    System.out.println("end "+endDate.toString());
 	    String str = arrList.get(0).replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "").trim();
 	    int dayOfWeek = convertDayToInt(str);
 	    if (dayOfWeek==-1) {
-            System.out.println("entre escape 1");
             cmd.setCommandType(Command.TYPE.INVALID);
             return;
         }
@@ -294,11 +274,9 @@ public class CommandParser {
             dates.add(startDate);
         }
         Date baseDate = getNextOccurenceOfDay(startDate, dayOfWeek);
-        System.out.println("base date "+baseDate.toString());   //for debug
         while(baseDate.getTime()<endDate.getTime()) {
             dates.add(baseDate);
             baseDate = startOfDay(getNextOccurenceOfDay(baseDate, dayOfWeek));
-            System.out.println("base date in loop "+baseDate.toString());
         }
         cmd.setDates(dates); 
 	}
@@ -315,12 +293,9 @@ public class CommandParser {
 			return;
 		}
 		endDate = endOfDay(endDate);
-		System.out.println("end Date "+endDate.toString());		//for debug
 		String str = arrList.get(0).replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "").trim();
-		System.out.println(str);
 		int dayOfWeek = convertDayToInt(str);
 		if (dayOfWeek==-1) {
-			System.out.println("entre escape 1");
 			cmd.setCommandType(Command.TYPE.INVALID);
 			return;
 		}
@@ -329,20 +304,12 @@ public class CommandParser {
 			dates.add(startOfDay(new Date()));
 		}
 		Date baseDate = getNextOccurenceOfDay(new Date(), dayOfWeek);
-		System.out.println("base date "+baseDate.toString());	//for debug
 		while(baseDate.getTime()<endDate.getTime()) {
 			dates.add(baseDate);
 			baseDate = startOfDay(getNextOccurenceOfDay(baseDate, dayOfWeek));
-			System.out.println("base date in loop "+baseDate.toString());
 		}
 		cmd.setDates(dates);
 			
-	}
-
-	private boolean isSameDay(Date date, int dayOfWeek) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);	 
-		return dayOfWeek == cal.get(Calendar.DAY_OF_WEEK);
 	}
 
 	private void createTimeConstraint(Command cmd, String str, ArrayList<Date> dates) {
@@ -394,29 +361,6 @@ public class CommandParser {
 		return null;
 	}
 
-	//EXIT
-	private Command initExitCommand() {
-        return new Command(Command.TYPE.EXIT);
-    }
-	//INVALID
-	private Command initInvalidCommand() {
-        return new Command(Command.TYPE.INVALID);
-    }
-	//UNDO
-	private Command initUndoCommand() {
-        return new Command(Command.TYPE.UNDO);
-    }
-
-	//SEARCH a string
-	private Command initSearchCommand(String remainStr) {
-		if(remainStr.length()==0) {
-        	return initInvalidCommand();
-        }
-		Command cmd = new Command(Command.TYPE.SEARCH);
-        cmd.setTask(remainStr);
-        return cmd;
-    }
-	
 	private String getFirstWord(String str) {
 		return str.trim().split(" ")[0];
 	}
@@ -478,8 +422,13 @@ public class CommandParser {
 		return str.equalsIgnoreCase("EVERY") || str.equalsIgnoreCase("UNTIL") || str.equalsIgnoreCase("EVERYDAY");
 	}
 	
+	private boolean isSameDay(Date date, int dayOfWeek) {
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(date);   
+	    return dayOfWeek == cal.get(Calendar.DAY_OF_WEEK);
+	}
+	
 	private boolean toAppend(String[] arr, int i) {
-//		assert i<arr.length;
 		if(!isPrepositionKeyword(arr[i]) && !isTimeFormat(arr[i]) && !isReoccurringKeyword(arr[i])) {
 			return true;
 		}
@@ -501,23 +450,30 @@ public class CommandParser {
 		int i;
 		switch (str.toLowerCase()) {
     		case "mon" :
+    		case "monday" :
     			i = 2;
     			break;
     		case "tue" :
+    		case "tuesday" :
     			i = 3;
     			break;
     		case "wed" :
+    		case "wednesday" :
     			i = 4;
     		case "thu" :
+    		case "thursday" :
     			i = 5;
     			break;
     		case "fri" :
+    		case "friday" :
     			i = 6;
     			break;
     		case "sat" :
+    		case "saturday" :
     			i = 7;
     			break;
     		case "sun" :
+    		case "sunday" :
     			i = 1;
     			break;
     		default :
@@ -525,5 +481,61 @@ public class CommandParser {
 		}
     	return i;
 	}
+	
+	/**This method is to calculate the next nearest occurrence of specific day of the week after a specific date
+     * 
+     * @param Date: the reference date 
+     * @param int: integer representation of day of the week
+     * @return Date: next occurrence of the day
+     */
+    private Date getNextOccurenceOfDay(Date today, int dayOfWeek) {  
+        Calendar cal = Calendar.getInstance();  
+        cal.setTime(today);  
+        int dow = cal.get(Calendar.DAY_OF_WEEK);  
+        int numDays = 7 - ((dow - dayOfWeek) % 7 + 7) % 7;  
+        cal.add(Calendar.DAY_OF_YEAR, numDays); 
+        return cal.getTime();  
+    } 
+      
+    private Date startOfDay(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        return cal.getTime();
+    }
+    
+    private Date endOfDay(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        return cal.getTime();
+    }
+    
+    /**This method is to add known patterns of date to the pattern bank
+     * 
+     * @return knowPatterns: the known pattern bank that will be used in parser.
+     */
+    private  ArrayList<SimpleDateFormat> initTimeFormatBank() {    
+        ArrayList<SimpleDateFormat> knowPatterns = new ArrayList<SimpleDateFormat>();
+        knowPatterns.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm dd/MM/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm d/MM/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm dd/M/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm d/M/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("dd/MM/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("d/MM/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("d/M/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("dd/M/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("MMM d yyyy"));
+        knowPatterns.add(new SimpleDateFormat("MMM dd yyyy"));
+        knowPatterns.add(new SimpleDateFormat("d MMM yyyy"));
+        knowPatterns.add(new SimpleDateFormat("dd MMM yyyy"));
+        return knowPatterns;
+    }
 }
 	
