@@ -22,6 +22,8 @@ import java.util.logging.Logger;
  *
  */
 public class Logic {
+    
+    private static Logic logic;
 
     private static final String INDEX_OUT_OF_BOUNDS = "Index you searched for is out of bounds";
     private static final String UNDO_COMMAND_PERFORMED = "UNDO command performed";
@@ -46,7 +48,7 @@ public class Logic {
     /**
      * This method is the constructor of the Logic class.
      */
-    public Logic() {
+    private Logic() {
 
         parser = new CommandParser();
         store = new Storage();
@@ -64,6 +66,13 @@ public class Logic {
         prepareSystem();
         
         sortTaskList();
+    }
+    
+    public static Logic getInstance(){
+        if(logic == null){
+            logic = new Logic();
+        }
+        return logic;
     }
 
     /**
@@ -156,7 +165,7 @@ public class Logic {
                     return 0;
                 }
                 return task1.getDate().get(task1.getDate().size()-1).
-                        compareTo(task2.getDate().get(task1.getDate().size()-1));
+                        compareTo(task2.getDate().get(task2.getDate().size()-1));
             }
         });
     }

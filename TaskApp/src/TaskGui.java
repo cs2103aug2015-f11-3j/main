@@ -53,7 +53,7 @@ public class TaskGui extends Application{
 	private void initialLogic() {
 		// TODO Auto-generated method stub
 		//taskLogic = new TaskLogic();
-		logic = new Logic();
+		logic = Logic.getInstance();
 	}
 
 	private void addListView() {
