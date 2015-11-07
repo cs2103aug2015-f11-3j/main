@@ -31,7 +31,6 @@ public class Logic {
     public ArrayList<Tasks> taskList;
     private ArrayList<Tasks> oldTaskList;
     private ArrayList<Tasks> searchList;
-
     public ArrayList<String> taskListString;
     private ArrayList<String> consoleList;
 
@@ -121,7 +120,7 @@ public class Logic {
             String originalLocation = taskFile.getAbsolutePath();
             taskFile = movedFile(taskFile, command.getTask());
             store.updateToFile(directoryFile, taskFile.getAbsolutePath());
-            consoleList.add("file is moved from " + originalLocation + " to " + command.getTask());
+            consoleList.add("File moved from " + originalLocation + " to " + command.getTask());
             break;
             
         case INVALID:
@@ -141,6 +140,7 @@ public class Logic {
         store.updateToFile(taskFile, taskListString);
     }
 
+    //This method sorts the task list by the date
     private void sortTaskList() {
                 
         Collections.sort(taskList, new Comparator<Tasks>() {
@@ -178,8 +178,11 @@ public class Logic {
     @SuppressWarnings("deprecation")
     private void searchForDate(Command command) {
         searchList.clear();
+        
+        int dateSize = command.getDates().size();
 
-        consoleList.add("Search for date: " + command.getDates());
+        consoleList.add("Search for date: "+getDateString(command.getDates().get(dateSize-1)));
+        
         for (Tasks curTask : taskList) {
             if(!curTask.getDate().isEmpty()){
                 if (curTask.getDate().get(curTask.getDate().size() - 1)
@@ -194,6 +197,17 @@ public class Logic {
             }
         }
     }
+    
+    @SuppressWarnings("deprecation")
+    private String getDateString(Date date){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(date.getDate());
+        stringBuilder.append("/");
+        stringBuilder.append(date.getMonth());
+        stringBuilder.append("/");
+        stringBuilder.append(date.getYear()+1900);
+        return stringBuilder.toString();
+    }
 
     // Delete a task by using it's index
     private void deleteIndex(Command command) {
@@ -206,7 +220,7 @@ public class Logic {
 
                     taskList.remove(j);
 
-                    consoleList.add("Deleted task with index:" + i);
+                    consoleList.add("Deleted task with index: " + i);
                 }
             }
         } else {
@@ -225,7 +239,7 @@ public class Logic {
                     
                     taskList.get(j).setDate(command.getDates());
 
-                    consoleList.add("Task with index:" + i + " has had it's date updated");
+                    consoleList.add("Task with index: " + i + " has had it's date updated");
                 }
             }
         } else {
@@ -333,7 +347,12 @@ public class Logic {
             taskList.add(task);
         }
 
-        consoleList.add("Added task " + command.getTask() + " on " + command.getDates());
+        consoleList.add("Added task '" + command.getTask() + "'");
+        if(command.getDates().isEmpty()){
+            consoleList.add("    as a floating task");
+        }else {
+            consoleList.add("    on "+getDateString(command.getDates().get(command.getDates().size()-1)));
+        }
     }
 
     // Transforms the Tasks into Strings
@@ -455,17 +474,9 @@ public class Logic {
                 
             }
         }
-        System.out.println("!!!!!!!!"+discardList.size());
  
         return discardList;
     }
-    
-    
-//    &&
-//    curTask.getDate().get(curTask.getDate().size() - 1)
-//    .getDate() != today.getDate()&&curTask.getDate().get(curTask.getDate().size() - 1)
-//    .getMonth() != today.getMonth()&&curTask.getDate().get(curTask.getDate().size() - 1)
-//    .getYear() != today.getYear()
 
     /**
      * This method returns the ArrayList of the items found in the file that
