@@ -487,4 +487,12 @@ public class Logic {
     public ArrayList<Tasks> getSearch() {
         return searchList;
     }
+    
+    public void clear(){
+        taskList.clear();
+        oldTaskList.clear();
+        searchList.clear();
+        consoleList.clear();
+        taskListString.clear();
+    }
 }
