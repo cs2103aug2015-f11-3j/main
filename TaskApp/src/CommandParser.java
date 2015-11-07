@@ -16,6 +16,7 @@ import java.util.Collections;
  *
  */
 public class CommandParser {
+    private static CommandParser cp;
 	private static final String USER_COMMAND_ADD = "add";
     private static final String USER_COMMAND_DELETE = "delete";
     private static final String USER_COMMAND_DELETE_INDEX = "deletei";
@@ -36,6 +37,14 @@ public class CommandParser {
 	public CommandParser() {
 		KNOWPATTERNS = initTimeFormatBank();
 	}
+	
+	public static CommandParser getInstance() {
+
+        if (cp == null) {
+            cp = new CommandParser();
+        }
+        return cp;
+    }
 	
 	/**This method is to parse file content in the form of ArrayList<String>
 	 *     to ArrayList<Task> when the application launches.
