@@ -28,11 +28,7 @@ public class CommandParser {
     
     private static ArrayList<SimpleDateFormat> KNOWPATTERNS;
     
-    
-    private static final String PARSE_PATTERN = "EEE MMM dd HH:mm:ss Z yyyy";
-	
 	private static final String[] PREPOSITION_KEYWORD = {"AT", "BY", "FROM", "TO", "ON"};
-	
 	private static final String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 	private static final String[] DAY_OF_THE_WEEK = {"MON", "TUE","WED","THU","FRI","SAT","SUN"};
 	
@@ -40,37 +36,14 @@ public class CommandParser {
 		KNOWPATTERNS = initTimeFormatBank();
 	}
 	
-	public ArrayList<Tasks> parseArrList(ArrayList<String> arrList) {
-	    ArrayList<Tasks> tasks = new ArrayList<Tasks>();
-		
-		for(int i=0; i<arrList.size(); i++) {
-			ArrayList<Date> dates = new ArrayList<Date>();
-			String event = createEvent(arrList.get(i));
-			toDateList(dates ,arrList.get(i));
-			tasks.add(new Tasks(event, dates));
-		}
-		return tasks;
-	}
-	
-	public String createEvent(String string) {
-		String[] tokens = string.split("\\[");
-		return tokens[0].trim();
-	}
-
-	public void toDateList(ArrayList<Date> dates, String string) {
-		String[] tokens = string.split("\\[");
-		String str =tokens[1].substring(0, tokens[1].length()-1);
-		String[] rawDate = str.split(",");
-		SimpleDateFormat sdf = new SimpleDateFormat(PARSE_PATTERN);
-		
-		for(int i=0; i<rawDate.length; i++) {
-			try {
-				Date date = sdf.parse(rawDate[i].trim());
-				dates.add(date);
-			} catch (ParseException e) {
-				System.err.println("cannot be parsed as date");
-			}	
-		}
+	/**This method is to parse file content in the form of ArrayList<String>
+	 *     to ArrayList<Task> when the application launches.
+	 * 
+	 * @param ArrayList<String>
+	 * @return ArrayList<Tasks>
+	 */
+	public ArrayList<Tasks> parseArrList(ArrayList<String> strTaskList) {
+	    return TaskParser.parseArrList(strTaskList);
 	}
 
 	public Command parse(String input) {
@@ -126,7 +99,37 @@ public class CommandParser {
 		return command;
 	}
 	
-	//READ a date
+	/**This method is to add known patterns of date to the pattern bank
+	 * 
+	 * @return knowPatterns: the known pattern bank that will be used in parser.
+	 */
+	private  ArrayList<SimpleDateFormat> initTimeFormatBank() {    
+        ArrayList<SimpleDateFormat> knowPatterns = new ArrayList<SimpleDateFormat>();
+        knowPatterns.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm dd/MM/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm d/MM/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm dd/M/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("HHmm d/M/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("dd/MM/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("d/MM/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("d/M/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("dd/M/yyyy"));
+        knowPatterns.add(new SimpleDateFormat("MMM d yyyy"));
+        knowPatterns.add(new SimpleDateFormat("MMM dd yyyy"));
+        knowPatterns.add(new SimpleDateFormat("d MMM yyyy"));
+        knowPatterns.add(new SimpleDateFormat("dd MMM yyyy"));
+        return knowPatterns;
+    }
+	
+	/**This method is to create the command based on the remaining String, 
+	 * if the remaining string cannot interpreted correctly, invalid type 
+	 * command will be created, otherwise read command is created.
+	 * 
+	 * @param String
+	 * @return command 
+	 *                 
+	 */
 	private Command initReadCommand(String str) {
         Command cmd = new Command(Command.TYPE.READ);
         ArrayList<Date> dates = new ArrayList<Date>();
@@ -135,16 +138,7 @@ public class CommandParser {
         if(str.equalsIgnoreCase("today")) {
         	date = endOfDay(date);
         }
-//        else if(str.equalsIgnoreCase("tmr")){
-//        	Calendar c = Calendar.getInstance(); 
-//        	c.setTime(date); 
-//        	c.add(Calendar.DATE, 1);
-//        	date = endOfDay(c.getTime());
-//        }
-//        else if(str.equalsIgnoreCase("this week")){
-//        	date = getNextOccurenceOfDay(date, Calendar.SUNDAY);
-//        	date = endOfDay(date);
-//      }
+
         else {
         	date = convertToDate(str);
         	if(date==null) {
@@ -157,6 +151,12 @@ public class CommandParser {
         return cmd;
     }
 	
+	/**This method is to calculate the next nearest occurrence of specific day of the week after a specific date
+	 * 
+	 * @param Date: the reference date 
+	 * @param int: integer representation of day of the week
+	 * @return Date: next occurrence of the day
+	 */
 	private Date getNextOccurenceOfDay(Date today, int dayOfWeek) {  
 	    Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);  
@@ -165,6 +165,7 @@ public class CommandParser {
 		cal.add(Calendar.DAY_OF_YEAR, numDays); 
 		return cal.getTime();  
 	} 
+	
 	
 	private Date startOfDay(Date date) {
 	    Calendar cal = Calendar.getInstance();
@@ -299,8 +300,7 @@ public class CommandParser {
             baseDate = startOfDay(getNextOccurenceOfDay(baseDate, dayOfWeek));
             System.out.println("base date in loop "+baseDate.toString());
         }
-        cmd.setDates(dates);
-       
+        cmd.setDates(dates); 
 	}
 
     private void createReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
@@ -394,25 +394,6 @@ public class CommandParser {
 		return null;
 	}
 
-	private  ArrayList<SimpleDateFormat> initTimeFormatBank() {	
-	    ArrayList<SimpleDateFormat> knowPatterns = new ArrayList<SimpleDateFormat>();
-		knowPatterns.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
-		knowPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
-		knowPatterns.add(new SimpleDateFormat("HHmm dd/MM/yyyy"));
-		knowPatterns.add(new SimpleDateFormat("HHmm d/MM/yyyy"));
-		knowPatterns.add(new SimpleDateFormat("HHmm dd/M/yyyy"));
-		knowPatterns.add(new SimpleDateFormat("HHmm d/M/yyyy"));
-		knowPatterns.add(new SimpleDateFormat("dd/MM/yyyy"));
-		knowPatterns.add(new SimpleDateFormat("d/MM/yyyy"));
-		knowPatterns.add(new SimpleDateFormat("d/M/yyyy"));
-		knowPatterns.add(new SimpleDateFormat("dd/M/yyyy"));
-		knowPatterns.add(new SimpleDateFormat("MMM d yyyy"));
-		knowPatterns.add(new SimpleDateFormat("MMM dd yyyy"));
-		knowPatterns.add(new SimpleDateFormat("d MMM yyyy"));
-		knowPatterns.add(new SimpleDateFormat("dd MMM yyyy"));
-		return knowPatterns;
-	}
-	
 	//EXIT
 	private Command initExitCommand() {
         return new Command(Command.TYPE.EXIT);
@@ -511,7 +492,7 @@ public class CommandParser {
 		return false;
 	}
 	
-	public boolean isNumeric(String str) {
+	private boolean isNumeric(String str) {
 		String regex = "\\d+";
 		return str.matches(regex);
 	}
