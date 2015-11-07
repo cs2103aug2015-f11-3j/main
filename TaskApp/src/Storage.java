@@ -2,9 +2,14 @@ package src;
 
 /**
  * The Storage saves all the data of the user,
+<<<<<<< HEAD
  * and will be updated after every action.
  * This part only aims to connect with the TaskLogic Part.
  * @@author A0126415M
+=======
+ * and will be updated according to commands, i.e. add/delete/update.
+ * @@author Fang Juping A0126415M
+>>>>>>> 372cf29091c7e89ec3179cc1a85dcbcbd7a61f2a
  */
 import java.io.*;
 import java.util.ArrayList;
@@ -24,6 +29,7 @@ public class Storage {
 	 */
 	public File prepareFile (String fileName) {
 		File file = new File(fileName);
+
 		if (!file.exists()) {
 			try {
 				file.createNewFile();
