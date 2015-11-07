@@ -368,25 +368,31 @@ public class Logic {
      * @return ArrayList containing the tasks that are not completed and still
      *         on time.
      */
+    @SuppressWarnings("deprecation")
     public ArrayList<Tasks> getToDoTask() {
         Date today = new Date();
 
         ArrayList<Tasks> toDoList = new ArrayList<>();
 
         for (Tasks curTask : taskList) {
-            if (!curTask.getStatus()) {
-                if (!curTask.getDate().isEmpty()) {
-                    if (curTask.getDate().get(curTask.getDate().size() - 1).after(today)) {
-                        toDoList.add(curTask);
-                    } else {
-                        if ((curTask.getDate().get(curTask.getDate().size() - 1).equals(today))) {
-                            toDoList.add(curTask);
-                        }
-                    }
-                } else {
+            
+            if(!curTask.getStatus()){
+                if(!curTask.getDate().isEmpty()){
+                    if (curTask.getDate().get(curTask.getDate().size() - 1)
+                            .getDate() == today.getDate()&&curTask.getDate().get(curTask.getDate().size() - 1)
+                            .getMonth()==today.getMonth()&&curTask.getDate().get(curTask.getDate().size() - 1)
+                            .getYear()==today.getYear()) {
+                                toDoList.add(curTask);
+                            }else {
+                                if (curTask.getDate().get(curTask.getDate().size() - 1).after(today)) {
+                                    toDoList.add(curTask);
+                                }
+                            }
+                }else {
                     toDoList.add(curTask);
                 }
             }
+               
         }
 
         return toDoList;
@@ -398,6 +404,7 @@ public class Logic {
      * @return ArrayList that contains the tasks that are either completed or
      *         overdue
      */
+    @SuppressWarnings("deprecation")
     public ArrayList<Tasks> getDiscard() {
         Date today = new Date();
 
@@ -406,14 +413,22 @@ public class Logic {
         for (Tasks curTask : taskList) {
             if (curTask.getStatus()) {
                 discardList.add(curTask);
-            } else {
+            } else{
                 if (!curTask.getDate().isEmpty()) {
-                    if (curTask.getDate().get(curTask.getDate().size() - 1).before(today)) {
+                    if (curTask.getDate().get(curTask.getDate().size() - 1).before(today)&&
+                            curTask.getDate().get(curTask.getDate().size() - 1)
+                            .getDate() != today.getDate()&&curTask.getDate().get(curTask.getDate().size() - 1)
+                            .getMonth() != today.getMonth()&&curTask.getDate().get(curTask.getDate().size() - 1)
+                            .getYear() != today.getYear()) {
                         discardList.add(curTask);
                     }
                 }
             }
+            
+          
         }
+        
+       
 
         return discardList;
     }
