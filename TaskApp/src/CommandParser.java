@@ -37,18 +37,18 @@ public class CommandParser {
 	private static final String[] DAY_OF_THE_WEEK = {"MON", "TUE","WED","THU","FRI","SAT","SUN"};
 	
 	public CommandParser() {
-		KNOWPATTERNS = new ArrayList<SimpleDateFormat>();
+		KNOWPATTERNS = initTimeFormatBank();
 	}
 	
 	public ArrayList<Tasks> parseArrList(ArrayList<String> arrList) {
-		ArrayList<Tasks> tasks = new ArrayList<Tasks>();
+	    ArrayList<Tasks> tasks = new ArrayList<Tasks>();
 		
-			for(int i=0; i<arrList.size(); i++) {
-				ArrayList<Date> dates = new ArrayList<Date>();
-				String event = createEvent(arrList.get(i));
-				toDateList(dates ,arrList.get(i));
-				tasks.add(new Tasks(event, dates));
-			}
+		for(int i=0; i<arrList.size(); i++) {
+			ArrayList<Date> dates = new ArrayList<Date>();
+			String event = createEvent(arrList.get(i));
+			toDateList(dates ,arrList.get(i));
+			tasks.add(new Tasks(event, dates));
+		}
 		return tasks;
 	}
 	
@@ -158,16 +158,16 @@ public class CommandParser {
     }
 	
 	private Date getNextOccurenceOfDay(Date today, int dayOfWeek) {  
-		  Calendar cal = Calendar.getInstance();  
-		  cal.setTime(today);  
-		  int dow = cal.get(Calendar.DAY_OF_WEEK);  
-		  int numDays = 7 - ((dow - dayOfWeek) % 7 + 7) % 7;  
-		  cal.add(Calendar.DAY_OF_YEAR, numDays); 
-		  return cal.getTime();  
+	    Calendar cal = Calendar.getInstance();  
+		cal.setTime(today);  
+		int dow = cal.get(Calendar.DAY_OF_WEEK);  
+		int numDays = 7 - ((dow - dayOfWeek) % 7 + 7) % 7;  
+		cal.add(Calendar.DAY_OF_YEAR, numDays); 
+		return cal.getTime();  
 	} 
 	
 	private Date startOfDay(Date date) {
-		Calendar cal = Calendar.getInstance();
+	    Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
@@ -233,7 +233,7 @@ public class CommandParser {
 		File file = new File(directory);
 		System.out.println(file.getName());
 		try {
-			if((!directory.isEmpty()) && file.createNewFile()) {
+		    if((!directory.isEmpty()) && file.createNewFile()) {
 				cmd.setTask(directory);				
 			}
 		} catch (IOException e) {
@@ -252,31 +252,69 @@ public class CommandParser {
 		ArrayList<Date> dates = new ArrayList<Date>();
 		String event = initEvent(remainStr);
 		cmd.setTask(event);
-		String timeStr = removeString(remainStr, event);
-		timeStr=timeStr.toLowerCase();
+		String timeStr = removeString(remainStr, event).toLowerCase();
 		System.out.println("timeStr is " +timeStr);
 		if (timeStr.contains("every") && timeStr.contains("until")) {
-			System.out.println("entre reoccurring task");
-			System.out.println(timeStr);
 			createReoccurringTimeConstraint(cmd, timeStr, dates);			
-		}else {
-			System.out.println("entre noraml task");
+		}
+		else if(timeStr.contains("every") && timeStr.contains("from") && timeStr.contains("to")) {
+		    createDurationReoccurringTimeConstraint(cmd, timeStr, dates);
+		}
+		else {
 			createTimeConstraint(cmd, timeStr, dates);
 		}
 		cmd.setDates(dates);
 	}
 	
-	private void createReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
+	private void createDurationReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
+        // TODO Auto-generated method stub
+	    System.out.println("entre duration reoccur");
+	    ArrayList<String> arrList = new ArrayList<String>(Arrays.asList(timeStr.split("\\b(to)\\b")));
+	    Date endDate = convertToDate(arrList.get(arrList.size()-1).trim());
+	    arrList = new ArrayList<String>(Arrays.asList(arrList.get(0).split("\\b(from)\\b")));
+	    Date startDate = convertToDate(arrList.get(arrList.size()-1).trim());
+	    if(endDate==null || startDate==null || endDate.getTime()<startDate.getTime()) {
+            cmd.setCommandType(Command.TYPE.INVALID);
+            return;
+        }
+	    endDate = endOfDay(endDate);
+	    startDate = startOfDay(startDate);
+	    System.out.println("start "+startDate.toString());
+	    System.out.println("end "+endDate.toString());
+	    String str = arrList.get(0).replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "").trim();
+	    int dayOfWeek = convertDayToInt(str);
+	    if (dayOfWeek==-1) {
+            System.out.println("entre escape 1");
+            cmd.setCommandType(Command.TYPE.INVALID);
+            return;
+        }
+        cmd.setKey(1);
+        if(isSameDay(startDate, dayOfWeek)) {
+            dates.add(startDate);
+        }
+        Date baseDate = getNextOccurenceOfDay(startDate, dayOfWeek);
+        System.out.println("base date "+baseDate.toString());   //for debug
+        while(baseDate.getTime()<endDate.getTime()) {
+            dates.add(baseDate);
+            baseDate = startOfDay(getNextOccurenceOfDay(baseDate, dayOfWeek));
+            System.out.println("base date in loop "+baseDate.toString());
+        }
+        cmd.setDates(dates);
+       
+	}
+
+    private void createReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
 		System.out.println("entre reoccuring");		//for debug
 		ArrayList<String> arrList = new ArrayList<String>(Arrays.asList(timeStr.split("\\b(until)\\b")));
 		for(int i=0; i<arrList.size(); i++) {
 			System.out.println(i +" "+arrList.get(i));
 		}
-		Date endDate = endOfDay(convertToDate(arrList.get(arrList.size()-1).trim()));
+		Date endDate = convertToDate(arrList.get(arrList.size()-1).trim());
 		if(endDate==null) {
 			cmd.setCommandType(Command.TYPE.INVALID);
 			return;
 		}
+		endDate = endOfDay(endDate);
 		System.out.println("end Date "+endDate.toString());		//for debug
 		String str = arrList.get(0).replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "").trim();
 		System.out.println(str);
@@ -356,21 +394,23 @@ public class CommandParser {
 		return null;
 	}
 
-	private void initTimeFormatBank() {	
-		KNOWPATTERNS.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("HHmm MMM d yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("HHmm dd/MM/yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("HHmm d/MM/yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("HHmm dd/M/yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("HHmm d/M/yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("dd/MM/yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("d/MM/yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("d/M/yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("dd/M/yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("MMM d yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("MMM dd yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("d MMM yyyy"));
-		KNOWPATTERNS.add(new SimpleDateFormat("dd MMM yyyy"));
+	private  ArrayList<SimpleDateFormat> initTimeFormatBank() {	
+	    ArrayList<SimpleDateFormat> knowPatterns = new ArrayList<SimpleDateFormat>();
+		knowPatterns.add(new SimpleDateFormat("HHmm MMM dd yyyy"));
+		knowPatterns.add(new SimpleDateFormat("HHmm MMM d yyyy"));
+		knowPatterns.add(new SimpleDateFormat("HHmm dd/MM/yyyy"));
+		knowPatterns.add(new SimpleDateFormat("HHmm d/MM/yyyy"));
+		knowPatterns.add(new SimpleDateFormat("HHmm dd/M/yyyy"));
+		knowPatterns.add(new SimpleDateFormat("HHmm d/M/yyyy"));
+		knowPatterns.add(new SimpleDateFormat("dd/MM/yyyy"));
+		knowPatterns.add(new SimpleDateFormat("d/MM/yyyy"));
+		knowPatterns.add(new SimpleDateFormat("d/M/yyyy"));
+		knowPatterns.add(new SimpleDateFormat("dd/M/yyyy"));
+		knowPatterns.add(new SimpleDateFormat("MMM d yyyy"));
+		knowPatterns.add(new SimpleDateFormat("MMM dd yyyy"));
+		knowPatterns.add(new SimpleDateFormat("d MMM yyyy"));
+		knowPatterns.add(new SimpleDateFormat("dd MMM yyyy"));
+		return knowPatterns;
 	}
 	
 	//EXIT
