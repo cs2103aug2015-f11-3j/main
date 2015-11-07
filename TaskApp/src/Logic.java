@@ -62,6 +62,8 @@ public class Logic {
         searchList = new ArrayList<>();
 
         prepareSystem();
+        
+        sortTaskList();
     }
 
     /**
@@ -488,6 +490,7 @@ public class Logic {
         return searchList;
     }
     
+    //For testing purposes 
     public void clear(){
         taskList.clear();
         oldTaskList.clear();
