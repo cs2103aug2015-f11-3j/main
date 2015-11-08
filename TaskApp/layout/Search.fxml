@@ -5,14 +5,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-
-<fx:root type="BorderPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<fx:root type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <TableView fx:id="searchTable" prefHeight="200.0" prefWidth="270.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="searchTable" prefHeight="200.0" prefWidth="420.0" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn fx:id="indexColumn" prefWidth="35.0" text="No." />
-          <TableColumn fx:id="eventColumn" prefWidth="65.0" text="Event" />
-            <TableColumn fx:id="dateColumn" prefWidth="170.0" text="Date" />
+          <TableColumn fx:id="indexColumn" prefWidth="50.0" text="No." />
+          <TableColumn fx:id="eventColumn" prefWidth="185.0" text="Event" />
+            <TableColumn fx:id="dateColumn" prefWidth="185.0" text="Date" />
         </columns>
       </TableView>
    </center>

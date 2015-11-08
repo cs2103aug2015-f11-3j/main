@@ -91,27 +91,27 @@ public class Logic {
         switch (command.getCommandType()) {
         case ADD:
             addTask(command);
-            taskListToString();
+//            taskListToString();
             break;
 
         case DELETE:
             deleteTask(command);
-            taskListToString();
+//            taskListToString();
             break;
 
         case DELETEI:
             deleteIndex(command);
-            taskListToString();
+//            taskListToString();
             break;
 
         case UPDATE:
             updateIndex(command);
-            taskListToString();
+//            taskListToString();
             break;
 
         case STATUS:
             updateStatus(command);
-            taskListToString();
+//            taskListToString();
             break;
 
         case SEARCH:
@@ -124,7 +124,7 @@ public class Logic {
 
         case UNDO:
             undoTask();
-            taskListToString();
+//            taskListToString();
             break;
 
         case FILE:
@@ -168,6 +168,8 @@ public class Logic {
                         compareTo(task2.getDate().get(task2.getDate().size()-1));
             }
         });
+        
+        taskListToString();
     }
 
     // Undo the latest change to the task manager

@@ -1,6 +1,5 @@
 package src;
 
-//test
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,33 +35,25 @@ public class TaskGui extends Application{
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stub
 		initialRootLayout();
 		initialPrimaryStage(primaryStage);
 		initialLogic();
 		addCommandBar(this);
 		addListView();
-		//addTodo();
-		//addOverdue();
-		//addSearch();
 		addTodoTableView(logic.getToDoTask());
 		addOverdueTableView(logic.getDiscard());
 		addSearchTableView(logic.getSearch());
 	}
 
 	private void initialLogic() {
-		// TODO Auto-generated method stub
-		//taskLogic = new TaskLogic();
 		logic = Logic.getInstance();
 	}
 
 	private void addListView() {
-		// TODO Auto-generated method stub
-		//root.setLeft(new ListViewController(userInput));
 		listViewController = new ListViewController();
 		root.getChildren().add(listViewController);
 		AnchorPane.setTopAnchor(listViewController, 10.0);
-		AnchorPane.setLeftAnchor(listViewController, 15.0);
+		AnchorPane.setLeftAnchor(listViewController, 25.0);
 		AnchorPane.setBottomAnchor(listViewController, 300.0);
 	}
 
@@ -71,8 +62,8 @@ public class TaskGui extends Application{
 		CommandBarController commandBarController = new CommandBarController(taskGui);
 		root.getChildren().add(commandBarController);
 		AnchorPane.setBottomAnchor(commandBarController, 10.0);
-		AnchorPane.setLeftAnchor(commandBarController, 15.0);
-		AnchorPane.setRightAnchor(commandBarController, 15.0);
+		AnchorPane.setLeftAnchor(commandBarController, 25.0);
+		AnchorPane.setRightAnchor(commandBarController, 25.0);
 		
 	}
 
@@ -81,6 +72,7 @@ public class TaskGui extends Application{
 		this.primaryStage = primaryStage;
         this.primaryStage.setTitle(WINDOW_TITLE);
         this.primaryStage.setScene(new Scene(root));
+        this.primaryStage.setResizable(false);
         this.primaryStage.show();
 	}
 
@@ -95,9 +87,7 @@ public class TaskGui extends Application{
 	}
 	
 	public void handleKeyPress(CommandBarController commandBarController, KeyCode key, String userInput) {
-		
 		if (key == KeyCode.ENTER) {
-			
 			handleEnterPress(commandBarController, userInput);
 		}
 	}
@@ -115,43 +105,35 @@ public class TaskGui extends Application{
 	
 
 	private void addSearchTableView(ArrayList<Tasks> search) {
-		// TODO Auto-generated method stub
 		System.out.println("SEARCH:  ");
 		data2 = getInitialTableData3(search);
 		searchController = new SearchController(data2);
 		root.getChildren().add(searchController);
-		AnchorPane.setTopAnchor(searchController, 10.0);
-		AnchorPane.setRightAnchor(searchController, 15.0);
+		AnchorPane.setTopAnchor(searchController, 350.0);
+		AnchorPane.setRightAnchor(searchController, 25.0);
 		AnchorPane.setBottomAnchor(searchController, 90.0);
 		
 	}
 	
 	private void addOverdueTableView(ArrayList<Tasks> discard) {
-		// TODO Auto-generated method stub
 		System.out.println("OVERDUE:  ");
 		data1 = getInitialTableData3(discard);
 		overDueController = new OverDueController(data1);
 		root.getChildren().add(overDueController);
 		AnchorPane.setTopAnchor(overDueController, 10.0);
-		AnchorPane.setLeftAnchor(overDueController, 680.0);
-		AnchorPane.setBottomAnchor(overDueController, 90.0);
+		AnchorPane.setRightAnchor(overDueController, 25.0);
+		AnchorPane.setBottomAnchor(overDueController, 400.0);
 	}
 	
 	private void addTodoTableView(ArrayList<Tasks> toDoTask) {
-		// TODO Auto-generated method stub
 		System.out.println("TODO:  ");
 		data = getInitialTableData3(toDoTask);
-		//todoTableController = new TodoTableController(data);
 		todoController = new TodoController(data);
-		
-		/*root.getChildren().add(todoTableController);
-		AnchorPane.setTopAnchor(todoTableController, 25.0);
-		AnchorPane.setLeftAnchor(todoTableController, 410.0);
-		AnchorPane.setBottomAnchor(todoTableController, 80.0);*/
 		root.getChildren().add(todoController);
 		AnchorPane.setTopAnchor(todoController, 10.0);
-		AnchorPane.setLeftAnchor(todoController, 390.0);
+		AnchorPane.setLeftAnchor(todoController, 410.0);
 		AnchorPane.setBottomAnchor(todoController, 90.0);
+		
 	}
 	
 	private ObservableList<Message> getInitialTableData3(ArrayList<Tasks> listTask) {
@@ -159,8 +141,6 @@ public class TaskGui extends Application{
 		List<Message> list = new ArrayList<Message>();
 		
 		for(int i=0; i<listTask.size(); i++){
-			/*list.add(new Message(listTask.get(i).getIndex(), listTask.get(i).getEvent(),
-					listTask.get(i).getDate().toString(), listTask.get(i).getStatus()));*/
 			System.out.println(listTask.get(i).getDate().size()+ "####");
 			if(listTask.get(i).getDate().size() == 0){
 				list.add(new Message(listTask.get(i).getIndex(), listTask.get(i).getEvent(),
@@ -196,7 +176,6 @@ public class TaskGui extends Application{
 					"/" +         cal.get(Calendar.YEAR);
 			return formatedDate;
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

@@ -37,8 +37,6 @@ public class OverDueController extends BorderPane{
             e.printStackTrace();
         }
         
-        //ObservableList<Message> data = FXCollections.observableArrayList(msg);
-        
         overDueTable.setItems(data);
         indexColumn.setCellValueFactory(new PropertyValueFactory<Message, Integer>("Index"));
         eventColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Event"));
@@ -51,10 +49,8 @@ public class OverDueController extends BorderPane{
 				protected void updateItem(Boolean item, boolean empty) {
 					super.updateItem(item, empty);
 					if (!empty) {
-						//setText(item.toString());
 						if (item) {
 							setStyle("-fx-background-color: green");
-							//getStyleClass().add("highlightedRow");
 						}
 						else{
 							setStyle("-fx-background-color: yellow");

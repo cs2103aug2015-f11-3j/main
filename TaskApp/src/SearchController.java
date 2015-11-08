@@ -34,13 +34,9 @@ public class SearchController extends BorderPane{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        //ObservableList<Message> data = FXCollections.observableArrayList(msg);
-        
         searchTable.setItems(data);
         indexColumn.setCellValueFactory(new PropertyValueFactory<Message, Integer>("Index"));
         eventColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Event"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Date"));
-        
 	}
 }
