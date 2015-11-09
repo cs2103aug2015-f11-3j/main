@@ -327,7 +327,6 @@ public class Logic {
         if (removeList.isEmpty()) {
             consoleList.add("No task has been found with the event: " + command.getTask());
         } else {
-            //System.out.println("delete");
             oldTaskList = new ArrayList<>(taskList);
             taskList.removeAll(removeList);
 

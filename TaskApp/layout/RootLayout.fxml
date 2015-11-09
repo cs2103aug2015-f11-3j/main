@@ -8,6 +8,6 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1300.0" stylesheets="src/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Text fx:id="text" layoutX="30.0" layoutY="490.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Get start with TaskManager!&#10;add task: add &lt;task&gt; [time] [date]&#10;delete task: delete&lt;keyword&gt;/&lt;index&gt;&#10;update date: update &lt;index&gt; &lt;date&gt;&#10;mark done: status &lt;index&gt;&#10;get list: read &lt;today&gt;/&lt;date&gt;&#10;search task: search &lt;keyword&gt;&#10;get back: undo&#10;save to local: file &lt;dir&gt;" wrappingWidth="325.7073059082031" />
+      <Text fx:id="text" layoutX="30.0" layoutY="490.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Get start with TaskManager!&#10;add task: add &lt;task&gt; [time] [date]&#10;delete task: delete&lt;keyword&gt;/deletei&lt;index&gt;&#10;update date: update &lt;index&gt; &lt;date&gt;&#10;mark done: status &lt;index&gt;&#10;get list: read &lt;today&gt;/&lt;date&gt;&#10;search task: search &lt;keyword&gt;&#10;get back: undo&#10;save to local: file &lt;dir&gt;" wrappingWidth="325.7073059082031" />
    </children>
 </AnchorPane>
