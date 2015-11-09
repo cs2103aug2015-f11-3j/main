@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import logic.Tasks;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import logic.Tasks;
 
 /**CommandParser parses the user's input to a command object that appropriate 
  * fields initialized. 
@@ -48,7 +46,7 @@ public class CommandParser {
         }
         return cp;
     }
-	
+
 	/**This method is to parse file content in the form of ArrayList<String>
 	 *     to ArrayList<Task> when the application launches.
 	 * 
@@ -405,7 +403,7 @@ public class CommandParser {
 	}
 	
 	private boolean isTimeFormat(String str) { 
-		if (str.contains("/") || isNumeric(str) ||isDay(str)||isMonth(str)) { 
+		if (str.contains("/") || isNumeric(str) ||isDay(str)||isMonth(str) || str.matches("^(\\d+-?)+\\d+$")) { 
 			return true;
 		}
 		else 
@@ -440,7 +438,7 @@ public class CommandParser {
 	private boolean isReoccurringKeyword(String str) {
 		return str.equalsIgnoreCase("EVERY") || str.equalsIgnoreCase("UNTIL") || str.equalsIgnoreCase("EVERYDAY");
 	}
-	
+
 	private boolean isSameDay(Date date, int dayOfWeek) {
 	    Calendar cal = Calendar.getInstance();
 	    cal.setTime(date);   
