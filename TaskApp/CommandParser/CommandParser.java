@@ -248,6 +248,10 @@ public class CommandParser {
 	public void createTask(String remainStr, Command cmd) {
 		ArrayList<Date> dates = new ArrayList<Date>();
 		String event = initEvent(remainStr);
+		if(event.length()==0) {
+		    cmd.setCommandType(Command.TYPE.INVALID);
+		    return;
+		}
 		cmd.setTask(event);
 		String timeStr = removeString(remainStr, event).toLowerCase();
 		if (timeStr.contains("every") && timeStr.contains("until")) {
