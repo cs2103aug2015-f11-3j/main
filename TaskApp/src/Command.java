@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**Command is a shared class between logic and commandparser
  * 
- * @@A0126331U
+ * @@author A0126331U
  *
  */
 public class Command {
