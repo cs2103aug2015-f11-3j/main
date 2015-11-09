@@ -14,6 +14,7 @@ import javafx.beans.property.StringProperty;
  * @author Cihang (A0126410)
  *
  */
+//@@author A0126410X
 public class Message {
 	private final IntegerProperty indexColumn;
 	private final StringProperty eventColumn;

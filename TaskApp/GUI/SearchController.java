@@ -17,6 +17,7 @@ import javafx.scene.layout.BorderPane;
  * @author Cihang (A0126410)
  *
  */
+//@@author A0126410X
 public class SearchController extends BorderPane{
 	private static final String SEARCH_TABLE_FXML = "/layout/Search.fxml";
 	

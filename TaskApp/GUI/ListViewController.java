@@ -16,6 +16,7 @@ import javafx.scene.layout.BorderPane;
  * @author Cihang (A0126410)
  *
  */
+//@@author A0126410X
 public class ListViewController extends BorderPane{
 
 	private static final String LISTVIEW_LAYOUT_FXML = "/layout/ListView.fxml";

@@ -25,6 +25,7 @@ import src.Storage;
  * @version 0.4
  *
  */
+//@@author A0145617A
 public class Logic {
 
     private static final String ADD_FLOATING_TASK = "    as a floating task";
@@ -392,7 +393,7 @@ public class Logic {
         }
     }
 
-    // @author A0126331U
+    // @@author A0126331U
     private void prepareSystem() {
         if (store.isEmptyFile(directoryFile)) {
             store.updateToFile(directoryFile, taskFile.getAbsolutePath());
@@ -405,7 +406,7 @@ public class Logic {
         setIndex();
     }
 
-    // @author A0126331U
+    // @@author A0126331U
     private File movedFile(File oldFile, String directory) {
         Path movefrom = FileSystems.getDefault().getPath(oldFile.getAbsolutePath());
         Path target = FileSystems.getDefault().getPath(directory);
@@ -425,6 +426,8 @@ public class Logic {
      * @return ArrayList of the console results.
      * @author A0145617A
      */
+    
+    //@@author A0145617A
     public ArrayList<String> getConsole() {
         return consoleList;
     }
