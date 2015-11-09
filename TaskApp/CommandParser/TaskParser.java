@@ -1,4 +1,4 @@
-package src;
+package CommandParser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,6 +9,11 @@ import java.util.logging.Logger;
 
 import logic.Tasks;
 
+/**TaskParser parses an ArrayList of string into an ArrayList of tasks
+ * 
+ * @@author A0126331U
+ *
+ */
 public class TaskParser {
     
     private static Logger logger = Logger.getLogger("Warning");

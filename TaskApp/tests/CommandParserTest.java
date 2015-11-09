@@ -8,8 +8,8 @@ import java.util.GregorianCalendar;
 
 import org.junit.Test;
 
+import CommandParser.CommandParser;
 import src.Command;
-import src.CommandParser;
 
 public class CommandParserTest {
 	

@@ -1,4 +1,4 @@
-package src;
+package CommandParser;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -9,11 +9,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import logic.Tasks;
+import src.Command;
 
 /**CommandParser parses the user's input to a command object that appropriate 
  * fields initialized. 
  * 
- * @author CYC
+ * @@author A0126331U
  *
  */
 public class CommandParser {
@@ -198,7 +199,6 @@ public class CommandParser {
 		try {
 		    System.out.println("directory1 "+directory);
 		    if((!directory.isEmpty()) && file.createNewFile()) {
-				System.out.println("directory2 "+directory);
 		        cmd.setTask(directory);				
 			}
 		} catch (IOException e) {
@@ -265,7 +265,6 @@ public class CommandParser {
 	}
 	
 	private void createDurationReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
-	    System.out.println("entre duration reoccur");
 	    ArrayList<String> arrList = new ArrayList<String>(Arrays.asList(timeStr.split("\\b(to)\\b")));
 	    Date endDate = convertToDate(arrList.get(arrList.size()-1).trim());
 	    arrList = new ArrayList<String>(Arrays.asList(arrList.get(0).split("\\b(from)\\b")));
@@ -295,7 +294,6 @@ public class CommandParser {
 	}
 
     private void createReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
-		System.out.println("entre reoccuring");		//for debug
 		ArrayList<String> arrList = new ArrayList<String>(Arrays.asList(timeStr.split("\\b(until)\\b")));
 		for(int i=0; i<arrList.size(); i++) {
 			System.out.println(i +" "+arrList.get(i));
@@ -306,10 +304,8 @@ public class CommandParser {
 			return;
 		}
 		endDate = endOfDay(endDate);
-		System.out.println("endDate "+endDate.toString());
 		String str = arrList.get(0).replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "").trim();
 		int dayOfWeek = convertDayToInt(str);
-		System.out.println("int day of the week "+dayOfWeek);
 		if (dayOfWeek==-1) {
 			cmd.setCommandType(Command.TYPE.INVALID);
 			return;
@@ -320,7 +316,6 @@ public class CommandParser {
 			dates.add(today);
 		}
 		Date baseDate = getNextOccurenceOfDay(today, dayOfWeek);
-		System.out.println("base date "+baseDate.toString());
 		while(baseDate.getTime()<endDate.getTime()) {
 			dates.add(baseDate);
 			baseDate = startOfDay(getNextOccurenceOfDay(baseDate, dayOfWeek));
@@ -333,15 +328,11 @@ public class CommandParser {
 		str = str.replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "-");
 		ArrayList<String> tokens = new ArrayList<String>(Arrays.asList(str.split("-")));
 		tokens.removeAll(Collections.singleton(""));
-		convertToDate(cmd ,tokens, dates);
+		saveToDateList(cmd ,tokens, dates);
 	}
 	
-	//supporting format example:
-	//1800 oct 3 2015
-	// 3/10/2015
-	//oct 3 2015
-	//3 oct 2015
-	private void convertToDate(Command cmd, ArrayList<String> tokens, ArrayList<Date> dateList) {
+	// parse tokens to date object, cmd type may possibly change
+	private void saveToDateList(Command cmd, ArrayList<String> tokens, ArrayList<Date> dateList) {
 		for(int i=0; i<tokens.size(); i++) {
 			for (SimpleDateFormat pattern : KNOWPATTERNS) {
 				try {
@@ -363,6 +354,7 @@ public class CommandParser {
 		}
 	}
 	
+	// covert a string into date
 	public Date convertToDate(String str) {
 		for (SimpleDateFormat pattern : KNOWPATTERNS) {
 			try {
@@ -377,7 +369,7 @@ public class CommandParser {
 		}
 		return null;
 	}
-
+	
 	private String getFirstWord(String str) {
 		return str.trim().split(" ")[0];
 	}
@@ -386,12 +378,11 @@ public class CommandParser {
 		return str.replaceFirst(strToRemove, "").trim();
 	}
 	
+	// create event string
 	private String initEvent(String str) {
 		StringBuilder sb = new StringBuilder();
 		String[] pieces = str.split(" ");
 		for (int i = 0; i < pieces.length; i++) {
-			System.out.println(i+ " "+pieces[i]);
-			System.out.println(toAppend(pieces,i));
 			if(toAppend(pieces, i)) {
 				sb.append(" ");
 				sb.append(pieces[i].trim());
@@ -445,6 +436,7 @@ public class CommandParser {
 	    return dayOfWeek == cal.get(Calendar.DAY_OF_WEEK);
 	}
 	
+	//check a token in a array ok to be appended
 	private boolean toAppend(String[] arr, int i) {
 		if(!isPrepositionKeyword(arr[i]) && !isTimeFormat(arr[i]) && !isReoccurringKeyword(arr[i])) {
 			return true;
