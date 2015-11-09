@@ -31,7 +31,6 @@ public class TestLogic {
     	if(index == 1){
     		for(int i=0; i<logic.getToDoTask().size(); i++){
     			if(logic.getToDoTask().get(i).getEvent().equals(string)){
-    				System.out.println(logic.getToDoTask().get(i).getEvent());
     				countTodo++;
     			}
     		}
@@ -100,11 +99,9 @@ public class TestLogic {
     public void testEstatusCommandFunction(){
     	countTodo=0; countOverdue =0; countSearch = 0;
     	logic.executeCommand("status 4");
-    	System.out.println("$$$$$"+ countTodo);
     	isTextFileContain("task4", 1);
     	assertEquals(1, countTodo);
     	isTextFileContain("task4", 2);
-    	System.out.println("$$$$$"+ countOverdue);
     	assertEquals(0, countOverdue);
     	assertEquals(false, logic.getDiscard().get(1).getStatus());
     	
