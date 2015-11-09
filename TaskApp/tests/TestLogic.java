@@ -8,6 +8,7 @@ import org.junit.runners.MethodSorters;
 
 import logic.Logic;
 
+//@@author A0126410X
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestLogic {
 	Logic logic = Logic.getInstance();
