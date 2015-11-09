@@ -7,6 +7,13 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * This class is a wrapper class that utilizes Properties 
+ * so that JavaFX can display the information easily.
+ * 
+ * @author Cihang (A0126410)
+ *
+ */
 public class Message {
 	private final IntegerProperty indexColumn;
 	private final StringProperty eventColumn;

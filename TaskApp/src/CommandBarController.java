@@ -9,6 +9,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * This class handles the TextField that users input commands in and the Label
+ * that shows feedback.
+ * 
+ * @author Cihang (A0126410)
+ *
+ */
 public class CommandBarController extends BorderPane{
 
 	private static final String COMMANDBAR_LAYOUT_FXML = "/layout/CommandBar.fxml";

@@ -10,6 +10,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * This class handles the OverDue table that display Overdue task 
+ * and complete task on table
+ * 
+ * @author Cihang (A0126410)
+ *
+ */
 public class OverDueController extends BorderPane{
 	private static final String UPDATE_TABLE_FXML = "/layout/Overdue.fxml";
 	@FXML

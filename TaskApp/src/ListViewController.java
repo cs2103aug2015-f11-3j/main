@@ -9,6 +9,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * This class handles the Console that users input commands in and the list view console
+ * that shows feedback.
+ * 
+ * @author Cihang (A0126410)
+ *
+ */
 public class ListViewController extends BorderPane{
 
 	private static final String LISTVIEW_LAYOUT_FXML = "/layout/ListView.fxml";

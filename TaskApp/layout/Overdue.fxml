@@ -17,6 +17,6 @@
       </TableView>
    </center>
    <top>
-      <Label fx:id="overdue" text="OverDue" BorderPane.alignment="CENTER" />
+      <Label fx:id="overdue" text="OverDue/Completed" BorderPane.alignment="CENTER" />
    </top>
 </fx:root>

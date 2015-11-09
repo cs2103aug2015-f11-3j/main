@@ -1,4 +1,4 @@
-package src;
+package logic;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +13,10 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import src.Command;
+import src.CommandParser;
+import src.Storage;
+
 /**
  * This class is the main logic class of the Software Engineering class CS2104
  * taken at NUS. My team name is F11-3J.
@@ -22,7 +26,9 @@ import java.util.logging.Logger;
  *
  */
 public class Logic {
-    
+
+    private static final String ADD_FLOATING_TASK = "    as a floating task";
+
     private static Logic logic;
 
     private static final String INDEX_OUT_OF_BOUNDS = "Index you searched for is out of bounds";
@@ -64,12 +70,12 @@ public class Logic {
         searchList = new ArrayList<>();
 
         prepareSystem();
-        
+
         sortTaskList();
     }
-    
-    public static Logic getInstance(){
-        if(logic == null){
+
+    public static Logic getInstance() {
+        if (logic == null) {
             logic = new Logic();
         }
         return logic;
@@ -91,27 +97,27 @@ public class Logic {
         switch (command.getCommandType()) {
         case ADD:
             addTask(command);
-//            taskListToString();
+            // taskListToString();
             break;
 
         case DELETE:
             deleteTask(command);
-//            taskListToString();
+            // taskListToString();
             break;
 
         case DELETEI:
             deleteIndex(command);
-//            taskListToString();
+            // taskListToString();
             break;
 
         case UPDATE:
             updateIndex(command);
-//            taskListToString();
+            // taskListToString();
             break;
 
         case STATUS:
             updateStatus(command);
-//            taskListToString();
+            // taskListToString();
             break;
 
         case SEARCH:
@@ -124,7 +130,7 @@ public class Logic {
 
         case UNDO:
             undoTask();
-//            taskListToString();
+            // taskListToString();
             break;
 
         case FILE:
@@ -133,7 +139,7 @@ public class Logic {
             store.updateToFile(directoryFile, taskFile.getAbsolutePath());
             consoleList.add("File moved from " + originalLocation + " to " + command.getTask());
             break;
-            
+
         case INVALID:
             consoleList.add(ERROR_KEYWORD);
             break;
@@ -146,29 +152,29 @@ public class Logic {
             log.log(Level.INFO, "Entered command: " + command.getTask());
             break;
         }
-        
+
         sortTaskList();
         store.updateToFile(taskFile, taskListString);
     }
 
-    //This method sorts the task list by the date
+    // This method sorts the task list by the date
     private void sortTaskList() {
-                
+
         Collections.sort(taskList, new Comparator<Tasks>() {
             public int compare(Tasks task1, Tasks task2) {
-                
-                if(task1.getDate().isEmpty() && (!task2.getDate().isEmpty())){
+
+                if (task1.getDate().isEmpty() && (!task2.getDate().isEmpty())) {
                     return 1;
-                }else if(task2.getDate().isEmpty() && (!task1.getDate().isEmpty())){
+                } else if (task2.getDate().isEmpty() && (!task1.getDate().isEmpty())) {
                     return -1;
-                }else if(task1.getDate().isEmpty()&&task2.getDate().isEmpty()){
+                } else if (task1.getDate().isEmpty() && task2.getDate().isEmpty()) {
                     return 0;
                 }
-                return task1.getDate().get(task1.getDate().size()-1).
-                        compareTo(task2.getDate().get(task2.getDate().size()-1));
+                return task1.getDate().get(task1.getDate().size() - 1)
+                        .compareTo(task2.getDate().get(task2.getDate().size() - 1));
             }
         });
-        
+
         taskListToString();
     }
 
@@ -191,34 +197,34 @@ public class Logic {
     @SuppressWarnings("deprecation")
     private void searchForDate(Command command) {
         searchList.clear();
-        
+
         int dateSize = command.getDates().size();
 
-        consoleList.add("Search for date: "+getDateString(command.getDates().get(dateSize-1)));
-        
+        consoleList.add("Search for date: " + getDateString(command.getDates().get(dateSize - 1)));
+
         for (Tasks curTask : taskList) {
-            if(!curTask.getDate().isEmpty()){
+            if (!curTask.getDate().isEmpty()) {
                 if (curTask.getDate().get(curTask.getDate().size() - 1)
                         .getDate() == (command.getDates().get(command.getDates().size() - 1).getDate())
                         && curTask.getDate().get(curTask.getDate().size() - 1)
                                 .getMonth() == (command.getDates().get(command.getDates().size() - 1).getMonth())
                         && curTask.getDate().get(curTask.getDate().size() - 1)
                                 .getYear() == (command.getDates().get(command.getDates().size() - 1).getYear())) {
-    
+
                     searchList.add(curTask);
                 }
             }
         }
     }
-    
+
     @SuppressWarnings("deprecation")
-    private String getDateString(Date date){
+    private String getDateString(Date date) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(date.getDate());
         stringBuilder.append("/");
         stringBuilder.append(date.getMonth());
         stringBuilder.append("/");
-        stringBuilder.append(date.getYear()+1900);
+        stringBuilder.append(date.getYear() + 1900);
         return stringBuilder.toString();
     }
 
@@ -249,7 +255,7 @@ public class Logic {
             for (int j = 0; j < taskList.size(); j++) {
                 if (taskList.get(j).getIndex() == i) {
                     setOldTask();
-                    
+
                     taskList.get(j).setDate(command.getDates());
 
                     consoleList.add("Task with index: " + i + " has had it's date updated");
@@ -269,11 +275,11 @@ public class Logic {
             for (int j = 0; j < taskList.size(); j++) {
                 if (taskList.get(j).getIndex() == i) {
                     setOldTask();
-                 
+
                     boolean status = taskList.get(j).getStatus();
 
                     taskList.get(j).setStatus(!status);
-                    
+
                     consoleList.add("Task with index:" + i + " has had it's status updated");
                 }
             }
@@ -282,10 +288,10 @@ public class Logic {
         }
     }
 
-    //Creates an new ArrayList that is going to be used for the UNDO command
+    // Creates an new ArrayList that is going to be used for the UNDO command
     private void setOldTask() {
         oldTaskList.clear();
-        for(int i=0;i<taskList.size();i++){
+        for (int i = 0; i < taskList.size(); i++) {
             Tasks task = new Tasks(taskList.get(i).getEvent(), taskList.get(i).getDate());
             task.setIndex(taskList.get(i).getIndex());
             task.setStatus(taskList.get(i).getStatus());
@@ -354,17 +360,17 @@ public class Logic {
         } else {
             Tasks task = new Tasks(command.getTask(), command.getDates());
             task.setIndex(index++);
-            
-            oldTaskList = new ArrayList<>(taskList);            
+
+            oldTaskList = new ArrayList<>(taskList);
 
             taskList.add(task);
         }
 
         consoleList.add("Added task '" + command.getTask() + "'");
-        if(command.getDates().isEmpty()){
-            consoleList.add("    as a floating task");
-        }else {
-            consoleList.add("    on "+getDateString(command.getDates().get(command.getDates().size()-1)));
+        if (command.getDates().isEmpty()) {
+            consoleList.add(ADD_FLOATING_TASK);
+        } else {
+            consoleList.add("    on " + getDateString(command.getDates().get(command.getDates().size() - 1)));
         }
     }
 
@@ -378,7 +384,7 @@ public class Logic {
             }
         }
     }
-    
+
     // Sets the index at the beginning of the application
     private void setIndex() {
         for (index = 1; index <= taskList.size(); index++) {
@@ -386,6 +392,7 @@ public class Logic {
         }
     }
 
+    // @author A0126331U
     private void prepareSystem() {
         if (store.isEmptyFile(directoryFile)) {
             store.updateToFile(directoryFile, taskFile.getAbsolutePath());
@@ -398,6 +405,7 @@ public class Logic {
         setIndex();
     }
 
+    // @author A0126331U
     private File movedFile(File oldFile, String directory) {
         Path movefrom = FileSystems.getDefault().getPath(oldFile.getAbsolutePath());
         Path target = FileSystems.getDefault().getPath(directory);
@@ -415,6 +423,7 @@ public class Logic {
      * This method returns the content of the console.
      * 
      * @return ArrayList of the console results.
+     * @author A0145617A
      */
     public ArrayList<String> getConsole() {
         return consoleList;
@@ -434,24 +443,23 @@ public class Logic {
         ArrayList<Tasks> toDoList = new ArrayList<>();
 
         for (Tasks curTask : taskList) {
-            
-            if(!curTask.getStatus()){
-                if(!curTask.getDate().isEmpty()){
-                    if (curTask.getDate().get(curTask.getDate().size() - 1)
-                            .getDate() == today.getDate()&&curTask.getDate().get(curTask.getDate().size() - 1)
-                            .getMonth()==today.getMonth()&&curTask.getDate().get(curTask.getDate().size() - 1)
-                            .getYear()==today.getYear()) {
-                                toDoList.add(curTask);
-                            }else {
-                                if (curTask.getDate().get(curTask.getDate().size() - 1).after(today)) {
-                                    toDoList.add(curTask);
-                                }
-                            }
-                }else {
+
+            if (!curTask.getStatus()) {
+                if (!curTask.getDate().isEmpty()) {
+                    if (curTask.getDate().get(curTask.getDate().size() - 1).getDate() == today.getDate()
+                            && curTask.getDate().get(curTask.getDate().size() - 1).getMonth() == today.getMonth()
+                            && curTask.getDate().get(curTask.getDate().size() - 1).getYear() == today.getYear()) {
+                        toDoList.add(curTask);
+                    } else {
+                        if (curTask.getDate().get(curTask.getDate().size() - 1).after(today)) {
+                            toDoList.add(curTask);
+                        }
+                    }
+                } else {
                     toDoList.add(curTask);
                 }
             }
-               
+
         }
 
         return toDoList;
@@ -472,22 +480,21 @@ public class Logic {
         for (Tasks curTask : taskList) {
             if (curTask.getStatus()) {
                 discardList.add(curTask);
-            } else{
+            } else {
                 if (!curTask.getDate().isEmpty()) {
                     if (curTask.getDate().get(curTask.getDate().size() - 1).before(today)) {
                         discardList.add(curTask);
                     }
-                    if (curTask.getDate().get(curTask.getDate().size() - 1)
-                        .getDate() == today.getDate()&&curTask.getDate().get(curTask.getDate().size() - 1)
-                        .getMonth() == today.getMonth()&&curTask.getDate().get(curTask.getDate().size() - 1)
-                        .getYear() == today.getYear()){
-                    discardList.remove(curTask);
+                    if (curTask.getDate().get(curTask.getDate().size() - 1).getDate() == today.getDate()
+                            && curTask.getDate().get(curTask.getDate().size() - 1).getMonth() == today.getMonth()
+                            && curTask.getDate().get(curTask.getDate().size() - 1).getYear() == today.getYear()) {
+                        discardList.remove(curTask);
+                    }
                 }
-                }
-                
+
             }
         }
- 
+
         return discardList;
     }
 
@@ -500,13 +507,8 @@ public class Logic {
     public ArrayList<Tasks> getSearch() {
         return searchList;
     }
+<<<<<<< Updated upstream:TaskApp/logic/Logic.java
+=======
     
-    //For testing purposes 
-    public void clear(){
-        taskList.clear();
-        oldTaskList.clear();
-        searchList.clear();
-        consoleList.clear();
-        taskListString.clear();
-    }
+>>>>>>> Stashed changes:TaskApp/src/Logic.java
 }
