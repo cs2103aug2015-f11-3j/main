@@ -16,6 +16,7 @@ import javafx.scene.layout.BorderPane;
  * @author Cihang (A0126410)
  *
  */
+//@@author A0126410X
 public class CommandBarController extends BorderPane{
 
 	private static final String COMMANDBAR_LAYOUT_FXML = "/layout/CommandBar.fxml";

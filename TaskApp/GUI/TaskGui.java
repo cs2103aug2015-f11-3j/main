@@ -26,6 +26,7 @@ import logic.Tasks;
  * @author Cihang (A0126410)
  *
  */
+//@@author A0126410X
 public class TaskGui extends Application{
 
 	private static final String ROOT_LAYOUT_FXML = "/layout/RootLayout.fxml";
