@@ -2,6 +2,11 @@ package src;
 import java.util.Date;
 import java.util.ArrayList;
 
+/**Command is a shared class between logic and commandparser
+ * 
+ * @@A0126331U
+ *
+ */
 public class Command {
 		public enum TYPE {ADD, DELETE, DELETEI, UPDATE, STATUS, READ, SEARCH, FILE, UNDO, EXIT, INVALID 
 	};
@@ -9,14 +14,12 @@ public class Command {
 	private TYPE commandType;
 	private String task;
 	private ArrayList<Date> dates;
-//	private int indexOfUpdateDeleteItem;
 	private int reoccuringKey;
 	
 	public Command(TYPE commandType) {
 		this.commandType = commandType;
 		task = new String();
 		dates = new ArrayList<Date>();
-//		indexOfUpdateDeleteItem = -1;
 		reoccuringKey = 0;
 	}
 	
@@ -28,7 +31,6 @@ public class Command {
 		return commandType;
 	}
 	
-	// add/delete/update methods
 	public String getTask() {
 		return task;
 	}
@@ -45,12 +47,6 @@ public class Command {
 		dates = datesArr;
 	}
 	
-//	public void setIndex(int i) {
-//		indexOfUpdateDeleteItem = i;
-//	}
-//	public int getIndex() {
-//		return indexOfUpdateDeleteItem;
-//	}
 	public void setKey(int i) {
 		reoccuringKey = i;
 	}
