@@ -50,7 +50,7 @@ public class Logic {
      */
     private Logic() {
 
-        parser = new CommandParser();
+        parser = CommandParser.getInstance();
         store = new Storage();
 
         directoryFile = store.prepareFile("directory.txt");

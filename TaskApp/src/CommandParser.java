@@ -105,6 +105,7 @@ public class CommandParser {
         	
         	default :
         		command = initInvalidCommand();
+        		break;
 		}
 		return command;
 	}
@@ -487,6 +488,7 @@ public class CommandParser {
     			break;
     		default :
     			i = -1;
+    			break;
 		}
     	return i;
 	}
