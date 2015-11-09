@@ -195,9 +195,7 @@ public class CommandParser {
 		}
 		Command cmd = new Command(Command.TYPE.FILE);
 		File file = new File(directory);
-		System.out.println(file.getName());
 		try {
-		    System.out.println("directory1 "+directory);
 		    if((!directory.isEmpty()) && file.createNewFile()) {
 		        cmd.setTask(directory);				
 			}
@@ -295,9 +293,6 @@ public class CommandParser {
 
     private void createReoccurringTimeConstraint(Command cmd, String timeStr, ArrayList<Date> dates) {
 		ArrayList<String> arrList = new ArrayList<String>(Arrays.asList(timeStr.split("\\b(until)\\b")));
-		for(int i=0; i<arrList.size(); i++) {
-			System.out.println(i +" "+arrList.get(i));
-		}
 		Date endDate = convertToDate(arrList.get(arrList.size()-1).trim());
 		if(endDate==null) {
 			cmd.setCommandType(Command.TYPE.INVALID);
@@ -339,7 +334,6 @@ public class CommandParser {
 					if(pattern.toLocalizedPattern().length()==tokens.get(i).trim().length()){
 						pattern.setLenient(false);
 						Date date = pattern.parse(tokens.get(i).trim());
-						System.out.println(date.toString()+"    "+1);
 						dateList.add(date);
 						break;
 					}
@@ -361,7 +355,6 @@ public class CommandParser {
 				if(pattern.toLocalizedPattern().length()==str.trim().length()){
 					pattern.setLenient(false);
 					Date date = pattern.parse(str.trim());	
-					System.out.println(date.toString()+"    "+pattern.toLocalizedPattern());
 					return date;
 				}
 			} catch (ParseException pe) {

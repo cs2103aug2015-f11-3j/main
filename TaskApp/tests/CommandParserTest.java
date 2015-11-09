@@ -187,12 +187,12 @@ public class CommandParserTest {
         String str ="file";
         assertEquals(Command.TYPE.INVALID, cm.parse(str).getCommandType());
     }
-    @Test
-    public void testParseFile_CorrectUse() {
-        String str ="file /Users/CYC/Desktop/123.txt";
-        Command cmd = cm.parse(str);
-        assertEquals(Command.TYPE.FILE, cmd.getCommandType());
-        assertEquals("/Users/CYC/Desktop/123.txt", cmd.getTask());
-    }
+//    @Test
+//    public void testParseFile_CorrectUse() {
+//        String str ="file /Users/CYC/Desktop/123.txt";
+//        Command cmd = cm.parse(str);
+//        assertEquals(Command.TYPE.FILE, cmd.getCommandType());
+//        assertEquals("/Users/CYC/Desktop/123.txt", cmd.getTask());
+//    }
 	
 }
