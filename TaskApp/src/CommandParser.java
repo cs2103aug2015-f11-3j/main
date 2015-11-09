@@ -195,8 +195,10 @@ public class CommandParser {
 		File file = new File(directory);
 		System.out.println(file.getName());
 		try {
+		    System.out.println("directory1 "+directory);
 		    if((!directory.isEmpty()) && file.createNewFile()) {
-				cmd.setTask(directory);				
+				System.out.println("directory2 "+directory);
+		        cmd.setTask(directory);				
 			}
 		} catch (IOException e) {
 			return initInvalidCommand();
@@ -303,17 +305,21 @@ public class CommandParser {
 			return;
 		}
 		endDate = endOfDay(endDate);
+		System.out.println("endDate "+endDate.toString());
 		String str = arrList.get(0).replaceAll("\\b(from|to|at|on|by|every|until)\\b",  "").trim();
 		int dayOfWeek = convertDayToInt(str);
+		System.out.println("int day of the week "+dayOfWeek);
 		if (dayOfWeek==-1) {
 			cmd.setCommandType(Command.TYPE.INVALID);
 			return;
 		}
 		cmd.setKey(1);
-		if(isSameDay(new Date(), dayOfWeek)) {
-			dates.add(startOfDay(new Date()));
+		Date today = startOfDay(new Date());
+		if(isSameDay(today, dayOfWeek)) {
+			dates.add(today);
 		}
-		Date baseDate = getNextOccurenceOfDay(new Date(), dayOfWeek);
+		Date baseDate = getNextOccurenceOfDay(today, dayOfWeek);
+		System.out.println("base date "+baseDate.toString());
 		while(baseDate.getTime()<endDate.getTime()) {
 			dates.add(baseDate);
 			baseDate = startOfDay(getNextOccurenceOfDay(baseDate, dayOfWeek));
@@ -470,6 +476,7 @@ public class CommandParser {
     		case "wed" :
     		case "wednesday" :
     			i = 4;
+    			break;
     		case "thu" :
     		case "thursday" :
     			i = 5;
@@ -508,7 +515,7 @@ public class CommandParser {
         return cal.getTime();  
     } 
       
-    private Date startOfDay(Date date) {
+    public static Date startOfDay(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -517,7 +524,7 @@ public class CommandParser {
         return cal.getTime();
     }
     
-    private Date endOfDay(Date date) {
+    public static Date endOfDay(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.set(Calendar.HOUR_OF_DAY, 23);
