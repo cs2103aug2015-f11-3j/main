@@ -1,4 +1,4 @@
-package src;
+package GUI;
 
 import java.io.IOException;
 import java.util.ArrayList;

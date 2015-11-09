@@ -1,4 +1,4 @@
-package src;
+package GUI;
 
 import java.io.IOException;
 
@@ -11,17 +11,17 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
 /**
- * This class handles the Todo table that display Todo task 
+ * This class handles the Search table that display search task 
  * on table
  * 
  * @author Cihang (A0126410)
  *
  */
-public class TodoController extends BorderPane {
-	private static final String UPDATE_TABLE_FXML = "/layout/Todo.fxml";
-
+public class SearchController extends BorderPane{
+	private static final String SEARCH_TABLE_FXML = "/layout/Search.fxml";
+	
 	@FXML
-	private TableView<Message> todoTable;
+	private TableView<Message> searchTable;
 	
 	@FXML
 	private TableColumn<Message, Integer> indexColumn;
@@ -32,9 +32,8 @@ public class TodoController extends BorderPane {
 	@FXML
 	private TableColumn<Message, String> dateColumn;
 	
-	
-	public TodoController(ObservableList<Message> data){
-		FXMLLoader loader = new FXMLLoader(getClass().getResource(UPDATE_TABLE_FXML));
+	public SearchController(ObservableList<Message> data){
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(SEARCH_TABLE_FXML));
 		loader.setController(this);
         loader.setRoot(this);
         try {
@@ -42,11 +41,9 @@ public class TodoController extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        todoTable.setItems(data);
+        searchTable.setItems(data);
         indexColumn.setCellValueFactory(new PropertyValueFactory<Message, Integer>("Index"));
         eventColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Event"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<Message, String>("Date"));
-        
 	}
 }
