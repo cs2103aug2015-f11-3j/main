@@ -20,10 +20,17 @@ import javafx.stage.Stage;
 import logic.Logic;
 import logic.Tasks;
 
+/**
+ * TaskGui is the entry point for JavaFX applications.
+ * 
+ * @author Cihang (A0126410)
+ *
+ */
 public class TaskGui extends Application{
 
 	private static final String ROOT_LAYOUT_FXML = "/layout/RootLayout.fxml";
 	private static final String WINDOW_TITLE = "Task Manager";
+	
 	private AnchorPane root;
 	private Stage primaryStage;
 	private ListViewController listViewController;
@@ -47,10 +54,16 @@ public class TaskGui extends Application{
 		addSearchTableView(logic.getSearch());
 	}
 
+	/**
+	 * Initializes the Logic class
+	 */
 	private void initialLogic() {
 		logic = Logic.getInstance();
 	}
 
+	/**
+	 * Add ListView to root and set it position
+	 */
 	private void addListView() {
 		listViewController = new ListViewController();
 		root.getChildren().add(listViewController);
@@ -59,18 +72,25 @@ public class TaskGui extends Application{
 		AnchorPane.setBottomAnchor(listViewController, 300.0);
 	}
 
+	/**
+	 * Add CommandBar to root and set it position
+	 * 
+	 * @param taskGui
+	 */
 	private void addCommandBar(TaskGui taskGui) {
-		
 		CommandBarController commandBarController = new CommandBarController(taskGui);
 		root.getChildren().add(commandBarController);
 		AnchorPane.setBottomAnchor(commandBarController, 10.0);
 		AnchorPane.setLeftAnchor(commandBarController, 25.0);
 		AnchorPane.setRightAnchor(commandBarController, 25.0);
-		
 	}
 
+	/**
+	 * Initializes the main JavaFX Stage with RootLayout being the main Scene.
+	 * 
+	 * @param primaryStage
+	 */
 	private void initialPrimaryStage(Stage primaryStage) {
-		// TODO Auto-generated method stub
 		this.primaryStage = primaryStage;
         this.primaryStage.setTitle(WINDOW_TITLE);
         this.primaryStage.setScene(new Scene(root));
@@ -78,8 +98,10 @@ public class TaskGui extends Application{
         this.primaryStage.show();
 	}
 
+	/**
+	 * Initializes the RootLayout that will contain all other JavaFX components.
+	 */
 	private void initialRootLayout() {
-		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(ROOT_LAYOUT_FXML));
 		try {
             root = loader.load();
@@ -88,62 +110,85 @@ public class TaskGui extends Application{
         }
 	}
 	
+	/**
+	 * Methods which refer to Logic class directly
+	 * 
+	 * @param commandBarController
+	 * @param key
+	 * @param userInput
+	 */
 	public void handleKeyPress(CommandBarController commandBarController, KeyCode key, String userInput) {
 		if (key == KeyCode.ENTER) {
 			handleEnterPress(commandBarController, userInput);
 		}
 	}
 
+	/**
+	 * Methods which use to add content to GUI
+	 * 
+	 * @param commandBarController
+	 * @param userInput
+	 */
 	private void handleEnterPress(CommandBarController commandBarController, String userInput) {
-		
 		logic.executeCommand(userInput);
 		listViewController.addArrayList(logic.getConsole());
-		//System.out.println("SIZE: "+logic.getToDoTask().size());
 		addTodoTableView(logic.getToDoTask());
 		addOverdueTableView(logic.getDiscard());
 		addSearchTableView(logic.getSearch());
 		commandBarController.clear();
 	}
 	
-
+	/**
+	 * Add Search Table to root and set it position
+	 * 
+	 * @param search
+	 */
 	private void addSearchTableView(ArrayList<Tasks> search) {
-		System.out.println("SEARCH:  ");
 		data2 = getInitialTableData3(search);
 		searchController = new SearchController(data2);
 		root.getChildren().add(searchController);
 		AnchorPane.setTopAnchor(searchController, 350.0);
 		AnchorPane.setRightAnchor(searchController, 25.0);
 		AnchorPane.setBottomAnchor(searchController, 90.0);
-		
 	}
 	
+	/**
+	 * Add Overdue Table to root and set it position
+	 * 
+	 * @param discard
+	 */
 	private void addOverdueTableView(ArrayList<Tasks> discard) {
-		System.out.println("OVERDUE:  ");
 		data1 = getInitialTableData3(discard);
 		overDueController = new OverDueController(data1);
 		root.getChildren().add(overDueController);
-		AnchorPane.setTopAnchor(overDueController, 10.0);
+		AnchorPane.setTopAnchor(overDueController, 15.0);
 		AnchorPane.setRightAnchor(overDueController, 25.0);
 		AnchorPane.setBottomAnchor(overDueController, 400.0);
 	}
 	
+	/**
+	 * Add Todo Table to root and set it position
+	 * 
+	 * @param toDoTask
+	 */
 	private void addTodoTableView(ArrayList<Tasks> toDoTask) {
-		System.out.println("TODO:  ");
 		data = getInitialTableData3(toDoTask);
 		todoController = new TodoController(data);
 		root.getChildren().add(todoController);
 		AnchorPane.setTopAnchor(todoController, 10.0);
 		AnchorPane.setLeftAnchor(todoController, 410.0);
 		AnchorPane.setBottomAnchor(todoController, 90.0);
-		
 	}
 	
+	/**
+	 * Add content to TableView list
+	 * 
+	 * @param listTask
+	 * @return
+	 */
 	private ObservableList<Message> getInitialTableData3(ArrayList<Tasks> listTask) {
-		// TODO Auto-generated method stub
 		List<Message> list = new ArrayList<Message>();
-		
 		for(int i=0; i<listTask.size(); i++){
-			System.out.println(listTask.get(i).getDate().size()+ "####");
 			if(listTask.get(i).getDate().size() == 0){
 				list.add(new Message(listTask.get(i).getIndex(), listTask.get(i).getEvent(),
 						"Not set yet", listTask.get(i).getStatus()));
@@ -165,11 +210,15 @@ public class TaskGui extends Application{
 		return data;
 	}
 
+	/**
+	 * Reformat the date format and display to GUI
+	 * 
+	 * @param string
+	 * @return
+	 */
 	private String ConvertDateFormat(String string) {
-		
 		DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
 		Date date;
-
 		try {
 			date = (Date)formatter.parse(string);				
 			Calendar cal = Calendar.getInstance();
@@ -181,7 +230,6 @@ public class TaskGui extends Application{
 			e.printStackTrace();
 			return null;
 		}
-		
 	}
 
 	public static void main(String[] args) {

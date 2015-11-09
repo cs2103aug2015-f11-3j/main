@@ -507,4 +507,8 @@ public class Logic {
     public ArrayList<Tasks> getSearch() {
         return searchList;
     }
+<<<<<<< Updated upstream:TaskApp/logic/Logic.java
+=======
+    
+>>>>>>> Stashed changes:TaskApp/src/Logic.java
 }
