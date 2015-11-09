@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import logic.Tasks;
+
 public class TaskParser {
     
     private static Logger logger = Logger.getLogger("Warning");

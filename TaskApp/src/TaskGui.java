@@ -17,6 +17,8 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import logic.Logic;
+import logic.Tasks;
 
 public class TaskGui extends Application{
 
