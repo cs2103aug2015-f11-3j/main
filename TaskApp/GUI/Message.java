@@ -1,4 +1,4 @@
-package src;
+package GUI;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;

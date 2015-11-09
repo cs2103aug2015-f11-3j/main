@@ -1,4 +1,4 @@
-package src;
+package GUI;
 
 import java.io.IOException;
 import javafx.collections.ObservableList;
@@ -18,7 +18,7 @@ import javafx.scene.layout.BorderPane;
  *
  */
 public class OverDueController extends BorderPane{
-	private static final String UPDATE_TABLE_FXML = "/layout/Overdue.fxml";
+	private static final String OVERDUE_TABLE_FXML = "/layout/Overdue.fxml";
 	@FXML
 	private TableView<Message> overDueTable;
 	
@@ -35,7 +35,7 @@ public class OverDueController extends BorderPane{
 	private TableColumn<Message, Boolean> statusColumn;
 	
 	public OverDueController(ObservableList<Message> data){
-		FXMLLoader loader = new FXMLLoader(getClass().getResource(UPDATE_TABLE_FXML));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(OVERDUE_TABLE_FXML));
 		loader.setController(this);
         loader.setRoot(this);
         try {
