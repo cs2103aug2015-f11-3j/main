@@ -10,7 +10,7 @@ public class LogicTest {
 
 	@Test
 	public void testAdd() {
-		Logic logic = new Logic();
+		Logic logic = Logic.getInstance();
 		
 		logic.executeCommand("add dinner with boss on 12 12 2015");
 		

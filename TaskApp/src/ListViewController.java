@@ -25,8 +25,6 @@ public class ListViewController extends BorderPane{
 		} catch (IOException e) {
             e.printStackTrace();
         }
-		 
-		//initialListView(userInput);
 	}
 	
 	 public void addItemToListView(String items) {
